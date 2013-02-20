@@ -88,6 +88,7 @@ class DbConnect
             $pdo->exec( $config[ 'exec' ] );
         }
         $this->pdo = $pdo;
+        $this->config = $config;
         return $pdo;
     }
 
