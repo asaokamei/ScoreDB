@@ -6,6 +6,7 @@ class Mock_QueryPdo
     var $config;
     var $sql, $prep, $type;
     var $stmt = 'stmt';
+    var $query;
     function __construct() {
         $this->config = func_get_args();
     }
@@ -16,5 +17,8 @@ class Mock_QueryPdo
     }
     function stmt() {
         return NULL;
+    }
+    function query( $query ) {
+        $this->query = $query;
     }
 }
