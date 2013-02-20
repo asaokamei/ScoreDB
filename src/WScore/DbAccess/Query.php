@@ -63,6 +63,13 @@ class Query
         return $this;
     }
 
+    /**
+     * @param mixed $config
+     */
+    public function connect( $config=null ) {
+        $this->dbAccess->connect( $config );
+    }
+
     // +----------------------------------------------------------------------+
     //  executing with PdObject
     // +----------------------------------------------------------------------+
