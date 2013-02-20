@@ -33,6 +33,7 @@ class DbAccess implements \Serializable
     /** @var string|array                dsn used for db connection  */
     private $connConfig = null;
 
+    /** @var array                       for serialize.  */
     private $toSerialize = array( 'dbConnect', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
     // +----------------------------------------------------------------------+
     //  Constructor and Managing Objects.
@@ -49,9 +50,9 @@ class DbAccess implements \Serializable
     }
 
     /**
-     * set Pdo. kind of for backward compatibility. 
+     * set database connection. can accept various input...
      *
-     * @param \Pdo|string|array $pdo
+     * @param \Pdo|DbConnect|string|array $pdo
      * @return DbAccess
      */
     public function connect( $pdo=null )
