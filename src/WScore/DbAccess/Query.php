@@ -110,7 +110,7 @@ class Query
      * @return Query
      */
     public function exec() {
-        $this->execSQL( $this->sql, $this->sqlObj->prepared_values, $this->sqlObj->prepared_types );
+        $this->pdoStmt = $this->pdoObj->query( $this->sqlObj );
         return $this;
     }
 

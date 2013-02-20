@@ -72,6 +72,15 @@ class DbAccess implements \Serializable
     //  Executing SQL. all methods returns Dba object.
     // +----------------------------------------------------------------------+
     /**
+     * @param QueryObject $query
+     * @return \PdoStatement
+     */
+    public function query( $query )
+    {
+        $sql = SqlBuilder::build( $query );
+        return $this->exec( $sql, $query->prepared_values, $query->prepared_types );
+    }
+    /**
      * executes an SQL statement using prepare statement.
      *
      * @param string $sql
