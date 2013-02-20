@@ -91,13 +91,13 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'abc' )->like( '%val%' )->select();
+        $this->query->table( $table )->col( 'abc' )->like( '%val%' )->select();
         $this->assertEquals( "abc", $this->pdo->query->where[0]['col'] );
         $this->assertEquals( ":db_prep_1", $this->pdo->query->where[0]['val'] );
         $this->assertEquals( "LIKE", $this->pdo->query->where[0]['rel'] );
         $this->assertEquals( "%val%", $this->pdo->query->prepared_values[':db_prep_1'] );
         // add one more where clause
-        $this->query->w( 'xyz' )->like( '%string%' )->select();
+        $this->query->col( 'xyz' )->like( '%string%' )->select();
         $this->assertEquals( "xyz", $this->pdo->query->where[1]['col'] );
         $this->assertEquals( ":db_prep_2", $this->pdo->query->where[1]['val'] );
         $this->assertEquals( "LIKE", $this->pdo->query->where[1]['rel'] );
@@ -107,7 +107,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'abc' )->notNull( array( 'b','c' ) )->select();
+        $this->query->table( $table )->col( 'abc' )->notNull( array( 'b','c' ) )->select();
         $this->assertEquals( "abc", $this->pdo->query->where[0]['col'] );
         $this->assertEquals( "IS NOT NULL", $this->pdo->query->where[0]['rel'] );
     }
@@ -115,7 +115,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'abc' )->isNull( array('b','c') )->select();
+        $this->query->table( $table )->col( 'abc' )->isNull( array('b','c') )->select();
         $this->assertEquals( "abc", $this->pdo->query->where[0]['col'] );
         $this->assertEquals( "IS NULL", $this->pdo->query->where[0]['rel'] );
     }
@@ -125,7 +125,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         $table = 'testTable';
         $this->query->table( $table );
         // add one more where clause
-        $this->query->w( 'abc' )->notIn( array( 'y', 'z' ) )->select();
+        $this->query->col( 'abc' )->notIn( array( 'y', 'z' ) )->select();
         $this->assertEquals( "abc", $this->pdo->query->where[0]['col'] );
         $this->assertEquals( ":db_prep_1", $this->pdo->query->where[0]['val'][0] );
         $this->assertEquals( "NOT IN", $this->pdo->query->where[0]['rel'] );
@@ -135,7 +135,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'abc' )->in( array('x','y') )->select();
+        $this->query->table( $table )->col( 'abc' )->in( array('x','y') )->select();
         $this->assertEquals( "abc", $this->pdo->query->where[0]['col'] );
         $this->assertEquals( ":db_prep_1", $this->pdo->query->where[0]['val'][0] );
         $this->assertEquals( "IN", $this->pdo->query->where[0]['rel'] );
@@ -146,11 +146,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->ge( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->ge( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a >= :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->ge( 'z' )->select();
+        $this->query->col( 'x' )->ge( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a >= :db_prep_1 AND x >= :db_prep_2", $sql );
     }
@@ -158,11 +158,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->gt( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->gt( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a > :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->gt( 'z' )->select();
+        $this->query->col( 'x' )->gt( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a > :db_prep_1 AND x > :db_prep_2", $sql );
     }
@@ -170,11 +170,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->le( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->le( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a <= :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->le( 'z' )->select();
+        $this->query->col( 'x' )->le( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a <= :db_prep_1 AND x <= :db_prep_2", $sql );
     }
@@ -182,11 +182,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->lt( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->lt( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a < :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->lt( 'z' )->select();
+        $this->query->col( 'x' )->lt( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a < :db_prep_1 AND x < :db_prep_2", $sql );
     }
@@ -194,11 +194,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->ne( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->ne( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a != :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->ne( 'z' )->select();
+        $this->query->col( 'x' )->ne( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a != :db_prep_1 AND x != :db_prep_2", $sql );
     }
@@ -225,11 +225,11 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // test setting column in select
         $table = 'testTable';
-        $this->query->table( $table )->w( 'a' )->eq( 'b' )->select();
+        $this->query->table( $table )->col( 'a' )->eq( 'b' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a = :db_prep_1", $sql );
         // add one more where clause
-        $this->query->w( 'x' )->eq( 'z' )->select();
+        $this->query->col( 'x' )->eq( 'z' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} WHERE a = :db_prep_1 AND x = :db_prep_2", $sql );
     }
@@ -237,7 +237,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // check setting table name
         $table = 'testTable';
-        $values = array( 'col1' => 'val1', 'colNull' => NULL, 'colZero' => '' );
+        $values = array( 'col1' => 'val1', 'colNull' => null, 'colZero' => '' );
         $this->query->table( $table )->values( $values )->makeUpdate()->exec();
 
         // check SQL statement
@@ -265,7 +265,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // check setting table name
         $table = 'testTable';
-        $this->query->table( $table )->w( 'id' )->eq(10)->makeDelete()->exec();
+        $this->query->table( $table )->col( 'id' )->eq(10)->makeDelete()->exec();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertContains( $table, $sql );
         $this->assertEquals( "DELETE FROM {$table} WHERE id = :db_prep_1", $sql );

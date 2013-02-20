@@ -352,9 +352,9 @@ class Query
         return $this;
     }
     public function __get( $name ) {
-        return $this->w( $name );
+        return $this->col( $name );
     }
-    public function w( $col ) {
+    public function col( $col ) {
         $this->queryObject->col( $col );
         return $this;
     }
@@ -369,8 +369,8 @@ class Query
         return $this;
     }
     public function id( $val, $type=null ) {
-        if( is_array( $val ) ) return $this->w( $this->id_name )->in( $val, $type );
-        return $this->w( $this->id_name )->mod( $val, '=', $type );
+        if( is_array( $val ) ) return $this->col( $this->id_name )->in( $val, $type );
+        return $this->col( $this->id_name )->mod( $val, '=', $type );
     }
     public function eq( $val, $type=null ) {
         if( is_array( $val ) ) return $this->in( $val, $type );
