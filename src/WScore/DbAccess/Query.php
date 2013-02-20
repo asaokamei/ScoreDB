@@ -487,7 +487,6 @@ class Query
     public function makeSQL( $type )
     {
         $this->queryObject->query( $type );
-        $this->sql = SqlBuilder::build( $this->queryObject );
         return $this;
     }
     public function makeSelect() {
