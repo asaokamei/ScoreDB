@@ -17,7 +17,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
-        $this->config = 'dsn=mysql:dbname=test_WScore username=admin password=admin';
+        $this->config = include( __DIR__ . '/dsn-mysql.php' );
         $pdo = new \WScore\DbAccess\PdObject( $this->config );
         $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '

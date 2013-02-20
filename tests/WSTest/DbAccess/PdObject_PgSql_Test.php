@@ -16,7 +16,7 @@ class PdObject_PgSql_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
-        $this->config = 'dsn=pgsql:host=localhost;dbname=test_WScore;user=pg_admin;password=admin';
+        $this->config = include( __DIR__ . '/dsn-pgsql.php' );
         $this->pdo = new \WScore\DbAccess\PdObject( $this->config );
         $this->column_list = '
             id SERIAL,

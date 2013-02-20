@@ -17,7 +17,7 @@ class PdObject_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
-        $this->config = 'dsn=mysql:dbname=test_WScore username=admin password=admin';
+        $this->config = include( __DIR__ . '/dsn-mysql.php' );
         $this->pdo = new \WScore\DbAccess\PdObject( $this->config );
         $this->column_list = '
             id int NOT NULL AUTO_INCREMENT,

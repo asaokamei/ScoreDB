@@ -13,7 +13,7 @@ class Dba_Rdb_MySql_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
-        $this->config = 'dsn=mysql:dbname=test_WScore;charset=utf8 username=admin password=admin';
+        $this->config = include( __DIR__ . '/dsn-mysql.php' );
         $this->rdb    = new Rdb();
     }
     // +----------------------------------------------------------------------+

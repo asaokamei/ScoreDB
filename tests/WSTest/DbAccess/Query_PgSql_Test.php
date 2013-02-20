@@ -26,7 +26,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         /** @var \WScore\DbAccess\Query */
-        $this->config = 'dsn=pgsql:host=localhost;dbname=test_WScore;user=pg_admin;password=admin';
+        $this->config = include( __DIR__ . '/dsn-pgsql.php' );
         $pdo = new \WScore\DbAccess\PdObject( $this->config );
         $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '
