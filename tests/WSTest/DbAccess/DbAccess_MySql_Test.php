@@ -19,8 +19,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = include( __DIR__ . '/dsn-mysql.php' );
-        $this->pdo = new \WScore\DbAccess\DbAccess();
-        $this->pdo->connect( new \WScore\DbAccess\DbConnect() );
+        $this->pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
         $this->pdo->connect( $this->config );
         $this->column_list = '
             id int NOT NULL AUTO_INCREMENT,
