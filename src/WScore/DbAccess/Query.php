@@ -6,7 +6,7 @@ class Query
     // PdObject for executing and fetching result from DB.
 
     /** @var \WScore\DbAccess\DbAccess   Access Database     */
-    protected $pdoObj  = null;
+    protected $dbAccess  = null;
 
     /** @var \PdoStatement               PDO statement obj   */
     protected $pdoStmt = null;
@@ -14,7 +14,7 @@ class Query
     // variables to build SQL statement.
 
     /** @var \WScore\DbAccess\QueryObject                 */
-    protected $sqlObj = null;
+    protected $queryObject = null;
 
     /** @var string   SQL Statement created by this class    */
     protected $sql = '';
@@ -35,7 +35,7 @@ class Query
     public static $pqDefault = 'prepare';
 
     /** @var QueryObject   SqlObject class    */
-    public $_sqlObject = '\WScore\DbAccess\QueryObject';
+    public $_queryObjectClass = '\WScore\DbAccess\QueryObject';
     // +----------------------------------------------------------------------+
     //  Construction and Managing Dba Object.
     // +----------------------------------------------------------------------+
@@ -44,7 +44,7 @@ class Query
      * @DimInjection  Fresh   \WScore\DbAccess\PdObject
      */
     public function __construct( $pdoObj=null ) {
-        $this->pdoObj = $pdoObj;
+        $this->dbAccess = $pdoObj;
         $this->clear();
     }
 
@@ -55,10 +55,10 @@ class Query
      * @return Query
      */
     public function clear() {
-        $class = $this->_sqlObject;
-        $this->sqlObj = new $class( $this->pdoObj );
-        $this->sqlObj->prepQuoteUseType = ( $this->_prepQuoteUseType ) ?: static::$pqDefault;
-        $this->sqlObj->col_data_types = $this->_col_data_types;
+        $class = $this->_queryObjectClass;
+        $this->queryObject = new $class( $this->dbAccess );
+        $this->queryObject->prepQuoteUseType = ( $this->_prepQuoteUseType ) ?: static::$pqDefault;
+        $this->queryObject->col_data_types = $this->_col_data_types;
         return $this;
     }
 
@@ -72,7 +72,7 @@ class Query
      * @return Query
      */
     public function setFetchMode( $mode, $class=null, $args=array() ) {
-        $this->pdoObj->setFetchMode( $mode, $class, $args );
+        $this->dbAccess->setFetchMode( $mode, $class, $args );
         return $this;
     }
 
@@ -82,7 +82,7 @@ class Query
      */
     public function lastId( $name=null ) {
         if( !$name ) $name = $this->table . '_id_seq';
-        return $this->pdoObj->lastId( $name );
+        return $this->dbAccess->lastId( $name );
     }
 
     /**
@@ -91,7 +91,7 @@ class Query
      */
     public function lockTable( $table=null ) {
         $table = ( $table )?: $this->table;
-        $this->pdoObj->lockTable( $table );
+        $this->dbAccess->lockTable( $table );
         return $this;
     }
 
@@ -100,7 +100,7 @@ class Query
      * @return string
      */
     public function getDriverName() {
-        return $this->pdoObj->getDriverName();
+        return $this->dbAccess->getDriverName();
     }
 
     /**
@@ -110,7 +110,7 @@ class Query
      * @return Query
      */
     public function exec() {
-        $this->pdoStmt = $this->pdoObj->query( $this->sqlObj );
+        $this->pdoStmt = $this->dbAccess->query( $this->queryObject );
         return $this;
     }
 
@@ -124,16 +124,16 @@ class Query
      * @return Query
      */
     public function execSQL( $sql=null, $prepared=array(), $dataType=array() ) {
-        if( !$this->pdoObj ) throw new \RuntimeException( 'Pdo Object not set.' );
-        $this->pdoStmt = $this->pdoObj->exec( $sql, $prepared, $dataType );
+        if( !$this->dbAccess ) throw new \RuntimeException( 'Pdo Object not set.' );
+        $this->pdoStmt = $this->dbAccess->exec( $sql, $prepared, $dataType );
         return $this;
     }
     public function execPrepare( $sql ) {
-        $this->pdoObj->execPrepare( $sql );
+        $this->dbAccess->execPrepare( $sql );
         return $this;
     }
     public function execExecute( $prepared, $dataType=array() ) {
-        $this->pdoObj->execExecute( $prepared, $dataType );
+        $this->dbAccess->execExecute( $prepared, $dataType );
         return $this;
     }
     // +----------------------------------------------------------------------+
@@ -191,7 +191,7 @@ class Query
      * @return mixed
      */
     public function p( $val ) {
-        $this->sqlObj->prepare( $val );
+        $this->queryObject->prepare( $val );
         return $val;
     }
 
@@ -200,7 +200,7 @@ class Query
      * @return string
      */
     public function q( $val ) {
-        $this->sqlObj->quote( $val );
+        $this->queryObject->quote( $val );
         return $val;
     }
     // +----------------------------------------------------------------------+
@@ -213,8 +213,8 @@ class Query
      */
     public function table( $table, $id_name='id' ) {
         $this->clear();
-        $this->table   = $this->sqlObj->table = $table;
-        $this->id_name = $this->sqlObj->id_name = $id_name;
+        $this->table   = $this->queryObject->table = $table;
+        $this->id_name = $this->queryObject->id_name = $id_name;
         return $this;
     }
 
@@ -223,7 +223,7 @@ class Query
      * @return Query
      */
     public function column( $column ) {
-        $this->sqlObj->columns = $column;
+        $this->queryObject->columns = $column;
         return $this;
     }
 
@@ -233,7 +233,7 @@ class Query
      * @return Query
      */
     public function values( $values ) {
-        $this->sqlObj->values = $values;
+        $this->queryObject->values = $values;
         return $this;
     }
 
@@ -244,27 +244,27 @@ class Query
      * @return Query
      */
     public function functions( $func ) {
-        $this->sqlObj->functions = $func;
+        $this->queryObject->functions = $func;
         return $this;
     }
     public function order( $order ) {
-        $this->sqlObj->order = $order;
+        $this->queryObject->order = $order;
         return $this;
     }
     public function group( $group ) {
-        $this->sqlObj->group = $group;
+        $this->queryObject->group = $group;
         return $this;
     }
     public function misc( $misc ) {
-        $this->sqlObj->misc = $misc;
+        $this->queryObject->misc = $misc;
         return $this;
     }
     public function limit( $limit ) {
-        $this->sqlObj->limit  = ( $limit  ) ? $limit : false;
+        $this->queryObject->limit  = ( $limit  ) ? $limit : false;
         return $this;
     }
     public function offset( $offset ) {
-        $this->sqlObj->offset = ( is_numeric( $offset ) ) ? $offset: 0;
+        $this->queryObject->offset = ( is_numeric( $offset ) ) ? $offset: 0;
         return $this;
     }
 
@@ -273,7 +273,7 @@ class Query
      * @return Query
      */
     public function distinct(){
-        $this->sqlObj->distinct = true;
+        $this->queryObject->distinct = true;
         return $this;
     }
 
@@ -282,7 +282,7 @@ class Query
      * @return Query
      */
     public function forUpdate() {
-        $this->sqlObj->forUpdate = true;
+        $this->queryObject->forUpdate = true;
         return $this;
     }
 
@@ -297,7 +297,7 @@ class Query
      * @return Query
      */
     public function join( $table, $join, $by=null, $columns=null ) {
-        $this->sqlObj->join[] = compact( 'table', 'join', 'by', 'columns' );
+        $this->queryObject->join[] = compact( 'table', 'join', 'by', 'columns' );
         return $this;
     }
     public function joinUsing( $table, $columns ) {
@@ -325,7 +325,7 @@ class Query
      * @return Query
      */
     public function where( $col, $val, $rel='=', $type=null ) {
-        $this->sqlObj->where( $col, $val, $rel, $type );
+        $this->queryObject->where( $col, $val, $rel, $type );
         return $this;
     }
 
@@ -338,7 +338,7 @@ class Query
      * @return Query
      */
     public function whereRaw( $col, $val, $rel='=' ) {
-        $this->sqlObj->whereRaw( $col, $val, $rel );
+        $this->queryObject->whereRaw( $col, $val, $rel );
         return $this;
     }
 
@@ -348,24 +348,24 @@ class Query
      * @return Query
      */
     public function or_() {
-        $this->sqlObj->modRaw( array( 'op' => 'OR' ) );
+        $this->queryObject->modRaw( array( 'op' => 'OR' ) );
         return $this;
     }
     public function __get( $name ) {
         return $this->w( $name );
     }
     public function w( $col ) {
-        $this->sqlObj->col( $col );
+        $this->queryObject->col( $col );
         return $this;
     }
     public function mod( $val, $rel, $type=null ) {
         $mod = array( 'val' => $val, 'rel' => $rel );
-        $this->sqlObj->mod( $mod, $type );
+        $this->queryObject->mod( $mod, $type );
         return $this;
     }
     public function modRaw( $val, $rel ) {
         $mod = array( 'val' => $val, 'rel' => $rel );
-        $this->sqlObj->modRaw( $mod );
+        $this->queryObject->modRaw( $mod );
         return $this;
     }
     public function id( $val, $type=null ) {
@@ -424,7 +424,7 @@ class Query
      * @return Query
      */
     public function setWhere( $where ) {
-        $this->sqlObj->where = $where;
+        $this->queryObject->where = $where;
         return $this;
     }
 
@@ -440,7 +440,7 @@ class Query
      * @return Query
      */
     public function clearWhere() {
-        $this->sqlObj->where = array();
+        $this->queryObject->where = array();
         return $this;
     }
     // +----------------------------------------------------------------------+
@@ -486,8 +486,8 @@ class Query
      */
     public function makeSQL( $type )
     {
-        $this->sqlObj->query( $type );
-        $this->sql = SqlBuilder::build( $this->sqlObj );
+        $this->queryObject->query( $type );
+        $this->sql = SqlBuilder::build( $this->queryObject );
         return $this;
     }
     public function makeSelect() {
