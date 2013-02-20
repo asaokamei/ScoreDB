@@ -38,7 +38,7 @@ class DbAccess implements \Serializable
      */
     public function __construct( $pdoObj=null )
     {
-        $this->dbConnect( $pdoObj );
+        $this->connect( $pdoObj );
     }
 
     /**
@@ -47,7 +47,7 @@ class DbAccess implements \Serializable
      * @param \Pdo|string|array $pdo
      * @return DbAccess
      */
-    public function dbConnect( $pdo=null ) {
+    public function connect( $pdo=null ) {
         if( !isset( $pdo ) ) { // do nothing
         }
         elseif( $pdo instanceof \PDO ) {
@@ -244,6 +244,6 @@ class DbAccess implements \Serializable
     {
         $info = unserialize( $serialized );
         foreach( $this->toSerialize as $var ) { $this->$var = $info[ $var ]; }
-        $this->dbConnect();
+        $this->connect();
     }
 }

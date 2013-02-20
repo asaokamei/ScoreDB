@@ -29,8 +29,8 @@ class Query_PgSql_Quoted_Test extends \PHPUnit_Framework_TestCase
         /** @var \WScore\DbAccess\Query */
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
         $pdo = new \WScore\DbAccess\DbAccess();
-        $pdo->dbConnect( new \WScore\DbAccess\DbConnect() );
-        $pdo->dbConnect( $this->config );
+        $pdo->connect( new \WScore\DbAccess\DbConnect() );
+        $pdo->connect( $this->config );
         $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '
             id SERIAL,
