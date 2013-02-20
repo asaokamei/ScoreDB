@@ -3,6 +3,12 @@ namespace WScore\DbAccess;
 
 class DbAccess implements \Serializable
 {
+    /**
+     * @Inject
+     * @var \WScore\DbAccess\DbConnect
+     */
+    public $dbConnect;
+
     /** @var \Pdo                        PDO object          */
     protected $pdoObj  = null;
 
@@ -30,14 +36,9 @@ class DbAccess implements \Serializable
      * @param \Pdo $pdoObj
      * @DimInjection Get   Pdo
      */
-    public function __construct( $pdoObj )
+    public function __construct( $pdoObj=null )
     {
-        if( $pdoObj instanceof \PDO ) {
-            $this->dbConnect( $pdoObj );
-        } else {
-            $this->connConfig = $pdoObj;
-            $this->dbConnect();
-        }
+        $this->dbConnect( $pdoObj );
     }
 
     /**
@@ -47,15 +48,19 @@ class DbAccess implements \Serializable
      * @return DbAccess
      */
     public function dbConnect( $pdo=null ) {
-        if( isset( $pdo ) && $pdo instanceof \PDO ) {
+        if( !isset( $pdo ) ) { // do nothing
+        }
+        elseif( $pdo instanceof \PDO ) {
             $this->pdoObj = $pdo;
-        } else {
-            if( isset( $pdo ) ) {
-                $this->connConfig = $pdo;
-            }
-            if( isset( $this->connConfig ) ) {
-                $this->pdoObj = \WScore\DbAccess\DbConnect::connect( $this->connConfig );
-            }
+        }
+        elseif( $pdo instanceof \WScore\DbAccess\DbConnect ) {
+            $this->dbConnect = $pdo;
+        }
+        elseif( is_string( $pdo ) ) {
+            $this->connConfig = $pdo;
+        }
+        if( !isset( $this->pdoObj ) && isset( $this->connConfig ) && isset( $this->dbConnect ) ) {
+            $this->pdoObj = $this->dbConnect->connect( $this->connConfig );
         }
         return $this;
     }

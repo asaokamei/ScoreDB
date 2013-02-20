@@ -27,7 +27,7 @@ config = 'db=database dbname=dbname host=host port=port username=user password=p
 class DbConnect
 {
     /** @var array   default attributes for PDO driver  */
-    public static $defaultAttr = array(
+    public $defaultAttr = array(
         \PDO::ATTR_ERRMODE      => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_CASE         => \PDO::CASE_LOWER,
         \PDO::ATTR_ORACLE_NULLS => \PDO::NULL_NATURAL,
@@ -35,12 +35,26 @@ class DbConnect
     );
 
     /** @var string    Pdo class name to generate */
-    public static $pdoClass = '\PDO';
+    public $pdoClass = '\PDO';
 
     /** @var string    charset to use. default is utf-8. */
-    public static $charset = 'utf8';
+    public $charset = 'utf8';
+
+    /**
+     * @var string
+     */
+    public $config;
+
+    public $pdo;
     
     // +----------------------------------------------------------------------+
+    /**
+     * @param string $config
+     */
+    public function __construct( $config='' )
+    {
+        $this->config = $config;
+    }
 
     /**
      * returns Pdo connection which is pooled by config name.
@@ -49,29 +63,31 @@ class DbConnect
      * @throws \RuntimeException
      * @return \Pdo
      */
-    public static function connect( $config )
+    public function connect( $config=null )
     {
+        if( !isset( $config ) ) $config = $this->config;
         if( is_string( $config ) ) {
-            $config = static::prepare( $config );
+            $config = $this->prepare( $config );
         }
         if( !isset( $config[ 'dsn' ] ) || empty( $config[ 'dsn' ] ) ) {
             throw new \RuntimeException( 'dsn not set for Pdo.' );
         }
         if( !isset( $config[ 'attributes' ] ) ) {
-            $config[ 'attributes' ] = static::$defaultAttr;
+            $config[ 'attributes' ] = $this->defaultAttr;
         }
         if( !isset( $config[ 'username' ] ) ) {
-            $config[ 'username' ] = NULL;
+            $config[ 'username' ] = null;
         }
         if( !isset( $config[ 'password' ] ) ) {
-            $config[ 'password' ] = NULL;
+            $config[ 'password' ] = null;
         }
-        $class = static::$pdoClass;
+        $class = $this->pdoClass;
         /** @var $pdo \Pdo */
         $pdo = new $class( $config[ 'dsn' ], $config[ 'username' ], $config[ 'password' ], $config[ 'attributes' ] );
         if( isset( $config[ 'exec' ] ) ) {
             $pdo->exec( $config[ 'exec' ] );
         }
+        $this->pdo = $pdo;
         return $pdo;
     }
 
@@ -82,7 +98,7 @@ class DbConnect
      * @param string $db_con
      * @return array
      */
-    public static function prepare( $db_con )
+    public function prepare( $db_con )
     {
         $conn_str = array( 'dsn', 'username', 'password' );
         $config = array();
