@@ -81,6 +81,12 @@ class QueryObject
         $this->pdoObj = $pdoObj;
     }
 
+    /**
+     * sets query type such as select, insert.
+     * for insert and update, process value for modifying values.
+     *
+     * @param string $type
+     */
     public function query( $type ) {
         $type = strtolower( $type );
         $this->queryType = $type;

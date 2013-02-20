@@ -40,11 +40,10 @@ class DbConnect
     /** @var string    charset to use. default is utf-8. */
     public $charset = 'utf8';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $config;
 
+    /** @var \Pdo */
     public $pdo;
     
     // +----------------------------------------------------------------------+
