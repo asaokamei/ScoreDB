@@ -1,6 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
-use \WScore\Core;
+namespace WSTest\DbAccess;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
@@ -23,15 +22,13 @@ class Query_PgSql_Quoted_Test extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        Core::clear();
-        Core::go();
-        Core::setPdo( 'dsn=pgsql:host=localhost;dbname=test_WScore;user=pg_admin;password=admin' );
     }
     public function setUp()
     {
         /** @var \WScore\DbAccess\Query */
-        \WScore\DbAccess\Query::$pqDefault = 'quote';
-        $this->query = Core::get( 'Query');
+        $this->config = 'dsn=pgsql:host=localhost;dbname=test_WScore;user=pg_admin;password=admin';
+        $pdo = new \WScore\DbAccess\PdObject( $this->config );
+        $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),

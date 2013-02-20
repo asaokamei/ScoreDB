@@ -1,5 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
+namespace WSTest\DbAccess;
 use \WScore\DbAccess\Rdb as Rdb;
 
 require_once( __DIR__ . '/../../autoloader.php' );
@@ -12,6 +12,7 @@ class Rdb_PgSql_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = 'dsn=pgsql:host=localhost;dbname=test_WScore;user=pg_admin;password=admin';
         $this->rdb    = new Rdb();
     }

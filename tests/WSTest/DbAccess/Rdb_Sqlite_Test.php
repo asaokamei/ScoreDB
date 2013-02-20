@@ -1,5 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
+namespace WSTest\DbAccess;
 use \WScore\DbAccess\Rdb as Rdb;
 
 require_once( __DIR__ . '/../../autoloader.php' );
@@ -12,6 +12,7 @@ class Dba_Rdb_Sqlite_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = 'dsn=sqlite::memory:';
         $this->rdb    = new Rdb();
     }

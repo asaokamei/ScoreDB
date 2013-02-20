@@ -1,5 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
+namespace WSTest\DbAccess;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
@@ -11,6 +11,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     var $pdo;
     function setUp()
     {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         /** @var Mock_QueryPdo */
         $this->pdo = new Mock_QueryPdo();
         /** @var \WScore\DbAccess\Query */

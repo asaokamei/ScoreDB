@@ -1,6 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
-use \WScore\Core;
+namespace WSTest\DbAccess;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
@@ -19,11 +18,8 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->config = 'dsn=mysql:dbname=test_WScore username=admin password=admin';
-        Core::clear();
-        Core::go();
-        Core::setPdo( $this->config );
-        /** @var \WScore\DbAccess\Query */
-        $this->query = Core::get( 'Query');
+        $pdo = new \WScore\DbAccess\PdObject( $this->config );
+        $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '
             id int NOT NULL AUTO_INCREMENT,
             name VARCHAR(30),

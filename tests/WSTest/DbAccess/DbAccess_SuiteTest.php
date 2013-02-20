@@ -19,10 +19,6 @@ class DbAccess_SuiteTests
         $suite->addTestFile( $folder . 'Query_MySql_Test.php' );
         $suite->addTestFile( $folder . 'Query_PgSql_Test.php' );
         $suite->addTestFile( $folder . 'Query_PgSql_Quoted_Test.php' );
-        $suite->addTestFile( $folder . 'Dao_MySql_Test.php' );
-        $suite->addTestFile( $folder . 'Relation_MySql_Test.php' );
-        $suite->addTestFile( $folder . 'Relation_HasJoined_MySql_Test.php' );
-        $suite->addTestFile( $folder . 'Relation_HasJoinDao_MySql_Test.php' );
         return $suite;
     }
 }

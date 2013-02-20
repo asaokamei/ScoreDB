@@ -1,6 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
-use \WScore\Core;
+namespace WSTest\DbAccess;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
@@ -17,11 +16,9 @@ class PdObject_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = 'dsn=mysql:dbname=test_WScore username=admin password=admin';
-        Core::clear();
-        Core::go();
-        Core::setPdo( $this->config );
-        $this->pdo = Core::get( '\WScore\DbAccess\PdObject');
+        $this->pdo = new \WScore\DbAccess\PdObject( $this->config );
         $this->column_list = '
             id int NOT NULL AUTO_INCREMENT,
             name CHAR(30),
@@ -96,7 +93,7 @@ class PdObject_Test extends \PHPUnit_Framework_TestCase
     {
         $max = 1;
         $arg = new Mock_PdObjectData();
-        $class = 'wsTests\DbAccess\Mock_PdObjectDao';
+        $class = 'WSTest\DbAccess\Mock_PdObjectDao';
         $this->fill_columns( $max );
         $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
@@ -111,7 +108,7 @@ class PdObject_Test extends \PHPUnit_Framework_TestCase
     public function test_fetch_mode_class()
     {
         $max = 1;
-        $class = 'wsTests\DbAccess\Mock_PdObjectData';
+        $class = 'WSTest\DbAccess\Mock_PdObjectData';
         $this->fill_columns( $max );
         $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class );
         /** @var $ret \PdoStatement */
