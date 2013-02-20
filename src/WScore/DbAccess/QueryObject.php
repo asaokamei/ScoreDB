@@ -4,6 +4,9 @@ namespace WScore\DbAccess;
 class QueryObject
 {
     // public variables to represent sql statement.
+    /** @var string          type of query, i.e. select, etc. */
+    public $queryType;
+
     /** @var string           name of database table    */
     public $table;
 
@@ -70,8 +73,20 @@ class QueryObject
     /** @var \Pdo */
     public $pdoObj = null;
 
+    // +----------------------------------------------------------------------+
+    /**
+     * @param \Pdo $pdoObj
+     */
     public function __construct( $pdoObj=null ) {
         $this->pdoObj = $pdoObj;
+    }
+
+    public function query( $type ) {
+        $type = strtolower( $type );
+        $this->queryType = $type;
+        if( in_array( $type, array( 'insert', 'update' ) ) ) {
+            $this->processValues();
+        }
     }
     // +----------------------------------------------------------------------+
     //  building where clause. 

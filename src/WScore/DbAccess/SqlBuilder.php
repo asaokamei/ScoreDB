@@ -7,6 +7,15 @@ class SqlBuilder
     //  Making SQL Statements.
     // +----------------------------------------------------------------------+
     /**
+     * @param QueryObject $query
+     * @return string
+     */
+    public static function build( $query )
+    {
+        $method = 'make' . ucwords( $query->queryType );
+        return self::$method( $query );
+    }
+    /**
      * @param QueryObject $sql
      * @throws \RuntimeException
      * @return string

@@ -486,11 +486,8 @@ class Query
      */
     public function makeSQL( $type )
     {
-        $type = 'make' . ucwords( $type );
-        if( in_array( $type, array( 'makeInsert', 'makeUpdate' ) ) ) {
-            $this->sqlObj->processValues();
-        }
-        $this->sql = SqlBuilder::$type( $this->sqlObj );
+        $this->sqlObj->query( $type );
+        $this->sql = SqlBuilder::build( $this->sqlObj );
         return $this;
     }
     public function makeSelect() {
