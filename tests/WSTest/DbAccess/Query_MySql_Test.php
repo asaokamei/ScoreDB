@@ -13,7 +13,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     /** @var \WScore\DbAccess\Query */
     var $query = NULL;
     var $table = 'test_WScore';
-    var $column_list = '';
+    var $table2= 'test_WScore2';
     // +----------------------------------------------------------------------+
     public function setUp()
     {
@@ -22,14 +22,6 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
         $pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
         $pdo->connect( $this->config );
         $this->query = new \WScore\DbAccess\Query( $pdo );
-        $this->column_list = '
-            id int NOT NULL AUTO_INCREMENT,
-            name VARCHAR(30),
-            age  int,
-            bdate date,
-            no_null text NOT NULL,
-            PRIMARY KEY (id)
-        ';
         $this->setUp_TestTable();
     }
 
@@ -50,19 +42,45 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     {
         $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table};" );
         $this->query->execSQL( "
-        CREATE TABLE {$this->table} ( {$this->column_list} );
+        CREATE TABLE {$this->table} (
+            id int NOT NULL AUTO_INCREMENT,
+            name VARCHAR(30),
+            age  int,
+            bdate date,
+            no_null text NOT NULL,
+            PRIMARY KEY (id)
+        );
+        " );
+        $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table2};" );
+        $this->query->execSQL( "
+        CREATE TABLE {$this->table2} (
+            id int NOT NULL AUTO_INCREMENT,
+            user_id int,
+            contact VARCHAR(30),
+            PRIMARY KEY (id)
+        );
         " );
     }
 
-    public function fill_columns( $max=10 )
-    {
-        $prepare = "
+    public function getPrepare() {
+        return "
             INSERT INTO {$this->table}
                 ( name, age, bdate, no_null )
             VALUES
                 ( :name, :age, :bdate, :no_null );
         ";
-        $this->query->execPrepare( $prepare );
+    }
+    public function getPrepare2() {
+        return "
+            INSERT INTO {$this->table2}
+                ( user_id, contact )
+            VALUES
+                ( :user_id, :contact );
+        ";
+    }
+    public function fill_columns( $max=10 )
+    {
+        $this->query->execPrepare( $this->getPrepare() );
         for( $i = 0; $i < $max; $i ++ ) {
             $values = $this->get_column_by_row( $i );
             $this->query->execExecute( $values );
@@ -114,7 +132,6 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     }
     public function test_fetchRow()
     {
-        $this->setUp_TestTable_perm();
         $max = 12;
         $this->fill_columns( $max );
 
@@ -157,19 +174,13 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     }
     public function test_insert_using_prepare()
     {
-        $prepare = "
-            INSERT INTO {$this->table}
-                ( name, age, bdate, no_null )
-            VALUES
-                ( :name, :age, :bdate, :no_null );
-        ";
         $values = array(
             ':name' => 'test prep',
             ':age' => '41',
             ':bdate' => '1980-02-03',
             ':no_null' => 'never null',
         );
-        $this->query->execPrepare( $prepare );
+        $this->query->execPrepare( $this->getPrepare() );
         $this->query->execExecute( $values );
         $id1 = $this->query->lastId();
         $this->assertTrue( $id1 > 0 );
@@ -195,6 +206,25 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
         $id2 = $this->query->lastId();
         $this->assertNotEquals( $id2, $id1 );
         $this->assertEquals( $id2, $id1 + 1 );
+    }
+    public function test_join_table()
+    {
+        $this->fill_columns( 3 );
+        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #1' ) );
+        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #2' ) );
+        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'2', 'contact'=>'contact #3' ) );
+
+        $data = $this->query->table( $this->table )->select();
+        $this->assertEquals( 3, count( $data ) );
+        $this->assertArrayNotHasKey( 'contact', $data[0] );
+
+        $data = $this->query->table( $this->table )->join( $this->table2, 'JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select();
+        $this->assertEquals( 3, count( $data ) );
+        $this->assertArrayHasKey( 'contact', $data[0] );
+
+        $data = $this->query->table( $this->table )->join( $this->table2, 'LEFT JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select();
+        $this->assertEquals( 4, count( $data ) );
+        $this->assertArrayHasKey( 'contact', $data[0] );
     }
     // +----------------------------------------------------------------------+
 }
