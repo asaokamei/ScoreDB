@@ -3,7 +3,7 @@ namespace WSTest\DbAccess;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
-class PdObject_PgSql_Test extends \PHPUnit_Framework_TestCase
+class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
     var $config = array();
     

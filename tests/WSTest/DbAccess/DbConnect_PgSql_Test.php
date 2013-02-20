@@ -4,7 +4,7 @@ use \WScore\DbAccess\DbConnect;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
-class Rdb_PgSql_Test extends \PHPUnit_Framework_TestCase
+class DbConnect_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
     var $config = array();
     /** @var \WScore\DbAccess\DbConnect */
