@@ -19,9 +19,8 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = include( __DIR__ . '/dsn-mysql.php' );
-        $pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
-        $pdo->connect( $this->config );
-        $this->query = new \WScore\DbAccess\Query( $pdo );
+        $this->query = include( __DIR__ . '/../../../scripts/query.php' );
+        $this->query->connect( $this->config );
         $this->setUp_TestTable();
     }
 

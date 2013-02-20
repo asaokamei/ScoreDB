@@ -28,9 +28,8 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
         require_once( __DIR__ . '/../../../scripts/require.php' );
         /** @var \WScore\DbAccess\Query */
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
-        $pdo->connect( $this->config );
-        $this->query = new \WScore\DbAccess\Query( $pdo );
+        $this->query = include( __DIR__ . '/../../../scripts/query.php' );
+        $this->query->connect( $this->config );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),
