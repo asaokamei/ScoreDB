@@ -1,6 +1,7 @@
 <?php
 namespace WSTest\DbAccess;
 
+use \WScore\DbAccess\DbAccess;
 require_once( __DIR__ . '/../../autoloader.php' );
 
 class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
