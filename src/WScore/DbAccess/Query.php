@@ -16,9 +16,6 @@ class Query
     /** @var \WScore\DbAccess\QueryObject                 */
     protected $queryObject = null;
 
-    /** @var string   SQL Statement created by this class    */
-    protected $sql = '';
-
     /** @var string           name of database table         */
     protected $table;
     
@@ -288,7 +285,6 @@ class Query
 
     /**
      * Building JOIN clause...
-     * TODO: should move this to SqlBuilder.
      *
      * @param $table
      * @param $join
