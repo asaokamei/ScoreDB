@@ -23,10 +23,11 @@ class DbAccess implements \Serializable
 
     /** @var array                       arguments for fetch_class object  */
     protected $fetchConstArg = array();
-    
+
+    /** @var string|array                dsn used for db connection  */
     private $connConfig = null;
 
-    private $toSerialize = array( 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
+    private $toSerialize = array( 'dbConnect', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
     // +----------------------------------------------------------------------+
     //  Constructor and Managing Objects.
     // +----------------------------------------------------------------------+
@@ -47,7 +48,8 @@ class DbAccess implements \Serializable
      * @param \Pdo|string|array $pdo
      * @return DbAccess
      */
-    public function connect( $pdo=null ) {
+    public function connect( $pdo=null )
+    {
         if( !isset( $pdo ) ) { // do nothing
         }
         elseif( $pdo instanceof \PDO ) {
@@ -56,7 +58,7 @@ class DbAccess implements \Serializable
         elseif( $pdo instanceof \WScore\DbAccess\DbConnect ) {
             $this->dbConnect = $pdo;
         }
-        elseif( is_string( $pdo ) ) {
+        elseif( is_string( $pdo ) || is_array( $pdo ) ) {
             $this->connConfig = $pdo;
         }
         if( !isset( $this->pdoObj ) && isset( $this->connConfig ) && isset( $this->dbConnect ) ) {
@@ -65,6 +67,9 @@ class DbAccess implements \Serializable
         return $this;
     }
 
+    /**
+     * @return string|array
+     */
     public function getConnConfig() {
         return $this->connConfig;
     }
