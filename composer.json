@@ -1,0 +1,14 @@
+{
+    "name": "wscore/dbaccess",
+    "description": "Database access and query builder.",
+    "authors": [
+        {
+            "name": "Asao Kamei",
+            "email": "kamei@workspot.jp"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
