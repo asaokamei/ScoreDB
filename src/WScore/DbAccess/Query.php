@@ -297,9 +297,7 @@ class Query
      * @return Query
      */
     public function join( $table, $join, $by=null, $columns=null ) {
-        $join  = "{$join} {$table}";
-        $join .= ($by)? " {$by}( {$columns} )": '';
-        $this->sqlObj->join[] = $join;
+        $this->sqlObj->join[] = compact( 'table', 'join', 'by', 'columns' );
         return $this;
     }
     public function joinUsing( $table, $columns ) {

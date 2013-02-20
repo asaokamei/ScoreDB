@@ -166,9 +166,18 @@ class SqlBuilder
         $joined = '';
         if( !empty( $join ) )
             foreach( $join as $j ) {
-                $joined .= ' ' . $j;
+                $joined .= ' ' . self::join( $j );
             }
         return $joined;
+    }
+    public static function join( $join ) {
+        /** @var $table string */
+        /** @var $by string */
+        /** @var $columns string */
+        extract( $join );
+        $join  = "{$join} {$table}";
+        $join .= ($by)? " {$by}( {$columns} )": '';
+        return $join;
     }
 
     /**
