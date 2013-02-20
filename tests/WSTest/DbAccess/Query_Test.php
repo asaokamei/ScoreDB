@@ -250,7 +250,10 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     }
     // +----------------------------------------------------------------------+
     /**
-     * @expectedException \RuntimeException
+     * This test no longer valid. Query does not build sql anymore.
+     * the mock class does not build sql.
+     *
+     * @ expectedException \RuntimeException
      */
     public function test_simple_delete_no_where()
     {
