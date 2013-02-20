@@ -24,7 +24,7 @@ config = 'db=database dbname=dbname host=host port=port username=user password=p
 */
 
 
-class Rdb
+class DbConnect
 {
     /** @var array   default attributes for PDO driver  */
     public static $defaultAttr = array(

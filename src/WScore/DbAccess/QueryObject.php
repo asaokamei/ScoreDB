@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class SqlObject
+class QueryObject
 {
     // public variables to represent sql statement.
     /** @var string           name of database table    */
@@ -41,16 +41,16 @@ class SqlObject
     public $misc;
 
     /** @var bool|int */
-    public $limit = FALSE;
+    public $limit = false;
 
     /** @var int */
     public $offset = 0;
 
     /** @var bool */
-    public $distinct = FALSE;
+    public $distinct = false;
 
     /** @var bool */
-    public $forUpdate = FALSE;
+    public $forUpdate = false;
 
     /** @var string */
     public $prepQuoteUseType = 'prepare';
@@ -68,9 +68,9 @@ class SqlObject
     public $col_data_types = array();
 
     /** @var \Pdo */
-    public $pdoObj = NULL;
+    public $pdoObj = null;
 
-    public function __construct( $pdoObj=NULL ) {
+    public function __construct( $pdoObj=null ) {
         $this->pdoObj = $pdoObj;
     }
     // +----------------------------------------------------------------------+
@@ -83,9 +83,9 @@ class SqlObject
      * @param string $val
      * @param string $rel
      * @param null|string|bool   $type
-     * @return SqlObject
+     * @return QueryObject
      */
-    public function where( $col, $val, $rel='=', $type=NULL ) {
+    public function where( $col, $val, $rel='=', $type=null ) {
         $this->prepOrQuote( $val, $type, $col );
         return $this->whereRaw( $col, $val, $rel );
     }
@@ -96,7 +96,7 @@ class SqlObject
      * @param        $col
      * @param        $val
      * @param string $rel
-     * @return SqlObject
+     * @return QueryObject
      */
     public function whereRaw( $col, $val, $rel='=' ) {
         $where = array( 'col' => $col, 'val'=> $val, 'rel' => $rel, 'op' => 'AND' );
@@ -108,10 +108,10 @@ class SqlObject
      * @param string $col
      */
     public function col( $col ) {
-        $this->where[] = array( 'col' => $col, 'val'=> NULL, 'rel' => NULL, 'op' => 'AND' );
+        $this->where[] = array( 'col' => $col, 'val'=> null, 'rel' => null, 'op' => 'AND' );
     }
 
-    public function mod( $where, $type=NULL ) {
+    public function mod( $where, $type=null ) {
         $last = array_pop( $this->where );
         if( $last ) {
             if( isset( $where[ 'val' ] ) ) {
@@ -140,20 +140,20 @@ class SqlObject
      * it will not be treated as prepared value, instead it is
      * set to SQL's NULL value.
      *
-     * @return SqlObject
+     * @return QueryObject
      */
     public function processValues()
     {
         if( !empty( $this->values ) )
             foreach( $this->values as $key => $val ) {
-                if( $val === NULL ) {
+                if( $val === null ) {
                     $this->functions[ $key ] = 'NULL';
                     unset( $this->values[ $key ] );
                 }
             }
         $values = $this->values;
         foreach( $values as $col => &$val ) {
-            $this->prepOrQuote( $val, NULL, $col );
+            $this->prepOrQuote( $val, null, $col );
         }
         $this->rowData = array_merge( $this->functions, $values );
         return $this;
@@ -167,9 +167,9 @@ class SqlObject
      * @param      $val
      * @param null $type    data type
      * @param null $col     column name. used to find data type
-     * @return SqlObject
+     * @return QueryObject
      */
-    public function prepOrQuote( &$val, $type=NULL, $col=NULL )
+    public function prepOrQuote( &$val, $type=null, $col=null )
     {
         $pqType = $this->prepQuoteUseType;
         $this->$pqType( $val, $type, $col );
@@ -186,9 +186,9 @@ class SqlObject
      * @param string|array $val
      * @param null|int     $type    data type
      * @param null $col     column name. used to find data type
-     * @return SqlObject
+     * @return QueryObject
      */
-    public function prepare( &$val, $type=NULL, $col=NULL )
+    public function prepare( &$val, $type=null, $col=null )
     {
         if( is_array( $val ) ) {
             foreach( $val as &$v ) {
@@ -214,9 +214,9 @@ class SqlObject
      *
      * @param string|array $val
      * @param null|int     $type    data type
-     * @return SqlObject
+     * @return QueryObject
      */
-    public function quote( &$val, $type=NULL )
+    public function quote( &$val, $type=null )
     {
         if( is_array( $val ) ) {
             foreach( $val as &$v ) {

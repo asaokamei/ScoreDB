@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class PdObject implements \Serializable
+class DbAccess implements \Serializable
 {
     /** @var \Pdo                        PDO object          */
     protected $pdoObj  = null;
@@ -44,7 +44,7 @@ class PdObject implements \Serializable
      * set Pdo. kind of for backward compatibility. 
      *
      * @param \Pdo|string|array $pdo
-     * @return PdObject
+     * @return DbAccess
      */
     public function dbConnect( $pdo=null ) {
         if( isset( $pdo ) && $pdo instanceof \PDO ) {
@@ -133,7 +133,7 @@ class PdObject implements \Serializable
     }
 
     /**
-     * @return PdObject
+     * @return DbAccess
      */
     public function applyFetchMode()
     {
@@ -151,7 +151,7 @@ class PdObject implements \Serializable
      * @param integer $mode     \PDO's fetch mode
      * @param string $class       class name if mode is fetch_class
      * @param array $constArg
-     * @return PdObject
+     * @return DbAccess
      */
     public function setFetchMode( $mode, $class=null, $constArg=array() ) {
         $this->fetchMode  = $mode;
@@ -175,7 +175,7 @@ class PdObject implements \Serializable
     // +----------------------------------------------------------------------+
     /**
      * @param string $table
-     * @return PdObject
+     * @return DbAccess
      */
     public function lockTable( $table ) {
         $lock = "LOCK TABLE {$table}";
