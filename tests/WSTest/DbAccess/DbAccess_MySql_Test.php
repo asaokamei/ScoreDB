@@ -32,7 +32,6 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->setUp_TestTable();
     }
 
-
     /**
      * set up permanent tables for testing.
      * use this if you are testing the tests!
@@ -91,6 +90,29 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         return $values;
     }
     // +----------------------------------------------------------------------+
+    public function test_connected_injection()
+    {
+        // build with config into DbConnect in prior.
+        $dbc = new \WScore\DbAccess\DbConnect( $this->config );
+        $dba = new \WScore\DbAccess\DbAccess();
+        $dba->sqlBuilder = new \WScore\DbAccess\SqlBuilder();
+        $dba->connect( $dbc );
+
+        $max = 1;
+        $arg = new Mock_PdObjectData();
+        $class = 'WSTest\DbAccess\Mock_PdObjectDao';
+        $this->fill_columns( $max );
+        $dba->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
+        /** @var $ret \PdoStatement */
+        $ret = $dba->exec( "SELECT * FROM {$this->table};" );
+
+        $fetched = $ret->fetch();
+        $this->assertTrue( is_object( $fetched ) );
+        $this->assertEquals( $class, get_class( $fetched ) );
+        $this->assertEquals( $arg, $fetched->getConstructed() );
+        $this->assertSame( $arg, $fetched->getConstructed() );
+    }
+
     public function test_fetch_data_record_class()
     {
         $max = 1;

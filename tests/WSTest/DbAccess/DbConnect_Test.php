@@ -31,7 +31,9 @@ class DbConnect_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $dsn, $pdo1->config[0] );
     }
     /**
-     * @expectedException \RuntimeException
+     * this test no longer valid. connect will not throw an exception.
+     *
+     * @ expectedException \RuntimeException
      */
     public function test_name_not_set()
     {
