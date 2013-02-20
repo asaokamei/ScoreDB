@@ -13,8 +13,11 @@ class Query
 
     // variables to build SQL statement.
 
-    /** @var \WScore\DbAccess\QueryObject                 */
-    protected $queryObject = null;
+    /**
+     * @Inject
+     * @var \WScore\DbAccess\QueryObject
+     */
+    public $queryObject = null;
 
     /** @var string           name of database table         */
     protected $table;
@@ -37,12 +40,13 @@ class Query
     //  Construction and Managing Dba Object.
     // +----------------------------------------------------------------------+
     /**
-     * @param DbAccess $pdoObj
-     * @DimInjection  Fresh   \WScore\DbAccess\PdObject
+     * @Inject
+     * @param \WScore\DbAccess\DbAccess $pdoObj
      */
     public function __construct( $pdoObj=null ) {
         $this->dbAccess = $pdoObj;
         $this->clear();
+        if( is_string( $this->queryObject ) ) $this->queryObject = new $this->queryObject;
     }
 
     /**
