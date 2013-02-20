@@ -466,7 +466,7 @@ class Query
 
     /**
      * @param array|null $column
-     * @return array|DataRecord
+     * @return array
      */
     public function select( $column=null ) {
         if( $column ) $this->column( $column );
