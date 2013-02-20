@@ -16,8 +16,11 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
+        require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->pdo = new \WScore\DbAccess\DbAccess( $this->config );
+        $this->pdo = new \WScore\DbAccess\DbAccess();
+        $this->pdo->dbConnect( new \WScore\DbAccess\DbConnect() );
+        $this->pdo->dbConnect( $this->config );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),

@@ -7,7 +7,7 @@ require_once( __DIR__ . '/../../autoloader.php' );
 class DbConnect_MySql_Test extends \PHPUnit_Framework_TestCase
 {
     var $config = array();
-    /** @var \WScore\DbAccess\DbConnect */
+    /** @var DbConnect */
     var $rdb;
     // +----------------------------------------------------------------------+
     public function setUp()

@@ -19,11 +19,7 @@ class DbConnect_Test extends \PHPUnit_Framework_TestCase
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->mockPdo = '\WSTest\DbAccess\Mock_RdbPdo';
         $this->rdb     = new DbConnect();
-        \WScore\DbAccess\DbConnect::$pdoClass = $this->mockPdo;
-    }
-
-    public static function tearDownAfterClass() {
-        \WScore\DbAccess\DbConnect::$pdoClass = '\PDO';
+        $this->rdb->pdoClass = $this->mockPdo;
     }
     // +----------------------------------------------------------------------+
     public function test_connect_with_new()
