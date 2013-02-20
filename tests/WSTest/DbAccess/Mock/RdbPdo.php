@@ -1,5 +1,5 @@
 <?php
-namespace wsTests\DbAccess;
+namespace WSTest\DbAccess;
 
 class Mock_RdbPdo
 {

@@ -1,13 +1,14 @@
 <?php
-namespace wsTests\DbAccess;
-use \WScore\DbAccess\DbConnect as Rdb;
+namespace WSTest\DbAccess;
+
+use \WScore\DbAccess\DbConnect;
 
 /*
  * TODO: RDB written, i.e. rewrite this test as well. 
  */
 require_once( __DIR__ . '/../../autoloader.php' );
 
-class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
+class DbConnect_Test extends \PHPUnit_Framework_TestCase
 {
     var $mockPdo;
     /** @var \WScore\DbAccess\DbConnect */
@@ -15,19 +16,21 @@ class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function setUp()
     {
-        $this->mockPdo = '\WScore\tests\DbAccess\Mock_RdbPdo';
+        require_once( __DIR__ . '/../../../scripts/require.php' );
+        $this->mockPdo = '\WSTest\DbAccess\Mock_RdbPdo';
         $this->rdb     = new DbConnect();
-        $this->rdb->pdoClass = $this->mockPdo;
+        \WScore\DbAccess\DbConnect::$pdoClass = $this->mockPdo;
     }
 
+    public static function tearDownAfterClass() {
+        \WScore\DbAccess\DbConnect::$pdoClass = '\PDO';
+    }
     // +----------------------------------------------------------------------+
     public function test_connect_with_new()
     {
-        $db = 'Test';
-        $dbname = 'test1';
-        $name1 = "db={$db} dbname={$dbname}";
-        $dsn   = "{$db}:dbname={$dbname};";
-        /** @var $pdo1 \wsTests\DbAccess\Mock_RdbPdo */
+        $name1 = "dsn=db:Test;dbname=test1";
+        $dsn   = "db:Test;dbname=test1";
+        /** @var $pdo1 \WSTest\DbAccess\Mock_RdbPdo */
         $pdo1 = $this->rdb->connect( $name1 );
         $this->assertEquals( $dsn, $pdo1->config[0] );
     }
@@ -47,7 +50,7 @@ class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
             'username' => 'test_user',
             'password' => 'testPswd',
         );
-        /** @var $pdo \wsTests\DbAccess\Mock_RdbPdo */
+        /** @var $pdo \WSTest\DbAccess\Mock_RdbPdo */
         $pdo = $this->rdb->connect( $dsn );
 
         $this->assertEquals( $dsn['dsn'], $pdo->config[0] );
@@ -58,11 +61,11 @@ class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
     // +----------------------------------------------------------------------+
     public function test_construct_config()
     {
-        $dsn  = 'db=myTest dbname=my_test';
-        /** @var $pdo \wsTests\DbAccess\Mock_RdbPdo */
+        $dsn  = 'dsn=db:myTest;dbname:my_test';
+        /** @var $pdo \WSTest\DbAccess\Mock_RdbPdo */
         $pdo = $this->rdb->connect( $dsn );
 
-        $this->assertEquals( 'myTest:dbname=my_test;', $pdo->config[0] );
+        $this->assertEquals( 'db:myTest;dbname:my_test', $pdo->config[0] );
 
     }
 }
