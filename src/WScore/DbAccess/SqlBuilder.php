@@ -7,7 +7,7 @@ class SqlBuilder
     //  Making SQL Statements.
     // +----------------------------------------------------------------------+
     /**
-     * @param SqlObject $sql
+     * @param QueryObject $sql
      * @throws \RuntimeException
      * @return string
      */
@@ -22,7 +22,7 @@ class SqlBuilder
     }
 
     /**
-     * @param SqlObject $sql
+     * @param QueryObject $sql
      * @return string
      * @throws \RuntimeException
      */
@@ -40,7 +40,7 @@ class SqlBuilder
     }
 
     /**
-     * @param SqlObject $sql
+     * @param QueryObject $sql
      * @return string
      * @throws \RuntimeException
      */
@@ -109,7 +109,7 @@ class SqlBuilder
     }
     
     /**
-     * @param SqlObject $sql
+     * @param QueryObject $sql
      * @return string
      */
     public static function makeCount( $sql )
@@ -117,13 +117,13 @@ class SqlBuilder
         if( is_array( $sql ) ) $sql = (object) $sql;
         $count = clone $sql;
         $count->columns   = 'COUNT(*) AS WScore__Count__';
-        $count->forUpdate = FALSE;
+        $count->forUpdate = false;
         $select = self::makeSelect( $count );
         return $select;
     }
 
     /**
-     * @param SqlObject $sql
+     * @param QueryObject $sql
      * @return string
      */
     public static function makeSelect( $sql )
@@ -137,7 +137,7 @@ class SqlBuilder
     }
 
     /**
-     * @param SqlObject $sql
+     * @param \WScore\DbAccess\QueryObject $sql
      * @return string
      * @throws \RuntimeException
      */

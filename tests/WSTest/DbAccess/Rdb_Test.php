@@ -1,6 +1,6 @@
 <?php
 namespace wsTests\DbAccess;
-use \WScore\DbAccess\Rdb as Rdb;
+use \WScore\DbAccess\DbConnect as Rdb;
 
 /*
  * TODO: RDB written, i.e. rewrite this test as well. 
@@ -10,13 +10,13 @@ require_once( __DIR__ . '/../../autoloader.php' );
 class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
 {
     var $mockPdo;
-    /** @var \WScore\DbAccess\Rdb */
+    /** @var \WScore\DbAccess\DbConnect */
     var $rdb;
     // +----------------------------------------------------------------------+
     public function setUp()
     {
         $this->mockPdo = '\WScore\tests\DbAccess\Mock_RdbPdo';
-        $this->rdb     = new Rdb();
+        $this->rdb     = new DbConnect();
         $this->rdb->pdoClass = $this->mockPdo;
     }
 
@@ -36,7 +36,7 @@ class Dba_Rdb_Test extends \PHPUnit_Framework_TestCase
      */
     public function test_name_not_set()
     {
-        $this->rdb->connect( NULL );
+        $this->rdb->connect( null );
     }
     // +----------------------------------------------------------------------+
     public function test_config_with_dsn()

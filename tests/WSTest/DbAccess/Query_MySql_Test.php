@@ -18,7 +18,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->config = include( __DIR__ . '/dsn-mysql.php' );
-        $pdo = new \WScore\DbAccess\PdObject( $this->config );
+        $pdo = new \WScore\DbAccess\DbAccess( $this->config );
         $this->query = new \WScore\DbAccess\Query( $pdo );
         $this->column_list = '
             id int NOT NULL AUTO_INCREMENT,

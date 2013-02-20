@@ -5,7 +5,7 @@ class Query
 {
     // PdObject for executing and fetching result from DB.
 
-    /** @var PdObject                   PDO object           */
+    /** @var \WScore\DbAccess\DbAccess   Access Database     */
     protected $pdoObj  = null;
 
     /** @var \PdoStatement               PDO statement obj   */
@@ -13,7 +13,7 @@ class Query
 
     // variables to build SQL statement.
 
-    /** @var null|\WScore\DbAccess\SqlObject                 */
+    /** @var \WScore\DbAccess\QueryObject                 */
     protected $sqlObj = null;
 
     /** @var string   SQL Statement created by this class    */
@@ -34,13 +34,13 @@ class Query
     /** @var string           default prepare/quote          */
     public static $pqDefault = 'prepare';
 
-    /** @var SqlObject   SqlObject class    */
-    public $_sqlObject = '\WScore\DbAccess\SqlObject';
+    /** @var QueryObject   SqlObject class    */
+    public $_sqlObject = '\WScore\DbAccess\QueryObject';
     // +----------------------------------------------------------------------+
     //  Construction and Managing Dba Object.
     // +----------------------------------------------------------------------+
     /**
-     * @param PdObject $pdoObj
+     * @param DbAccess $pdoObj
      * @DimInjection  Fresh   \WScore\DbAccess\PdObject
      */
     public function __construct( $pdoObj=null ) {

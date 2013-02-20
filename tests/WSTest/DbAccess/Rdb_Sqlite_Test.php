@@ -1,20 +1,20 @@
 <?php
 namespace WSTest\DbAccess;
-use \WScore\DbAccess\Rdb as Rdb;
+use \WScore\DbAccess\DbConnect;
 
 require_once( __DIR__ . '/../../autoloader.php' );
 
 class Dba_Rdb_Sqlite_Test extends \PHPUnit_Framework_TestCase
 {
     var $config = array();
-    /** @var \WScore\DbAccess\Rdb */
+    /** @var \WScore\DbAccess\DbConnect */
     var $rdb;
     // +----------------------------------------------------------------------+
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = 'dsn=sqlite::memory:';
-        $this->rdb    = new Rdb();
+        $this->rdb    = new DbConnect();
     }
     // +----------------------------------------------------------------------+
     public function test_create_table_insert_and_select()

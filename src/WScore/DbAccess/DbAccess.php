@@ -54,7 +54,7 @@ class DbAccess implements \Serializable
                 $this->connConfig = $pdo;
             }
             if( isset( $this->connConfig ) ) {
-                $this->pdoObj = \WScore\DbAccess\Rdb::connect( $this->connConfig );
+                $this->pdoObj = \WScore\DbAccess\DbConnect::connect( $this->connConfig );
             }
         }
         return $this;

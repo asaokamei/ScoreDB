@@ -7,8 +7,8 @@ class PdObject_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
     var $config = array();
     
-    /** @var \WScore\DbAccess\PdObject */
-    var $pdo = NULL;
+    /** @var \WScore\DbAccess\DbAccess */
+    var $pdo = null;
     
     var $table = 'test_WScore';
     
@@ -17,7 +17,7 @@ class PdObject_PgSql_Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->pdo = new \WScore\DbAccess\PdObject( $this->config );
+        $this->pdo = new \WScore\DbAccess\DbAccess( $this->config );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),
