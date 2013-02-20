@@ -50,7 +50,7 @@ class DbConnect
     /**
      * @param string $config
      */
-    public function __construct( $config='' )
+    public function __construct( $config=null )
     {
         $this->config = $config;
     }
@@ -65,6 +65,7 @@ class DbConnect
     public function connect( $config=null )
     {
         if( !isset( $config ) ) $config = $this->config;
+        if( !isset( $config ) ) return null;
         if( is_string( $config ) ) {
             $config = $this->prepare( $config );
         }

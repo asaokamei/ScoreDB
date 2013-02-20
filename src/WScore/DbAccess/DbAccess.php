@@ -67,7 +67,7 @@ class DbAccess implements \Serializable
         elseif( is_string( $pdo ) || is_array( $pdo ) ) {
             $this->connConfig = $pdo;
         }
-        if( !isset( $this->pdoObj ) && isset( $this->connConfig ) && isset( $this->dbConnect ) ) {
+        if( !isset( $this->pdoObj ) && isset( $this->dbConnect ) ) {
             $this->pdoObj = $this->dbConnect->connect( $this->connConfig );
         }
         return $this;
