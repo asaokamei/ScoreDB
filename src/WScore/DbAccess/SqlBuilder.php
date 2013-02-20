@@ -10,7 +10,7 @@ class SqlBuilder
      * @param QueryObject $query
      * @return string
      */
-    public static function build( $query )
+    public function build( $query )
     {
         $method = 'make' . ucwords( $query->queryType );
         return self::$method( $query );
@@ -20,7 +20,7 @@ class SqlBuilder
      * @throws \RuntimeException
      * @return string
      */
-    public static function makeInsert( $sql )
+    protected function makeInsert( $sql )
     {
         if( is_array( $sql ) ) $sql = (object) $sql;
         if( !$sql->table ) throw new \RuntimeException( 'table not set. ' );
@@ -35,7 +35,7 @@ class SqlBuilder
      * @return string
      * @throws \RuntimeException
      */
-    public static function makeUpdate( $sql )
+    protected function makeUpdate( $sql )
     {
         if( is_array( $sql ) ) $sql = (object) $sql;
         if( !$sql->table ) throw new \RuntimeException( 'table not set. ' );
@@ -53,7 +53,7 @@ class SqlBuilder
      * @return string
      * @throws \RuntimeException
      */
-    public static function makeDelete( $sql )
+    protected function makeDelete( $sql )
     {
         if( is_array( $sql ) ) $sql = (object) $sql;
         if( !$sql->table ) throw new \RuntimeException( 'table not set. ' );
@@ -70,7 +70,7 @@ class SqlBuilder
      * @param array|string $where
      * @return string
      */
-    public static function makeWhere( $where )
+    protected function makeWhere( $where )
     {
         if( is_array( $where ) ) {
             $where_str = '';
@@ -93,7 +93,7 @@ class SqlBuilder
      * @param string $op
      * @return string
      */
-    public static function formWhere( $col, $val, $rel='=', $op='AND' ) 
+    protected function formWhere( $col, $val, $rel='=', $op='AND' )
     {
         $where = '';
         $rel = strtoupper( $rel );
@@ -121,7 +121,7 @@ class SqlBuilder
      * @param QueryObject $sql
      * @return string
      */
-    public static function makeCount( $sql )
+    protected function makeCount( $sql )
     {
         if( is_array( $sql ) ) $sql = (object) $sql;
         $count = clone $sql;
@@ -135,7 +135,7 @@ class SqlBuilder
      * @param QueryObject $sql
      * @return string
      */
-    public static function makeSelect( $sql )
+    protected function makeSelect( $sql )
     {
         if( is_array( $sql ) ) $sql = (object) $sql;
         $select  = 'SELECT ';
@@ -150,7 +150,7 @@ class SqlBuilder
      * @return string
      * @throws \RuntimeException
      */
-    public static function makeSelectBody( $sql )
+    protected function makeSelectBody( $sql )
     {
         if( !$sql->table ) throw new \RuntimeException( 'table not set. ' );
         $select  = self::makeColumn( $sql->columns );
@@ -170,7 +170,7 @@ class SqlBuilder
      * @param array $join
      * @return string
      */
-    public static function makeJoin( $join ) 
+    protected function makeJoin( $join )
     {
         $joined = '';
         if( !empty( $join ) )
@@ -179,7 +179,7 @@ class SqlBuilder
             }
         return $joined;
     }
-    public static function join( $join ) {
+    protected function join( $join ) {
         /** @var $table string */
         /** @var $by string */
         /** @var $columns string */
@@ -193,7 +193,7 @@ class SqlBuilder
      * @param array|string $columns
      * @return string
      */
-    public static function makeColumn( $columns ) 
+    protected function makeColumn( $columns )
     {
         if( !$columns || empty( $columns ) ) {
             $column = '*';

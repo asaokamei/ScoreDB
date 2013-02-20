@@ -9,6 +9,12 @@ class DbAccess implements \Serializable
      */
     public $dbConnect;
 
+    /**
+     * @Inject
+     * @var \WScore\DbAccess\SqlBuilder
+     */
+    public $sqlBuilder;
+
     /** @var \Pdo                        PDO object          */
     protected $pdoObj  = null;
 
@@ -82,7 +88,7 @@ class DbAccess implements \Serializable
      */
     public function query( $query )
     {
-        $sql = SqlBuilder::build( $query );
+        $sql = $this->sqlBuilder->build( $query );
         return $this->exec( $sql, $query->prepared_values, $query->prepared_types );
     }
     /**
