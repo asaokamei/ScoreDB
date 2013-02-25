@@ -6,6 +6,8 @@ require_once( __DIR__ . '/../../autoloader.php' );
 
 class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
+    static $dbAccess;
+    
     var $config = array();
     
     /** @var \WScore\DbAccess\DbAccess */
@@ -15,11 +17,23 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
     
     var $column_list = '';
     // +----------------------------------------------------------------------+
+    /**
+     * This method is called before the first test of this test class is run.
+     *
+     * @since Method available since Release 3.4.0
+     */
+    public static function setUpBeforeClass()
+    {
+        /** @var \WScore\DbAccess\Query */
+        require_once( __DIR__ . '/../../../scripts/require.php' );
+        self::$dbAccess = include( __DIR__ . '/../../../scripts/dbaccess.php' );
+        self::$dbAccess->connect( include( __DIR__ . '/dsn-pgsql.php' ) );
+    }
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
+        $this->pdo = self::$dbAccess; include( __DIR__ . '/../../../scripts/dbaccess.php' );
         $this->pdo->connect( $this->config );
         $this->column_list = '
             id SERIAL,

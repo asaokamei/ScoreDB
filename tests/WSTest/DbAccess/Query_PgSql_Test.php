@@ -9,6 +9,7 @@ require_once( __DIR__ . '/../../autoloader.php' );
 
 class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
+    static $queryObject;
     var $config = array();
     /** @var \WScore\DbAccess\Query */
     var $query = NULL;
@@ -22,13 +23,15 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
+        /** @var \WScore\DbAccess\Query */
+        require_once( __DIR__ . '/../../../scripts/require.php' );
+        self::$queryObject = include( __DIR__ . '/../../../scripts/query.php' );
     }
     public function setUp()
     {
-        require_once( __DIR__ . '/../../../scripts/require.php' );
-        /** @var \WScore\DbAccess\Query */
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->query = include( __DIR__ . '/../../../scripts/query.php' );
+        /** @var \WScore\DbAccess\Query */
+        $this->query = self::$queryObject;
         $this->query->connect( $this->config );
         $this->column_list = '
             id SERIAL,
