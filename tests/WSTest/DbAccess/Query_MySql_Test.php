@@ -171,37 +171,19 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
             }
         }
     }
-    public function test_insert_using_prepare()
-    {
-        $values = array(
-            ':name' => 'test prep',
-            ':age' => '41',
-            ':bdate' => '1980-02-03',
-            ':no_null' => 'never null',
-        );
-        $this->query->execPrepare( $this->getPrepare() );
-        $this->query->execExecute( $values );
-        $id1 = $this->query->lastId();
-        $this->assertTrue( $id1 > 0 );
-
-        $this->query->execExecute( $values );
-        $id2 = $this->query->lastId();
-        $this->assertNotEquals( $id2, $id1 );
-        $this->assertEquals( $id2, $id1 + 1 );
-    }
     public function test_insert_with_last_id()
     {
-        $insert = "
-            INSERT INTO {$this->table}
-                ( name, age, bdate, no_null )
-            VALUES
-                ( 'test query', 40, '1990-01-02', 'not null' );
-        ";
-        $this->query->execSQL( $insert );
+        $insert = array(
+            'name' => 'test query',
+            'age' => '40',
+            'bdate' => '1990-01-02',
+            'no_null' => 'not null',
+        );
+        $this->query->table( $this->table )->insert( $insert );
         $id1 = $this->query->lastId();
         $this->assertTrue( $id1 > 0 );
 
-        $this->query->execSQL( $insert );
+        $this->query->table( $this->table )->insert( $insert );
         $id2 = $this->query->lastId();
         $this->assertNotEquals( $id2, $id1 );
         $this->assertEquals( $id2, $id1 + 1 );
@@ -209,9 +191,9 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     public function test_join_table()
     {
         $this->fill_columns( 3 );
-        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #1' ) );
-        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #2' ) );
-        $this->query->execSQL( $this->getPrepare2(), array( 'user_id'=>'2', 'contact'=>'contact #3' ) );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #1' ) );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #2' ) );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'2', 'contact'=>'contact #3' ) );
 
         $data = $this->query->table( $this->table )->select();
         $this->assertEquals( 3, count( $data ) );
