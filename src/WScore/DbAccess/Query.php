@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class Query
+class Query implements QueryInterface
 {
     // PdObject for executing and fetching result from DB.
 
