@@ -50,6 +50,12 @@ class Query implements QueryInterface
     }
 
     /**
+     * @return \WScore\DbAccess\DbAccess
+     */
+    public function dbAccess() {
+        return $this->dbAccess;
+    }
+    /**
      * clear returns brand new Sql object, instead of using
      * the same object and reset all variables.
      *
