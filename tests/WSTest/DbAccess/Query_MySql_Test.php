@@ -121,7 +121,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
 
         // now check to see really added
         $return2 = $this->query->table( $this->table )
-            ->where( 'id', $id )->select();
+            ->where( 'id', $id )->select()->fetchAll();
         $this->assertTrue( is_array( $return2 ) );
     }
     public function test_driver_name()
@@ -135,7 +135,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
 
         // get all data
-        $this->query->execSQL( "SELECT * FROM {$this->table};" );
+        $this->query->table( $this->table )->select();
 
         // check fetchNumRow
         $numRows = $this->query->fetchNumRow();
@@ -156,7 +156,7 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
 
         // get all data
-        $this->query->execSQL( "SELECT * FROM {$this->table};" );
+        $this->query->table( $this->table )->select();
 
         // check fetchNumRow
         $numRows = $this->query->fetchNumRow();
@@ -195,15 +195,15 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #2' ) );
         $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'2', 'contact'=>'contact #3' ) );
 
-        $data = $this->query->table( $this->table )->select();
+        $data = $this->query->table( $this->table )->select()->fetchAll();
         $this->assertEquals( 3, count( $data ) );
         $this->assertArrayNotHasKey( 'contact', $data[0] );
 
-        $data = $this->query->table( $this->table )->join( $this->table2, 'JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select();
+        $data = $this->query->table( $this->table )->join( $this->table2, 'JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select()->fetchAll();
         $this->assertEquals( 3, count( $data ) );
         $this->assertArrayHasKey( 'contact', $data[0] );
 
-        $data = $this->query->table( $this->table )->join( $this->table2, 'LEFT JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select();
+        $data = $this->query->table( $this->table )->join( $this->table2, 'LEFT JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select()->fetchAll();
         $this->assertEquals( 4, count( $data ) );
         $this->assertArrayHasKey( 'contact', $data[0] );
     }

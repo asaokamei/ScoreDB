@@ -14,7 +14,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
     /** @var \WScore\DbAccess\Query */
     var $query = NULL;
     var $table = 'test_query';
-    var $column_list = '';
+    var $table2= 'test_WScore2';
     // +----------------------------------------------------------------------+
     /**
      * This method is called before the first test of this test class is run.
@@ -33,14 +33,6 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
         /** @var \WScore\DbAccess\Query */
         $this->query = self::$queryObject;
         $this->query->connect( $this->config );
-        $this->column_list = '
-            id SERIAL,
-            name VARCHAR(30),
-            age  int,
-            bdate date,
-            no_null text NOT NULL,
-            PRIMARY KEY (id)
-        ';
         $this->setUp_TestTable();
     }
 
@@ -61,19 +53,46 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
     {
         $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table};" );
         $this->query->execSQL( "
-        CREATE TABLE {$this->table} ( {$this->column_list} );
+        CREATE TABLE {$this->table} (
+            id SERIAL,
+            name VARCHAR(30),
+            age  int,
+            bdate date,
+            no_null text NOT NULL,
+            PRIMARY KEY (id)
+        );
+        " );
+        $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table2};" );
+        $this->query->execSQL( "
+        CREATE TABLE {$this->table2} (
+            id SERIAL,
+            user_id int,
+            contact VARCHAR(30),
+            PRIMARY KEY (id)
+        );
         " );
     }
 
-    public function fill_columns( $max=10 )
-    {
-        $prepare = "
+    public function getPrepare() {
+        return "
             INSERT INTO {$this->table}
                 ( name, age, bdate, no_null )
             VALUES
                 ( :name, :age, :bdate, :no_null );
         ";
-        $this->query->execPrepare( $prepare );
+    }
+    public function getPrepare2() {
+        return "
+            INSERT INTO {$this->table2}
+                ( user_id, contact )
+            VALUES
+                ( :user_id, :contact );
+        ";
+    }
+
+    public function fill_columns( $max=10 )
+    {
+        $this->query->execPrepare( $this->getPrepare() );
         for( $i = 0; $i < $max; $i ++ ) {
             $values = $this->get_column_by_row( $i );
             $this->query->execExecute( $values );
@@ -115,7 +134,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
 
         // now check to see really added
         $return2 = $this->query->table( $this->table )
-            ->where( 'id', $id )->select();
+            ->where( 'id', $id )->select()->fetchAll();
         $this->assertTrue( is_array( $return2 ) );
     }
     public function test_driver_name()
@@ -129,7 +148,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
 
         // get all data
-        $this->query->execSQL( "SELECT * FROM {$this->table};" );
+        $this->query->table( $this->table )->select();
 
         // check fetchNumRow
         $numRows = $this->query->fetchNumRow();
@@ -150,7 +169,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
 
         // get all data
-        $this->query->execSQL( "SELECT * FROM {$this->table};" );
+        $this->query->table( $this->table )->select();
 
         // check fetchNumRow
         $numRows = $this->query->fetchNumRow();
@@ -165,46 +184,42 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
             }
         }
     }
-    public function test_insert_using_prepare()
-    {
-        $prepare = "
-            INSERT INTO {$this->table}
-                ( name, age, bdate, no_null )
-            VALUES
-                ( :name, :age, :bdate, :no_null );
-        ";
-        $values = array(
-            ':name' => 'test prep',
-            ':age' => '41',
-            ':bdate' => '1980-02-03',
-            ':no_null' => 'never null',
-        );
-        $this->query->execPrepare( $prepare );
-        $this->query->execExecute( $values );
-        $id1 = $this->query->lastId( $this->table . '_id_seq' );
-        $this->assertTrue( $id1 > 0 );
-
-        $this->query->execExecute( $values );
-        $id2 = $this->query->lastId( $this->table . '_id_seq' );
-        $this->assertNotEquals( $id2, $id1 );
-        $this->assertEquals( $id2, $id1 + 1 );
-    }
     public function test_insert_with_last_id()
     {
-        $insert = "
-            INSERT INTO {$this->table}
-                ( name, age, bdate, no_null )
-            VALUES
-                ( 'test query', 40, '1990-01-02', 'not null' );
-        ";
-        $this->query->execSQL( $insert );
-        $id1 = $this->query->lastId( $this->table . '_id_seq' );
+        $insert = array(
+            'name' => 'test query',
+            'age' => '40',
+            'bdate' => '1990-01-02',
+            'no_null' => 'not null',
+        );
+        $this->query->table( $this->table )->insert( $insert );
+        $id1 = $this->query->lastId();
         $this->assertTrue( $id1 > 0 );
 
-        $this->query->execSQL( $insert );
-        $id2 = $this->query->lastId( $this->table . '_id_seq' );
+        $this->query->table( $this->table )->insert( $insert );
+        $id2 = $this->query->lastId();
         $this->assertNotEquals( $id2, $id1 );
         $this->assertEquals( $id2, $id1 + 1 );
     }
+    public function test_join_table()
+    {
+        $this->fill_columns( 3 );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #1' ) );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'1', 'contact'=>'contact #2' ) );
+        $this->query->dbAccess()->execSql( $this->getPrepare2(), array( 'user_id'=>'2', 'contact'=>'contact #3' ) );
+
+        $data = $this->query->table( $this->table )->select()->fetchAll();
+        $this->assertEquals( 3, count( $data ) );
+        $this->assertArrayNotHasKey( 'contact', $data[0] );
+
+        $data = $this->query->table( $this->table )->join( $this->table2, 'JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select()->fetchAll();
+        $this->assertEquals( 3, count( $data ) );
+        $this->assertArrayHasKey( 'contact', $data[0] );
+
+        $data = $this->query->table( $this->table )->join( $this->table2, 'LEFT JOIN', 'ON', $this->table.'.id=' . $this->table2.'.user_id' )->select()->fetchAll();
+        $this->assertEquals( 4, count( $data ) );
+        $this->assertArrayHasKey( 'contact', $data[0] );
+    }
+
     // +----------------------------------------------------------------------+
 }
