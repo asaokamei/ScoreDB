@@ -39,8 +39,8 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
      */
     public function setUp_TestTable()
     {
-        $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table};" );
-        $this->query->execSQL( "
+        $this->query->dbAccess()->execSQL( "DROP TABLE IF EXISTS {$this->table};" );
+        $this->query->dbAccess()->execSQL( "
         CREATE TABLE {$this->table} (
             id int NOT NULL AUTO_INCREMENT,
             name VARCHAR(30),
@@ -50,8 +50,8 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
             PRIMARY KEY (id)
         );
         " );
-        $this->query->execSQL( "DROP TABLE IF EXISTS {$this->table2};" );
-        $this->query->execSQL( "
+        $this->query->dbAccess()->execSQL( "DROP TABLE IF EXISTS {$this->table2};" );
+        $this->query->dbAccess()->execSQL( "
         CREATE TABLE {$this->table2} (
             id int NOT NULL AUTO_INCREMENT,
             user_id int,
@@ -79,10 +79,10 @@ class Query_MySql_Test extends \PHPUnit_Framework_TestCase
     }
     public function fill_columns( $max=10 )
     {
-        $this->query->execPrepare( $this->getPrepare() );
+        $this->query->dbAccess()->execPrepare( $this->getPrepare() );
         for( $i = 0; $i < $max; $i ++ ) {
             $values = $this->get_column_by_row( $i );
-            $this->query->execExecute( $values );
+            $this->query->dbAccess()->execExecute( $values );
         }
     }
 

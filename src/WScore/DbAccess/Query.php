@@ -127,29 +127,6 @@ class Query implements QueryInterface
         $this->pdoStmt = $this->dbAccess->query( $this->queryObject );
         return $this;
     }
-
-    /**
-     * executes SQL statement. mostly for backward compatibility.
-     *
-     * @param null  $sql
-     * @param array $prepared
-     * @param array $dataType
-     * @throws \RuntimeException
-     * @return Query
-     */
-    public function execSQL( $sql=null, $prepared=array(), $dataType=array() ) {
-        if( !$this->dbAccess ) throw new \RuntimeException( 'Pdo Object not set.' );
-        $this->pdoStmt = $this->dbAccess->execSql( $sql, $prepared, $dataType );
-        return $this;
-    }
-    public function execPrepare( $sql ) {
-        $this->dbAccess->execPrepare( $sql );
-        return $this;
-    }
-    public function execExecute( $prepared, $dataType=array() ) {
-        $this->dbAccess->execExecute( $prepared, $dataType );
-        return $this;
-    }
     // +----------------------------------------------------------------------+
     //  Getting result from PdoStatement.
     // +----------------------------------------------------------------------+
