@@ -10,7 +10,8 @@ Interface QueryInterface
     public function lockTable( $table=null );
     public function exec();
     public function table( $table, $id_name='id' );
-    public function update( $values );
+    public function update( $values=array() );
+    public function insert( $values=array() );
     public function select( $column=null );
     public function count();
 

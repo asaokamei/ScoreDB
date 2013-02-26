@@ -440,16 +440,26 @@ class Query implements QueryInterface
      * @param array $values
      * @return Query
      */
-    public function update( $values ) {
-        return $this->values( $values )->makeUpdate()->exec();
+    public function update( $values=array() ) {
+        if( $values ) {
+            return $this->values( $values )->execType( 'Update' )->exec();
+        }
+        return $this->execType( 'Update' )->exec();
     }
 
     /**
      * @param array $values
      * @return Query
      */
-    public function insert( $values ) {
-        return $this->values( $values )->makeInsert()->exec();
+    public function insert( $values=array() ) {
+        if( $values ) {
+            return $this->values( $values )->execType( 'Insert' )->exec();
+        }
+        return $this->execType( 'Insert' )->exec();
+    }
+
+    public function delete() {
+        return $this->execType( 'Delete' )->exec();
     }
 
     /**
@@ -458,14 +468,15 @@ class Query implements QueryInterface
      */
     public function select( $column=null ) {
         if( $column ) $this->column( $column );
-        return $this->makeSelect()->exec();
+        return $this->execType( 'Select' )->exec();
     }
 
     /**
      * @return string
      */
     public function count() {
-        return $this->makeCount()->exec()->pdoStmt->fetchColumn(0);
+        $this->execType( 'Count' )->exec();
+        return $this->pdoStmt->fetchColumn(0);
     }
 
     /**
@@ -474,25 +485,11 @@ class Query implements QueryInterface
      * @param $type
      * @return Query
      */
-    public function makeSQL( $type )
+    public function execType( $type )
     {
         $this->queryObject->query( $type );
         return $this;
     }
-    public function makeSelect() {
-        return $this->makeSQL( 'Select' );
-    }
-    public function makeCount() {
-        return $this->makeSQL( 'Count' );
-    }
-    public function makeDelete() {
-        return $this->makeSQL( 'Delete' );
-    }
-    public function makeInsert() {
-        return $this->makeSQL( 'Insert' );
-    }
-    public function makeUpdate() {
-        return $this->makeSQL( 'Update' );
-    }
+
     // +----------------------------------------------------------------------+
 }
