@@ -23,19 +23,19 @@ Query Usage Example
 finding data whose name is 'Bob' from 'table'.
 
 ```php
-$found = $query->table( 'table' )->name->eq( 'Bob' )->select();
+$found = $query->table( 'table' )->name->eq( 'Bob' )->select()->fetchAll();
 ```
 
 finding data whose name contain (like) 'Bob' from 'table'.
 
 ```php
-$found = $query->table( 'table' )->name->contain( 'Bob' )->select();
+$found = $query->table( 'table' )->name->contain( 'Bob' )->select()->fetchAll();
 ```
 
 finding maximum of 10 data whose name contain 'Bob', age is greater than 20, from 'table'.
 
 ```php
-$found = $query->table( 'table' )->name->contain( 'Bob' )->age->gt( 20 )->limit( 10 )->select();
+$found = $query->table( 'table' )->name->contain( 'Bob' )->age->gt( 20 )->limit( 10 )->select()->fetchAll();
 ```
 
 ###Inserting Data

@@ -481,7 +481,7 @@ class Query implements QueryInterface
      */
     public function select( $column=null ) {
         if( $column ) $this->column( $column );
-        return $this->makeSelect()->exec()->fetchAll();
+        return $this->makeSelect()->exec();
     }
 
     /**
