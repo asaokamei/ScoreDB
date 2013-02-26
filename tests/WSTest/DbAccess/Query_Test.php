@@ -9,6 +9,8 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     var $query;
     /** @var Mock_QueryPdo|\WScore\DbAccess\DbAccess */
     var $pdo;
+    /** @var \WScore\DbAccess\SqlBuilder */
+    var $builder;
     function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
@@ -16,6 +18,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         $this->pdo = new Mock_QueryPdo();
         /** @var \WScore\DbAccess\Query */
         $this->query = new \WScore\DbAccess\Query( $this->pdo );
+        $this->builder = new \WScore\DbAccess\SqlBuilder;
     }
     public function getValFromUpdate( $sql, $name ) {
         preg_match( "/{$name}=(:db_prep_[0-9]+)/", $sql, $matches );
@@ -27,7 +30,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $values[ $name ], $val1 );
     }
     public function getSqlFromQuery( $query ) {
-        return \WScore\DbAccess\SqlBuilder::build( $query );
+        return $this->builder->build( $query );
     }
     // +----------------------------------------------------------------------+
     public function test_select_with_many_option()
@@ -206,17 +209,17 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // check setting table name
         $table = 'testTable';
-        $this->query->table( $table )->where( 'a', 'b', 'c' )->makeSelect()->exec();
+        $this->query->table( $table )->where( 'a', 'b', 'c' )->select();
         $select = "SELECT * FROM {$table} WHERE a C :db_prep_1";
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( $select, $sql );
         // add one more where clause
-        $this->query->where( 'x', 'y', 'z' )->makeSelect()->exec();
+        $this->query->where( 'x', 'y', 'z' )->select();
         $select .= " AND x Z :db_prep_2";
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( $select, $sql );
         // add one more whereRaw clause. should be as is.
-        $this->query->whereRaw( '1', '2', '3' )->makeSelect()->exec();
+        $this->query->whereRaw( '1', '2', '3' )->select();
         $select .= " AND 1 3 2";
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( $select, $sql );
@@ -238,7 +241,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $values = array( 'col1' => 'val1', 'colNull' => null, 'colZero' => '' );
-        $this->query->table( $table )->values( $values )->makeUpdate()->exec();
+        $this->query->table( $table )->values( $values )->update();
 
         // check SQL statement
         $sql = $this->getSqlFromQuery( $this->pdo->query );
@@ -259,13 +262,13 @@ class Query_Test extends \PHPUnit_Framework_TestCase
     {
         // check setting table name
         $table = 'testTable';
-        $this->query->table( $table )->makeDelete()->exec();
+        $this->query->table( $table )->delete();
     }
     public function test_simple_delete()
     {
         // check setting table name
         $table = 'testTable';
-        $this->query->table( $table )->col( 'id' )->eq(10)->makeDelete()->exec();
+        $this->query->table( $table )->col( 'id' )->eq(10)->delete();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertContains( $table, $sql );
         $this->assertEquals( "DELETE FROM {$table} WHERE id = :db_prep_1", $sql );
@@ -275,7 +278,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $values = array( 'col1' => 'val1', 'col2' => 'val2' );
-        $this->query->table( $table )->values( $values )->makeUpdate()->exec();
+        $this->query->table( $table )->values( $values )->update();
 
         // check SQL statement
         $sql = $this->getSqlFromQuery( $this->pdo->query );
@@ -302,7 +305,7 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         $this->query->table( $table );
         // check INSERT
         $values = array( 'col1' => 'val1', 'col2' => 'val2' );
-        $this->query->values( $values )->makeInsert()->exec();
+        $this->query->values( $values )->insert();
 
         // check SQL statement
         $sql = $this->getSqlFromQuery( $this->pdo->query );
@@ -334,14 +337,15 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $this->query->table( $table );
-        $this->query->makeCount()->exec();
-        $sql = $this->getSqlFromQuery( $this->pdo->query );
+        $this->query->execType( 'Count' );
+        $sql = $this->getSqlFromQuery( $this->query->queryObject );
         $this->assertContains( $table, $sql );
         $this->assertEquals( "SELECT COUNT(*) AS WScore__Count__ FROM {$table}", $sql );
 
         // test setting column in select
-        $this->query->column( 'colA' )->makeCount()->exec();
-        $sql = $this->getSqlFromQuery( $this->pdo->query );
+        $this->query->column( 'colA' )->execType( 'Count' );
+        $this->query->execType( 'Count' );
+        $sql = $this->getSqlFromQuery( $this->query->queryObject );
         $this->assertEquals( "SELECT COUNT(*) AS WScore__Count__ FROM {$table}", $sql );
     }
     public function test_make_simple_select_statement()
@@ -349,13 +353,13 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $this->query->table( $table );
-        $this->query->makeSelect()->exec();
+        $this->query->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertContains( $table, $sql );
         $this->assertEquals( "SELECT * FROM {$table}", $sql );
 
         // test setting column in select
-        $this->query->column( 'colA' )->makeSelect()->exec();
+        $this->query->column( 'colA' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT colA FROM {$table}", $sql );
 
@@ -369,14 +373,14 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $this->query->table( $table );
-        $this->query->forUpdate()->makeSelect()->exec();
+        $this->query->forUpdate()->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertContains( $table, $sql );
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT * FROM {$table} FOR UPDATE", $sql );
 
         // test setting column in select
-        $this->query->column( 'colA' )->makeSelect()->exec();
+        $this->query->column( 'colA' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT colA FROM {$table} FOR UPDATE", $sql );
 
@@ -390,13 +394,13 @@ class Query_Test extends \PHPUnit_Framework_TestCase
         // check setting table name
         $table = 'testTable';
         $this->query->table( $table );
-        $this->query->distinct()->makeSelect()->exec();
+        $this->query->distinct()->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertContains( $table, $sql );
         $this->assertEquals( "SELECT DISTINCT * FROM {$table}", $sql );
 
         // test setting column in select
-        $this->query->column( 'colA' )->makeSelect()->exec();
+        $this->query->column( 'colA' )->select();
         $sql = $this->getSqlFromQuery( $this->pdo->query );
         $this->assertEquals( "SELECT DISTINCT colA FROM {$table}", $sql );
 
