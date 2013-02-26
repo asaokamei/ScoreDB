@@ -104,7 +104,7 @@ class Query_PgSql_Test extends \PHPUnit_Framework_TestCase
         $date = new \DateTime( '1980-05-01' );
         $date = $date->add( new \DateInterval( "P{$row}D" ) );
         $values = array(
-            ':name' => 'filed #' . $row,
+            ':name' => 'filed\'s #' . $row,
             ':age' => 40 + $row,
             ':bdate' => $date->format( 'Y-m-d' ),
             ':no_null' => 'never null'.($row+1),

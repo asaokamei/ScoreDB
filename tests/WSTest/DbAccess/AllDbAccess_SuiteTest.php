@@ -18,6 +18,7 @@ class All_DbAccess_SuiteTests
         $suite->addTestFile( $folder . 'Query_Test.php' );
         $suite->addTestFile( $folder . 'Query_MySql_Test.php' );
         $suite->addTestFile( $folder . 'Query_PgSql_Test.php' );
+        $suite->addTestFile( $folder . 'Query_MySql_Quoted_Test.php' );
         $suite->addTestFile( $folder . 'Query_PgSql_Quoted_Test.php' );
         return $suite;
     }
