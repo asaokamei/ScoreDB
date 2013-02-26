@@ -6,15 +6,13 @@ require_once( __DIR__ . '/../../autoloader.php' );
 
 class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
-    /** @var \WScore\DbAccess\DbAccess */
-    static $dbAccess;
-
+    /** @var \WScore\DbAccess\DbConnect */
     static $dbConnect;
     
     var $config = array();
     
     /** @var \WScore\DbAccess\DbAccess */
-    var $pdo = null;
+    var $dbAccess = null;
     
     var $table = 'test_WScore';
     
@@ -27,17 +25,22 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
+        /*
+         * to suppress "FATAL:  remaining connection slots are reserved for
+         * non-replication superuser connections" error from PostgreSQL.
+         * create dbConnect at the beginning of this tests.
+         */
         require_once( __DIR__ . '/../../../scripts/require.php' );
-        self::$dbAccess = include( __DIR__ . '/../../../scripts/dbaccess.php' );
-        self::$dbAccess->connect( include( __DIR__ . '/dsn-pgsql.php' ) );
-        self::$dbConnect = self::$dbAccess->dbConnect;
+        $dbAccess = include( __DIR__ . '/../../../scripts/dbaccess.php' );
+        $dbAccess->connect( include( __DIR__ . '/dsn-pgsql.php' ) );
+        self::$dbConnect = $dbAccess->dbConnect;
     }
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
-        $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
-        $this->pdo->connect( self::$dbConnect );
+        $this->config   = include( __DIR__ . '/dsn-pgsql.php' );
+        $this->dbAccess = include( __DIR__ . '/../../../scripts/dbaccess.php' );
+        $this->dbAccess->connect( self::$dbConnect );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),
@@ -65,8 +68,8 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
      */
     public function setUp_TestTable()
     {
-        $this->pdo->exec( "DROP TABLE IF EXISTS {$this->table};" );
-        $this->pdo->exec( "
+        $this->dbAccess->exec( "DROP TABLE IF EXISTS {$this->table};" );
+        $this->dbAccess->exec( "
         CREATE TABLE {$this->table} ( {$this->column_list} );
         " );
     }
@@ -79,10 +82,10 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
             VALUES
                 ( :name, :age, :bdate, :no_null );
         ";
-        $this->pdo->execPrepare( $prepare );
+        $this->dbAccess->execPrepare( $prepare );
         for( $i = 0; $i < $max; $i ++ ) {
             $values = $this->get_column_by_row( $i );
-            $this->pdo->execExecute( $values );
+            $this->dbAccess->execExecute( $values );
         }
     }
 
@@ -115,9 +118,9 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
         $class = 'WSTest\DbAccess\Mock_PdObjectDao';
         class_exists( $class );
         $this->fill_columns( $max );
-        $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
+        $this->dbAccess->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->dbAccess->exec( "SELECT * FROM {$this->table};" );
 
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
@@ -130,9 +133,9 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
         $max = 1;
         $class = 'WSTest\DbAccess\Mock_PdObjectData';
         $this->fill_columns( $max );
-        $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class );
+        $this->dbAccess->setFetchMode( \PDO::FETCH_CLASS, $class );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->dbAccess->exec( "SELECT * FROM {$this->table};" );
         
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
@@ -149,7 +152,7 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
         $max = 1;
         $this->fill_columns( $max );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->dbAccess->exec( "SELECT * FROM {$this->table};" );
 
         $fetched = $ret->fetch( \PDO::FETCH_OBJ );
         $this->assertTrue( is_object( $fetched ) );
@@ -167,7 +170,7 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 
         // get all data
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->dbAccess->exec( "SELECT * FROM {$this->table};" );
 
         // check fetchNumRow
         $columns = array( 'name', 'age', 'bdate', 'no_null' );
@@ -186,7 +189,7 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 
         // get all data
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->dbAccess->exec( "SELECT * FROM {$this->table};" );
 
         // check fetchNumRow
         $allData = $ret->fetchAll();
@@ -215,13 +218,13 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
             ':bdate' => '1980-02-03',
             ':no_null' => 'never null',
         );
-        $this->pdo->exec( $prepare, $values );
-        $id1 = $this->pdo->lastId( $this->table . '_id_seq' );
+        $this->dbAccess->exec( $prepare, $values );
+        $id1 = $this->dbAccess->lastId( $this->table . '_id_seq' );
         $this->assertTrue( $id1 > 0 );
         
         $select = "SELECT * FROM {$this->table} WHERE id='{$id1}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->dbAccess->exec( $select );
         $result = $ret->fetch();
         foreach( $values as $key => $val ) {
             $key = substr( $key, 1 );
@@ -234,13 +237,13 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
         $insert = "INSERT INTO {$this->table} ( name, age, bdate, no_null ) VALUES (
             '{$data{':name'}}', '{$data{':age'}}', '{$data{':bdate'}}', '{$data{':no_null'}}'
         )";
-        $this->pdo->exec( $insert );
-        $id = $this->pdo->lastId( $this->table . '_id_seq' );
+        $this->dbAccess->exec( $insert );
+        $id = $this->dbAccess->lastId( $this->table . '_id_seq' );
         $this->assertEquals( '1', $id );
         
         $select = "SELECT * FROM {$this->table} WHERE id='{$id}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->dbAccess->exec( $select );
         $result = $ret->fetch();
         $data[ ':id' ] = $id;
         foreach( $data as $key => $val ) {
@@ -251,14 +254,14 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
     function test_quote()
     {
         $data   = 'test';
-        $quoted = $this->pdo->quote( $data );
+        $quoted = $this->dbAccess->quote( $data );
         $this->assertEquals( "'" . addslashes( $data ) . "'", $quoted );
     }
     function test_quote_with_quote()
     {
         $data   = 'tests\' more';
         $pgQuoted = 'tests\'\' more';
-        $quoted = $this->pdo->quote( $data );
+        $quoted = $this->dbAccess->quote( $data );
         $this->assertEquals( "'" . $pgQuoted . "'", $quoted );
     }
     function test_quote_with_array()
@@ -268,7 +271,7 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
             'tests\' more',
         );
         $pgQuoted = 'tests\'\' more';
-        $quoted = $this->pdo->quote( $data );
+        $quoted = $this->dbAccess->quote( $data );
         $this->assertEquals( "'" . addslashes( $data[0] ) . "'", $quoted[0] );
         $this->assertEquals( "'" . $pgQuoted . "'", $quoted[1] );
     }
@@ -292,13 +295,13 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
             ':age' => \PDO::PARAM_INT,
             ':no_null' => \PDO::PARAM_STR,
         );
-        $this->pdo->exec( $prepare, $values, $types );
-        $id1 = $this->pdo->lastId( $this->table . '_id_seq' );
+        $this->dbAccess->exec( $prepare, $values, $types );
+        $id1 = $this->dbAccess->lastId( $this->table . '_id_seq' );
         $this->assertTrue( $id1 > 0 );
 
         $select = "SELECT * FROM {$this->table} WHERE id='{$id1}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->dbAccess->exec( $select );
         $result = $ret->fetch();
         foreach( $values as $key => $val ) {
             $key = substr( $key, 1 );
