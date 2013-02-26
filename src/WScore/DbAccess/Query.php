@@ -133,7 +133,7 @@ class Query implements QueryInterface
      */
     public function execSQL( $sql=null, $prepared=array(), $dataType=array() ) {
         if( !$this->dbAccess ) throw new \RuntimeException( 'Pdo Object not set.' );
-        $this->pdoStmt = $this->dbAccess->exec( $sql, $prepared, $dataType );
+        $this->pdoStmt = $this->dbAccess->execSql( $sql, $prepared, $dataType );
         return $this;
     }
     public function execPrepare( $sql ) {

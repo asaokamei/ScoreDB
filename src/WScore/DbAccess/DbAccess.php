@@ -90,7 +90,7 @@ class DbAccess implements \Serializable
     public function query( $query )
     {
         $sql = $this->sqlBuilder->build( $query );
-        return $this->exec( $sql, $query->prepared_values, $query->prepared_types );
+        return $this->execSql( $sql, $query->prepared_values, $query->prepared_types );
     }
     /**
      * executes an SQL statement using prepare statement.
@@ -101,7 +101,7 @@ class DbAccess implements \Serializable
      * @throws \RuntimeException
      * @return \PdoStatement
      */
-    public function exec( $sql, $prepared=array(), $dataTypes=array() )
+    public function execSql( $sql, $prepared=array(), $dataTypes=array() )
     {
         if( !$sql ) throw new \RuntimeException( "missing Sql statement." );
         if( empty( $prepared ) ) {
@@ -209,7 +209,7 @@ class DbAccess implements \Serializable
         if( $driver == 'pgsql' ) {
             $lock .= ' IN ACCESS EXCLUSIVE MODE';
         }
-        $this->exec( $lock );
+        $this->execSql( $lock );
         return $this;
     }
 

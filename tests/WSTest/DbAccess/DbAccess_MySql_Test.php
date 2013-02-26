@@ -47,8 +47,8 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
      */
     public function setUp_TestTable()
     {
-        $this->pdo->exec( "DROP TABLE IF EXISTS {$this->table};" );
-        $this->pdo->exec( "
+        $this->pdo->execSql( "DROP TABLE IF EXISTS {$this->table};" );
+        $this->pdo->execSql( "
         CREATE TABLE {$this->table} ( {$this->column_list} );
         " );
     }
@@ -104,7 +104,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
         $dba->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
-        $ret = $dba->exec( "SELECT * FROM {$this->table};" );
+        $ret = $dba->execSql( "SELECT * FROM {$this->table};" );
 
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
@@ -121,7 +121,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
         $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->pdo->execSql( "SELECT * FROM {$this->table};" );
 
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
@@ -136,7 +136,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $this->fill_columns( $max );
         $this->pdo->setFetchMode( \PDO::FETCH_CLASS, $class );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->pdo->execSql( "SELECT * FROM {$this->table};" );
         
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
@@ -153,7 +153,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $max = 1;
         $this->fill_columns( $max );
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->pdo->execSql( "SELECT * FROM {$this->table};" );
 
         $fetched = $ret->fetch( \PDO::FETCH_OBJ );
         $this->assertTrue( is_object( $fetched ) );
@@ -171,7 +171,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
 
         // get all data
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->pdo->execSql( "SELECT * FROM {$this->table};" );
 
         // check fetchNumRow
         $columns = array( 'name', 'age', 'bdate', 'no_null' );
@@ -190,7 +190,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
 
         // get all data
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( "SELECT * FROM {$this->table};" );
+        $ret = $this->pdo->execSql( "SELECT * FROM {$this->table};" );
 
         // check fetchNumRow
         $allData = $ret->fetchAll();
@@ -219,13 +219,13 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
             ':bdate' => '1980-02-03',
             ':no_null' => 'never null',
         );
-        $this->pdo->exec( $prepare, $values );
+        $this->pdo->execSql( $prepare, $values );
         $id1 = $this->pdo->lastId();
         $this->assertTrue( $id1 > 0 );
         
         $select = "SELECT * FROM {$this->table} WHERE id='{$id1}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->pdo->execSql( $select );
         $result = $ret->fetch();
         foreach( $values as $key => $val ) {
             $key = substr( $key, 1 );
@@ -238,13 +238,13 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $insert = "INSERT {$this->table} ( name, age, bdate, no_null ) VALUES (
             '{$data{':name'}}', '{$data{':age'}}', '{$data{':bdate'}}', '{$data{':no_null'}}'
         )";
-        $this->pdo->exec( $insert );
+        $this->pdo->execSql( $insert );
         $id = $this->pdo->lastId();
         $this->assertEquals( '1', $id );
         
         $select = "SELECT * FROM {$this->table} WHERE id='{$id}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->pdo->execSql( $select );
         $result = $ret->fetch();
         $data[ ':id' ] = $id;
         foreach( $data as $key => $val ) {
@@ -294,13 +294,13 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
             ':age' => \PDO::PARAM_INT,
             ':no_null' => \PDO::PARAM_STR,
         );
-        $this->pdo->exec( $prepare, $values, $types );
+        $this->pdo->execSql( $prepare, $values, $types );
         $id1 = $this->pdo->lastId();
         $this->assertTrue( $id1 > 0 );
 
         $select = "SELECT * FROM {$this->table} WHERE id='{$id1}'";
         /** @var $ret \PdoStatement */
-        $ret = $this->pdo->exec( $select );
+        $ret = $this->pdo->execSql( $select );
         $result = $ret->fetch();
         foreach( $values as $key => $val ) {
             $key = substr( $key, 1 );
