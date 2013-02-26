@@ -6,7 +6,10 @@ require_once( __DIR__ . '/../../autoloader.php' );
 
 class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
 {
+    /** @var \WScore\DbAccess\DbAccess */
     static $dbAccess;
+
+    static $dbConnect;
     
     var $config = array();
     
@@ -24,17 +27,17 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        /** @var \WScore\DbAccess\Query */
         require_once( __DIR__ . '/../../../scripts/require.php' );
         self::$dbAccess = include( __DIR__ . '/../../../scripts/dbaccess.php' );
         self::$dbAccess->connect( include( __DIR__ . '/dsn-pgsql.php' ) );
+        self::$dbConnect = self::$dbAccess->dbConnect;
     }
     public function setUp()
     {
         require_once( __DIR__ . '/../../../scripts/require.php' );
         $this->config = include( __DIR__ . '/dsn-pgsql.php' );
-        $this->pdo = self::$dbAccess; include( __DIR__ . '/../../../scripts/dbaccess.php' );
-        $this->pdo->connect( $this->config );
+        $this->pdo = include( __DIR__ . '/../../../scripts/dbaccess.php' );
+        $this->pdo->connect( self::$dbConnect );
         $this->column_list = '
             id SERIAL,
             name VARCHAR(30),
