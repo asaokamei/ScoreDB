@@ -307,5 +307,31 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
             $this->assertEquals( $val, $result[ $key ] );
         }
     }
+    function xtest_serialize()
+    {
+        $max = 4;
+        $this->fill_columns( $max );
+
+        $serialize = serialize( $this->dbAccess );
+        $dbAccess  = unserialize( $serialize );
+        
+        // get all data
+        /** @var $ret \PdoStatement */
+        $ret = $dbAccess->execSql( "SELECT * FROM {$this->table};" );
+
+        // check fetchNumRow
+        $allData = $ret->fetchAll();
+        $numRows = count( $allData );
+        $this->assertEquals( $max, $numRows );
+
+        $columns = array( 'name', 'age', 'bdate', 'no_null' );
+        for( $row = 0; $row < $max; $row ++ ) {
+            $rowData = $this->get_column_by_row($row);
+            foreach( $columns as $colName ) {
+                $this->assertEquals( $allData[$row][$colName], $rowData[':'.$colName] );
+            }
+        }
+
+    }
     // +----------------------------------------------------------------------+
 }
