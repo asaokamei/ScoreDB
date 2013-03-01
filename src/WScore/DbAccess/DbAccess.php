@@ -34,7 +34,7 @@ class DbAccess implements \Serializable
     private $connConfig = null;
 
     /** @var array                       for serialize.  */
-    private $toSerialize = array( 'dbConnect', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
+    private $toSerialize = array( 'dbConnect', 'sqlBuilder', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
     // +----------------------------------------------------------------------+
     //  Constructor and Managing Objects.
     // +----------------------------------------------------------------------+
