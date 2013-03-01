@@ -307,7 +307,7 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
             $this->assertEquals( $val, $result[ $key ] );
         }
     }
-    function xtest_serialize()
+    function test_serialize()
     {
         $max = 4;
         $this->fill_columns( $max );
