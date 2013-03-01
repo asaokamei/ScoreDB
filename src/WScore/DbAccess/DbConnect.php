@@ -43,9 +43,6 @@ class DbConnect
     /** @var string */
     public $config;
 
-    /** @var \Pdo */
-    public $pdo;
-    
     // +----------------------------------------------------------------------+
     /**
      * @param string $config
@@ -87,7 +84,6 @@ class DbConnect
         if( isset( $config[ 'exec' ] ) ) {
             $pdo->exec( $config[ 'exec' ] );
         }
-        $this->pdo = $pdo;
         $this->config = $config;
         return $pdo;
     }

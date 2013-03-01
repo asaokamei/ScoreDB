@@ -308,5 +308,27 @@ class DbAccess_PgSql_Test extends \PHPUnit_Framework_TestCase
             $this->assertEquals( $val, $result[ $key ] );
         }
     }
+    public function test_serialize()
+    {
+        $max = 1;
+        $this->fill_columns( $max );
+
+        // get all data
+        /** @var $ret \PdoStatement */
+        $ser = serialize( $this->dbAccess );
+        $dba = unserialize( $ser );
+        $ret = $dba->execSql( "SELECT * FROM {$this->table};" );
+
+        // check fetchNumRow
+        $allData = $ret->fetchAll();
+        $numRows = count( $allData );
+        $this->assertEquals( $max, $numRows );
+
+        $columns = array( 'name', 'age', 'bdate', 'no_null' );
+        $rowData = $this->get_column_by_row(0);
+        foreach( $columns as $colName ) {
+            $this->assertEquals( $allData[0][$colName], $rowData[':'.$colName] );
+        }
+    }
     // +----------------------------------------------------------------------+
 }
