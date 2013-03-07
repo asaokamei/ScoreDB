@@ -464,7 +464,7 @@ class Query implements QueryInterface
 
     /**
      * @param array|null $column
-     * @return array
+     * @return \PdoStatement
      */
     public function select( $column=null ) {
         if( $column ) $this->column( $column );
