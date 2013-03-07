@@ -468,7 +468,8 @@ class Query implements QueryInterface
      */
     public function select( $column=null ) {
         if( $column ) $this->column( $column );
-        return $this->execType( 'Select' )->exec();
+        $this->execType( 'Select' )->exec();
+        return $this->pdoStmt;
     }
 
     /**
