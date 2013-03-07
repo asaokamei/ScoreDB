@@ -41,8 +41,8 @@ class DbAccess implements \Serializable
     /**
      * inject Pdo and Sql object.
      *
+     * @Inject
      * @param \Pdo $pdoObj
-     * @DimInjection Get   Pdo
      */
     public function __construct( $pdoObj=null )
     {
