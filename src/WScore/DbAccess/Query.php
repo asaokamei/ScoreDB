@@ -238,22 +238,47 @@ class Query implements QueryInterface
         $this->queryObject->functions = $func;
         return $this;
     }
+
+    /**
+     * @param string $order
+     * @return $this
+     */
     public function order( $order ) {
         $this->queryObject->order = $order;
         return $this;
     }
+
+    /**
+     * @param string $group
+     * @return $this
+     */
     public function group( $group ) {
         $this->queryObject->group = $group;
         return $this;
     }
+
+    /**
+     * @param string $misc
+     * @return $this
+     */
     public function misc( $misc ) {
         $this->queryObject->misc = $misc;
         return $this;
     }
+
+    /**
+     * @param string $limit
+     * @return $this
+     */
     public function limit( $limit ) {
         $this->queryObject->limit  = ( $limit  ) ? $limit : false;
         return $this;
     }
+
+    /**
+     * @param string $offset
+     * @return $this
+     */
     public function offset( $offset ) {
         $this->queryObject->offset = ( is_numeric( $offset ) ) ? $offset: 0;
         return $this;
