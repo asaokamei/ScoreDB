@@ -121,15 +121,15 @@ class Paginate implements \ArrayAccess
     public function makeUrl( $page )
     {
         if( !$page ) return '';
-        $url = sprintf( $this->page_url, $page );
-        if( !empty( $this->options ) ) {
-            if( strpos( $url, '?' ) !== false ) $url .= '?';
-            foreach( $this->options as $key => $val ) {
-                $key = htmlentities( $key, ENT_QUOTES );
-                $val = urlencode( $val );
-                $url .= strpos( $url, -1 ) == '?' ? '' : '&';
-                $url .= "{$key}={$val}";
-            }
+        $option = $this->options;
+        $option[ $this->page_parameter ] = $page;
+        $url = $this->page_url;
+        if( !$url || strpos( $url, '?' ) !== false ) $url .= '?';
+        foreach( $option as $key => $val ) {
+            $key = htmlentities( $key, ENT_QUOTES );
+            $val = urlencode( $val );
+            $url .= ( substr( $url, -1 ) === '?' ) ? '' : '&';
+            $url .= "{$key}={$val}";
         }
         return $url;
     }
