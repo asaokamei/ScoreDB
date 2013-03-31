@@ -3,6 +3,13 @@ namespace WScore\DbAccess;
 
 use \Psr\Log\LoggerInterface;
 
+/**
+ * Class Profile
+ *
+ * @package WScore\DbAccess
+ * 
+ * @singleton
+ */
 class Profile
 {
     /**
