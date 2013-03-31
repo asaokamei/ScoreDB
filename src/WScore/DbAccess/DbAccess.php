@@ -27,20 +27,11 @@ class DbAccess implements \Serializable
     /** @var \PdoStatement */
     protected $pdoStmt;
 
-    /** @var int                         fetch mode for PDO                */
-    protected $fetchMode = \PDO::FETCH_ASSOC;
-    
-    /** @var string                      class name if fetch mode is Class */
-    protected $fetchClass = null;
-
-    /** @var array                       arguments for fetch_class object  */
-    protected $fetchConstArg = array();
-
     /** @var string|array                dsn used for db connection  */
     private $connConfig = null;
 
     /** @var array                       for serialize.  */
-    private $toSerialize = array( 'dbConnect', 'sqlBuilder', 'log', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
+    private $toSerialize = array( 'dbConnect', 'sqlBuilder', 'log', 'connConfig', );
     // +----------------------------------------------------------------------+
     //  Constructor and Managing Objects.
     // +----------------------------------------------------------------------+
@@ -117,7 +108,6 @@ class DbAccess implements \Serializable
             $this->execPrepare( $sql );
             $this->execExecute( $prepared, $dataTypes );
         }
-        $this->applyFetchMode();
         return $this->pdoStmt;
     }
 
@@ -167,34 +157,6 @@ class DbAccess implements \Serializable
             $this->log->log( $this->pdoStmt->queryString, microtime( true ) - $start, $prepared, $dataTypes );
         }
         return $this->pdoStmt;
-    }
-
-    /**
-     * @return DbAccess
-     */
-    public function applyFetchMode()
-    {
-        if( $this->fetchMode ) {
-            if( $this->fetchMode === \PDO::FETCH_CLASS ) {
-                $this->pdoStmt->setFetchMode( $this->fetchMode, $this->fetchClass, $this->fetchConstArg );
-            }
-            else {
-                $this->pdoStmt->setFetchMode( $this->fetchMode );
-            }
-        }
-        return $this;
-    }
-    /**
-     * @param integer $mode     \PDO's fetch mode
-     * @param string $class       class name if mode is fetch_class
-     * @param array $constArg
-     * @return DbAccess
-     */
-    public function setFetchMode( $mode, $class=null, $constArg=array() ) {
-        $this->fetchMode  = $mode;
-        $this->fetchClass = $class;
-        $this->fetchConstArg = (is_array( $constArg ))? $constArg: array($constArg);
-        return $this;
     }
     // +----------------------------------------------------------------------+
     //  fetching result from the database.

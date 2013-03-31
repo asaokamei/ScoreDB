@@ -107,10 +107,10 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $arg = new Mock_PdObjectData();
         $class = 'WSTest\DbAccess\Mock_PdObjectDao';
         $this->fill_columns( $max );
-        $dba->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
         $ret = $dba->execSql( "SELECT * FROM {$this->table};" );
 
+        $ret->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
         $this->assertEquals( $class, get_class( $fetched ) );
@@ -124,10 +124,10 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $arg = new Mock_PdObjectData();
         $class = 'WSTest\DbAccess\Mock_PdObjectDao';
         $this->fill_columns( $max );
-        $this->dbAccess->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         /** @var $ret \PdoStatement */
         $ret = $this->dbAccess->execSql( "SELECT * FROM {$this->table};" );
 
+        $ret->setFetchMode( \PDO::FETCH_CLASS, $class, array( $arg ) );
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
         $this->assertEquals( $class, get_class( $fetched ) );
@@ -139,10 +139,10 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         $max = 1;
         $class = 'WSTest\DbAccess\Mock_PdObjectData';
         $this->fill_columns( $max );
-        $this->dbAccess->setFetchMode( \PDO::FETCH_CLASS, $class );
         /** @var $ret \PdoStatement */
         $ret = $this->dbAccess->execSql( "SELECT * FROM {$this->table};" );
         
+        $ret->setFetchMode( \PDO::FETCH_CLASS, $class );
         $fetched = $ret->fetch();
         $this->assertTrue( is_object( $fetched ) );
         $this->assertEquals( $class, get_class( $fetched ) );

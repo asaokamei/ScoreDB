@@ -80,17 +80,6 @@ class Query implements QueryInterface
     //  executing with PdObject
     // +----------------------------------------------------------------------+
     /**
-     * @param       $mode
-     * @param null  $class
-     * @param array $args
-     * @return Query
-     */
-    public function setFetchMode( $mode, $class=null, $args=array() ) {
-        $this->dbAccess->setFetchMode( $mode, $class, $args );
-        return $this;
-    }
-
-    /**
      * @param null|string $name
      * @return string
      */
