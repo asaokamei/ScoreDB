@@ -1,6 +1,8 @@
 <?php
 namespace WScore\DbAccess;
 
+use \Psr\Log\LoggerInterface;
+
 class DbAccess implements \Serializable
 {
     /**
@@ -14,6 +16,12 @@ class DbAccess implements \Serializable
      * @var \WScore\DbAccess\SqlBuilder
      */
     public $sqlBuilder;
+
+    /**
+     * @Inject
+     * @var LoggerInterface
+     */
+    private $log;
 
     /** @var \Pdo                        PDO object          */
     protected $pdoObj  = null;
@@ -138,11 +146,8 @@ class DbAccess implements \Serializable
      */
     public function execExecute( $prepared, $dataTypes=array() ) 
     {
-        if( empty( $dataTypes ) ) {
-            // data types are not specified. just execute the statement.
-            $this->pdoStmt->execute( $prepared );
-        }
-        else {
+        if( !empty( $dataTypes ) ) {
+            
             // bind value for each holder/value.
             foreach( $prepared as $holder => $value ) {
                 if( array_key_exists( $holder, $dataTypes ) ) {
@@ -153,8 +158,9 @@ class DbAccess implements \Serializable
                     $this->pdoStmt->bindValue( $holder, $value );
                 }
             }
-            $this->pdoStmt->execute();
+            $prepared = null;
         }
+        $this->pdoStmt->execute( $prepared );
         return $this->pdoStmt;
     }
 
