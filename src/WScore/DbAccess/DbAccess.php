@@ -1,8 +1,6 @@
 <?php
 namespace WScore\DbAccess;
 
-use \Psr\Log\LoggerInterface;
-
 class DbAccess implements \Serializable
 {
     /**
@@ -19,9 +17,9 @@ class DbAccess implements \Serializable
 
     /**
      * @Inject
-     * @var LoggerInterface
+     * @var \WScore\DbAccess\Profile
      */
-    private $log;
+    public $log;
 
     /** @var \Pdo                        PDO object          */
     protected $pdoObj  = null;
@@ -42,7 +40,7 @@ class DbAccess implements \Serializable
     private $connConfig = null;
 
     /** @var array                       for serialize.  */
-    private $toSerialize = array( 'dbConnect', 'sqlBuilder', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
+    private $toSerialize = array( 'dbConnect', 'sqlBuilder', 'log', 'connConfig', 'fetchClass', 'fetchConstArg', 'fetchMode', );
     // +----------------------------------------------------------------------+
     //  Constructor and Managing Objects.
     // +----------------------------------------------------------------------+
@@ -128,7 +126,8 @@ class DbAccess implements \Serializable
      * @throws \RuntimeException
      * @return \PdoStatement
      */
-    public function execPrepare( $sql ) {
+    public function execPrepare( $sql ) 
+    {
         if( is_object( $this->pdoStmt ) ) {
             $this->pdoStmt->closeCursor();
         }
@@ -158,9 +157,15 @@ class DbAccess implements \Serializable
                     $this->pdoStmt->bindValue( $holder, $value );
                 }
             }
-            $prepared = null;
+            $execPrepare = null;
+        } else {
+            $execPrepare = $prepared;
         }
-        $this->pdoStmt->execute( $prepared );
+        $start = microtime( true );
+        $this->pdoStmt->execute( $execPrepare );
+        if( $this->log ) {
+            $this->log->log( $this->pdoStmt->queryString, microtime( true ) - $start, $prepared, $dataTypes );
+        }
         return $this->pdoStmt;
     }
 
