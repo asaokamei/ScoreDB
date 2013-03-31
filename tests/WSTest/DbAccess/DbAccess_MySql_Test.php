@@ -31,6 +31,11 @@ class DbAccess_MySql_Test extends \PHPUnit_Framework_TestCase
         ';
         $this->setUp_TestTable();
     }
+    
+    public function tearDown()
+    {
+        $this->dbAccess->log->logProfile();
+    }
 
     /**
      * set up permanent tables for testing.
