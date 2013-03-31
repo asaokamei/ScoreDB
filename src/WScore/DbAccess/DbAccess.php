@@ -101,13 +101,8 @@ class DbAccess implements \Serializable
     public function execSql( $sql, $prepared=array(), $dataTypes=array() )
     {
         if( !$sql ) throw new \RuntimeException( "missing Sql statement." );
-        if( empty( $prepared ) ) {
-            $this->pdoStmt = $this->pdoObj->query( $sql );
-        }
-        else {
-            $this->execPrepare( $sql );
-            $this->execExecute( $prepared, $dataTypes );
-        }
+        $this->execPrepare( $sql );
+        $this->execExecute( $prepared, $dataTypes );
         return $this->pdoStmt;
     }
 
