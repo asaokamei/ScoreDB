@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class Query implements QueryInterface
+class Query implements QueryInterface, \Serializable
 {
     // PdObject for executing and fetching result from DB.
 
@@ -506,5 +506,37 @@ class Query implements QueryInterface
         return $this;
     }
 
+    // +----------------------------------------------------------------------+
+    /**
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        $data = array();
+        $list = get_object_vars( $this );
+        foreach( $list as $var => $val ) {
+            if( $var !== 'pdoStmt' )
+                $data[ $var ] = $val;
+        }
+        return serialize( $data );
+    }
+
+    /**
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized   The string representation of the object.
+     * @return mixed the original value unserialized.
+     */
+    public function unserialize( $serialized )
+    {
+        $info = unserialize( $serialized );
+        foreach( $info as $var => $val ) {
+            if( $var !== 'pdoStmt' )
+                $this->$var = $val;
+        }
+        $this->connect();
+    }
     // +----------------------------------------------------------------------+
 }
