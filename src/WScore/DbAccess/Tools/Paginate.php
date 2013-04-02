@@ -15,6 +15,8 @@ namespace WScore\DbAccess\Tools;
  * @property $prev_page
  * @property $pages
  * @property $options
+ *
+ * @cacheable
  */
 class Paginate implements \ArrayAccess
 {
