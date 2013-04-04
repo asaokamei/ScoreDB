@@ -7,7 +7,7 @@ use \Psr\Log\LoggerInterface;
  * Class Profile
  *
  * @package WScore\DbAccess
- * 
+ *
  * @singleton
  */
 class Profile
@@ -22,10 +22,12 @@ class Profile
     
     public $time = 0;
 
+    public $logs = array();
+
     /**
      * @param LoggerInterface $log
      */
-    public function __construct( $log=null ) 
+    public function __construct( $log=null )
     {
         if( $log ) $this->log = $log;
     }
@@ -39,14 +41,16 @@ class Profile
      */
     public function log( $query, $time, $prep, $types )
     {
+        $info = array(
+            'query' => $query,
+            'time'  => $time,
+            'prep'  => $prep,
+            'types' => $types,
+        );
         if( $this->log ) {
-            $info = array(
-                'query' => $query,
-                'time'  => $time,
-                'prep'  => $prep,
-                'types' => $types,
-            );
             $this->log->debug( 'execLog', $info );
+        } else {
+            $this->logs[] = $info;
         }
         $this->count++;
         $this->time += $time;
@@ -73,5 +77,12 @@ class Profile
         if( $this->log ) {
             $this->log->info( 'profile', $this->getProfile() );
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getLog() {
+        return $this->logs;
     }
 }
