@@ -123,9 +123,9 @@ class DbAccess implements \Serializable
     }
 
     /**
-     * @param array  $prepared     place holders for prepared statement.
-     * @param array  $dataTypes    data types for the place holders.
-     * @throws \RuntimeException
+     * @param array $prepared     place holders for prepared statement.
+     * @param array $dataTypes    data types for the place holders.
+     * @throws \PDOException
      * @return \PdoStatement
      */
     public function execExecute( $prepared, $dataTypes=array() ) 
@@ -147,7 +147,13 @@ class DbAccess implements \Serializable
             $execPrepare = $prepared;
         }
         $start = microtime( true );
-        $this->pdoStmt->execute( $execPrepare );
+        try {
+            $this->pdoStmt->execute( $execPrepare );
+        } catch( \PDOException $e ) {
+            $msg = $e->getMessage();
+            $sql = $this->pdoStmt->queryString;
+            throw new \PDOException( "$sql\n$msg" );
+        }
         if( $this->log ) {
             $this->log->log( $this->pdoStmt->queryString, microtime( true ) - $start, $prepared, $dataTypes );
         }
