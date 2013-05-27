@@ -104,7 +104,6 @@ class DbConnect
             $pattern = "/{$parameter}=(\S+)/";
             if( preg_match( $pattern, $db_con, $matches ) ) {
                 $config[ "{$parameter}" ] = $matches[1];
-                $db_con = preg_replace( "/{$parameter}={$matches{1}}/", '', $db_con );
             }
         }
         return $config;
