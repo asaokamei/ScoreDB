@@ -76,6 +76,39 @@ class Query implements QueryInterface, \Serializable
         $this->dbAccess->connect( $config );
     }
 
+    /**
+     * @return $this
+     * @throws \RuntimeException
+     */
+    public function begin() {
+        if( !$this->dbAccess->pdo()->beginTransaction() ) {
+            throw new \RuntimeException( 'cannot begin transaction' );
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \RuntimeException
+     */
+    public function commit() {
+        if( !$this->dbAccess->pdo()->commit() ) {
+            throw new \RuntimeException( 'cannot commit transaction' );
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \RuntimeException
+     */
+    public function rollback() {
+        if( !$this->dbAccess->pdo()->rollback() ) {
+            throw new \RuntimeException( 'cannot rollback transaction' );
+        }
+        return $this;
+    }
+
     // +----------------------------------------------------------------------+
     //  executing with PdObject
     // +----------------------------------------------------------------------+

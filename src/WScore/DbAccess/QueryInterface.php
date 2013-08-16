@@ -14,6 +14,9 @@ Interface QueryInterface
     public function select( $column=null );
     public function count();
 
+    public function begin();
+    public function commit();
+    public function rollback();
 
 
 }

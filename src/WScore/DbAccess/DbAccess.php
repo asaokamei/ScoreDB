@@ -77,6 +77,13 @@ class DbAccess implements \Serializable
     public function getConnConfig() {
         return $this->connConfig;
     }
+
+    /**
+     * @return null|\Pdo
+     */
+    public function pdo() {
+        return $this->pdoObj;
+    }
     // +----------------------------------------------------------------------+
     //  Executing SQL. all methods returns Dba object.
     // +----------------------------------------------------------------------+
