@@ -32,7 +32,7 @@ class QueryObject
     public $order;
 
     /** @var array|string */
-    public $where;
+    public $where = array();
 
     /** @var string */
     public $group;
