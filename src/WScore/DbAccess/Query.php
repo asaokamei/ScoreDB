@@ -395,6 +395,13 @@ class Query implements QueryInterface, \Serializable
         $this->queryObject->col( $col );
         return $this;
     }
+
+    /**
+     * @param $val
+     * @param $rel
+     * @param null $type
+     * @return $this
+     */
     public function mod( $val, $rel, $type=null ) {
         $mod = array( 'val' => $val, 'rel' => $rel );
         $this->queryObject->mod( $mod, $type );
@@ -405,53 +412,69 @@ class Query implements QueryInterface, \Serializable
         $this->queryObject->modRaw( $mod );
         return $this;
     }
+    /** @return $this  */
     public function id( $val, $type=null ) {
         if( is_array( $val ) ) return $this->col( $this->id_name )->in( $val, $type );
         return $this->col( $this->id_name )->mod( $val, '=', $type );
     }
+    /** @return $this  */
     public function eq( $val, $type=null ) {
         if( is_array( $val ) ) return $this->in( $val, $type );
         return $this->mod( $val, '=', $type );
     }
+    /** @return $this  */
     public function ne( $val, $type=null ) {
         return $this->mod( $val, '!=', $type );
     }
+    /** @return $this  */
     public function lt( $val, $type=null ) {
         return $this->mod( $val, '<', $type );
     }
+    /** @return $this  */
     public function le( $val, $type=null ) {
         return $this->mod( $val, '<=', $type );
     }
+    /** @return $this  */
     public function gt( $val, $type=null ) {
         return $this->mod( $val, '>', $type );
     }
+    /** @return $this  */
     public function ge( $val, $type=null ) {
         return $this->mod( $val, '>=', $type );
     }
+    /** @return $this  */
     public function in( $val, $type=null ) {
         return $this->mod( $val, 'IN', $type );
     }
+    /** @return $this  */
     public function notIn( $val, $type=null ) {
         return $this->mod( $val, 'NOT IN', $type );
     }
+    /** @return $this  */
     public function between( $val, $type=null ) {
         return $this->mod( $val, 'BETWEEN', $type );
     }
+    /** @return $this  */
     public function isNull() {
         return $this->modRaw( null, 'IS NULL' );
     }
+    /** @return $this  */
     public function notNull() {
         return $this->modRaw( null, 'IS NOT NULL' );
     }
+    /** @return $this  */
     public function like( $val, $type=null ) {
         return $this->mod( $val, 'LIKE', $type );
     }
+    /** @return $this  */
     public function contain( $val, $type=null ) {
         return $this->mod( "%{$val}%", 'LIKE', $type );
     }
+    /** @return $this  */
     public function startWith( $val, $type=null ) {
         return $this->mod( $val.'%', 'LIKE', $type );
     }
+    /** @return $this  */
     public function endWith( $val, $type=null ) {
         return $this->mod( '%'.$val, 'LIKE', $type );
     }
