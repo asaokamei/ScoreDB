@@ -149,13 +149,11 @@ class DbAccess implements \Serializable
                     $this->pdoStmt->bindValue( $holder, $value );
                 }
             }
-            $execPrepare = null;
-        } else {
-            $execPrepare = $prepared;
+            $prepared = null;
         }
         $start = microtime( true );
         try {
-            $this->pdoStmt->execute( $execPrepare );
+            $this->pdoStmt->execute( $prepared );
         } catch( \PDOException $e ) {
             $msg = $e->getMessage();
             $sql = $this->pdoStmt->queryString;
