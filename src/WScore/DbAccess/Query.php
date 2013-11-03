@@ -258,6 +258,22 @@ class Query implements QueryInterface, \Serializable
     }
 
     /**
+     * @param $name
+     * @return null|mixed
+     */
+    public function getValue( $name ) {
+        return array_key_exists( $name, $this->queryObject->values ) ? $this->queryObject->values[ $name ] : null;
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function setValue( $name, $value ) {
+        $this->queryObject->values[ $name ] = $value;
+    }
+
+    /**
      * set SQL functions for INSERT or UPDATE. The functions are not 'prepared'.
      * TODO: find better name than functions??? how about rawValue?
      * @param $func
