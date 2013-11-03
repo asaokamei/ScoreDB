@@ -149,6 +149,13 @@ class Query implements QueryInterface, \Serializable
         $this->pdoStmt = $this->dbAccess->query( $this->queryObject );
         return $this;
     }
+
+    /**
+     * @return \PdoStatement
+     */
+    public function getStmt() {
+        return $this->pdoStmt;
+    }
     // +----------------------------------------------------------------------+
     //  Getting result from PdoStatement.
     // +----------------------------------------------------------------------+
