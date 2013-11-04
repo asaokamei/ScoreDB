@@ -9,7 +9,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "psr/log": "~1.0"
+        "psr/log": "~1.0",
+        "monolog/monolog":"1.5.x"
     },
     "autoload": {
         "psr-0": {
