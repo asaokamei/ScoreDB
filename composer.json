@@ -15,7 +15,8 @@
     },
     "require-dev": {
         "aura/sqlquery":"2.0.x-dev",
-        "c9s/sqlbuilder": "*"
+        "c9s/sqlbuilder": "*",
+        "illuminate/database": "dev-master"
     },
     "autoload": {
         "psr-4": {
