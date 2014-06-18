@@ -42,6 +42,11 @@ class Builder
         'where',
     ];
 
+    protected $delete = [
+        'table',
+        'where',
+    ];
+
     // +----------------------------------------------------------------------+
     //  construction
     // +----------------------------------------------------------------------+
@@ -84,6 +89,14 @@ class Builder
         }
     }
 
+    /**
+     * @param Query $query
+     */
+    protected function setQuery( $query ) {
+        $this->query = $query;
+        $this->bind  = $query->bind();
+    }
+
     // +----------------------------------------------------------------------+
     //  convert to SQL statements.
     // +----------------------------------------------------------------------+
@@ -93,7 +106,7 @@ class Builder
      */
     public function toSelect( $query )
     {
-        $this->query = $query;
+        $this->setQuery( $query );
         $sql = 'SELECT' . $this->buildByList( $this->select );
         return $sql;
     }
@@ -104,7 +117,7 @@ class Builder
      */
     public function toInsert( $query )
     {
-        $this->query = $query;
+        $this->setQuery( $query );
         $sql = 'INSERT INTO' . $this->buildByList( $this->insert );
         return $sql;
     }
@@ -115,8 +128,19 @@ class Builder
      */
     public function toUpdate( $query )
     {
-        $this->query = $query;
+        $this->setQuery( $query );
         $sql = 'UPDATE' . $this->buildByList( $this->insert );
+        return $sql;
+    }
+
+    /**
+     * @param Query $query
+     * @return string
+     */
+    public function toDelete( $query )
+    {
+        $this->setQuery( $query );
+        $sql = 'DELETE' . $this->buildByList( $this->delete );
         return $sql;
     }
 

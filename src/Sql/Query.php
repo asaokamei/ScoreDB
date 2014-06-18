@@ -9,6 +9,15 @@ class Query
     protected $where;
 
     /**
+     * design decision: bind is kept inside Query.
+     * A Query object must have one independent Bind object,
+     * or contamination of variables occur.
+     *
+     * @var Bind
+     */
+    protected $bind;
+
+    /**
      * @var string           name of database table
      */
     public $table;
@@ -75,19 +84,20 @@ class Query
 
     // +----------------------------------------------------------------------+
     /**
-     * @param Where   $where
+     * @param Where $where
+     * @param Bind  $bind
      */
-    public function __construct( $where ) {
+    public function __construct( $where, $bind ) {
         $where->setQuery( $this );
         $this->where = $where;
+        $this->bind  = $bind;
     }
 
     /**
-     * @return Query
+     * @return Bind
      */
-    public function fresh() {
-        $self = new Query( $this->where );
-        return $self;
+    public function bind() {
+        return $this->bind;
     }
 
     /**

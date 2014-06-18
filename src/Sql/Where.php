@@ -27,18 +27,11 @@ class Where
     //  managing objects.
     // +----------------------------------------------------------------------+
     /**
-     * @param Bind $bind
-     */
-    public function __construct( $bind )
-    {
-        $this->bind = $bind;
-    }
-
-    /**
      * @param Query $q
      */
     public function setQuery( $q ) {
         $this->query = $q;
+        $this->bind  = $q->bind();
     }
 
     /**
