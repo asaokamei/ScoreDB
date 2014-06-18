@@ -4,6 +4,16 @@ namespace WScore\DbAccess\Sql;
 class Builder
 {
     /**
+     * @var Bind
+     */
+    protected $bind;
+
+    /**
+     * @var Quote
+     */
+    protected $quote;
+
+    /**
      * @var Query
      */
     protected $query;
@@ -31,18 +41,26 @@ class Builder
         'updateSet',
         'where',
     ];
-    /**
-     * @var Quote
-     */
-    protected $quote;
 
     // +----------------------------------------------------------------------+
     //  construction
     // +----------------------------------------------------------------------+
     /**
+     * @param Bind   $bind
+     * @param Quote  $quote
+     */
+    public function __construct( $bind, $quote )
+    {
+        $this->bind  = $bind;
+        $this->quote = $quote;
+    }
+
+    /**
+     * ugly if statements. replace this method with some other pattern.
+     *
      * @param string $db
      */
-    public function __construct( $db )
+    public function setDbType( $db )
     {
         if( $db == 'mysql' ) {
             
@@ -57,8 +75,10 @@ class Builder
             $this->insert[] = 'returning';
             $this->update[] = 'returning';
             
-        } elseif( $db == 'pgsql' ) {
+        } elseif( $db == 'sqlite' ) {
             
+        } else {
+
             $this->select[] = 'limit';
             $this->select[] = 'offset';
         }
@@ -124,8 +144,8 @@ class Builder
      */
     protected function buildInsertCol() {
         $columns = array_keys( $this->query->values );
-        foreach( $columns as $key => $col ) {
-            $columns[$key] = $this->quote->quote($col);
+        foreach( $columns as $col ) {
+            $columns[] = $this->quote->quote($col);
         }
         return '( '.implode( ', ', $columns ).' )';
     }
@@ -135,11 +155,12 @@ class Builder
      */
     protected function buildInsertVal() {
         $columns = [];
-        foreach( $this->query->values as $key => $col ) {
-            if( is_callable($col) ) {
-                $columns[$key] = $col();
+        foreach( $this->query->values as $col => $val ) {
+            $val = $this->bind->prepare( $val, $col );
+            if( is_callable($val) ) {
+                $columns[] = $val();
             } else {
-                $columns[$key] = $col;
+                $columns[] = $val;
             }
         }
         return 'VALUES ( '.implode( ', ', $columns ).' )';
@@ -148,9 +169,11 @@ class Builder
     protected function buildUpdateSet() {
         $setter = [];
         foreach( $this->query->values as $col => $val ) {
+            $val = $this->bind->prepare( $val, $col );
             if( is_callable($val) ) {
                 $val = $val();
             }
+            $col = $this->quote->quote($col);
             $setter[] = $this->quote->quote($col).'='.$val;
         }
         return 'SET '.implode( ', ', $setter );

@@ -4,6 +4,11 @@ namespace WScore\DbAccess\Sql;
 class Where
 {
     /**
+     * @var Bind
+     */
+    protected $bind;
+
+    /**
      * @var Query
      */
     protected $query;
@@ -21,6 +26,14 @@ class Where
     // +----------------------------------------------------------------------+
     //  managing objects.
     // +----------------------------------------------------------------------+
+    /**
+     * @param Bind $bind
+     */
+    public function __construct( $bind )
+    {
+        $this->bind = $bind;
+    }
+
     /**
      * @param Query $q
      */
@@ -105,7 +118,7 @@ class Where
      */
     public function where( $col, $val, $rel = '=', $type = null )
     {
-        $holder = $this->query->prepare( $val, $type, $col );
+        $holder = $this->bind->prepare( $val, $type, $col );
         return $this->whereRaw( $col, $holder, $rel );
     }
 
@@ -229,7 +242,7 @@ class Where
      */
     public function in( $values, $not=false, $type = null )
     {
-        $holders = $this->query->prepare( $values );
+        $holders = $this->bind->prepare( $values );
         $holders = '(' . implode( ', ', $holders ) . ')';
         $rel = $not ? 'NOT IN' : 'IN';
         return $this->whereRaw( $this->column, $holders, $rel, $type );
