@@ -55,4 +55,20 @@ class Bind_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $value, $val() );
         $this->assertTrue( empty( $bind ) );
     }
+
+    /**
+     * @test
+     */
+    function with_type_and_setting_type()
+    {
+        $type1 = $this->get('type');
+        $type2 = $this->get('type');
+        $this->b->setColumnType( 'col2', $type2 );
+        $holder1  = $this->b->prepare( 'test', $type1 );
+        $holder2  = $this->b->prepare( 'test', null, 'col2' );
+        
+        $types = $this->b->getBindType();
+        $this->assertEquals( $type1, $types[$holder1] );
+        $this->assertEquals( $type2, $types[$holder2] );
+    }
 }
