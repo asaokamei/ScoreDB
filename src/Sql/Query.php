@@ -98,6 +98,7 @@ class Query
      * @param Where   $where
      */
     public function __construct( $where ) {
+        $where->setQuery( $this );
         $this->where = $where;
     }
 
