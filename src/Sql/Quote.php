@@ -28,15 +28,16 @@ class Quote
         if( !$separator ) return $this->quoteString( $name );
         if( !is_array( $separator ) ) $separator = array($separator);
         while( $sep = array_shift( $separator ) ) {
-            if( false === stripos( $name, $sep ) ) {
-                $list = preg_split( "/[$sep]+/i", $name, PREG_SPLIT_NO_EMPTY );
+            if( false !== stripos( $name, $sep ) ) {
+                $list = explode( $sep, $name );
                 foreach( $list as $key => $str ) {
-                    $list[$key] = $this->quote( $str, $sep );
+                    $list[$key] = $this->quote( $str, $separator );
                 }
-                $name = implode( $sep, $list );
+                return implode( $sep, $list );
+                break;
             }
         }
-        return $name;
+        return $this->quoteString($name);
     }
 
     /**
