@@ -9,11 +9,6 @@ class Query
     protected $where;
 
     /**
-     * @var Builder
-     */
-    protected $quote;
-
-    /**
      * @var string           name of database table
      */
     public $table;
@@ -100,19 +95,17 @@ class Query
 
     // +----------------------------------------------------------------------+
     /**
-     * @param null|Where   $where
-     * @param null|Quote $quote
+     * @param Where   $where
      */
-    public function __construct( $where=null, $quote=null ) {
+    public function __construct( $where ) {
         $this->where = $where;
-        $this->quote = $quote;
     }
 
     /**
      * @return Query
      */
     public function fresh() {
-        $self = new Query( $this->where, $this->quote );
+        $self = new Query( $this->where );
         return $self;
     }
 
