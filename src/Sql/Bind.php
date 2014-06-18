@@ -32,6 +32,13 @@ class Bind
         $this->col_data_types[$column] = $type;
     }
 
+    /**
+     * reset the counter to 1. 
+     */
+    public static function reset() {
+        static::$prepared_counter = 1;
+    }
+
     // +----------------------------------------------------------------------+
     //  preparing for Insert and Update statement.
     // +----------------------------------------------------------------------+

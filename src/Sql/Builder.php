@@ -129,7 +129,7 @@ class Builder
     public function toUpdate( $query )
     {
         $this->setQuery( $query );
-        $sql = 'UPDATE' . $this->buildByList( $this->insert );
+        $sql = 'UPDATE' . $this->buildByList( $this->update );
         return $sql;
     }
 
@@ -156,8 +156,8 @@ class Builder
         $statement = '';
         foreach( $list as $item ) {
             $method = 'build'.ucwords($item);
-            if( $sql = $this->$method ) {
-                $statement = ' ' . $sql;
+            if( $sql = $this->$method() ) {
+                $statement .= ' ' . $sql;
             }
         }
         return $statement;
@@ -167,8 +167,9 @@ class Builder
      * @return string
      */
     protected function buildInsertCol() {
-        $columns = array_keys( $this->query->values );
-        foreach( $columns as $col ) {
+        $keys = array_keys( $this->query->values );
+        $columns = [];
+        foreach( $keys as $col ) {
             $columns[] = $this->quote->quote($col);
         }
         return '( '.implode( ', ', $columns ).' )';

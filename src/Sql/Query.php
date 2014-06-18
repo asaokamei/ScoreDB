@@ -88,9 +88,9 @@ class Query
      * @param Bind  $bind
      */
     public function __construct( $where, $bind ) {
+        $this->bind  = $bind;
         $where->setQuery( $this );
         $this->where = $where;
-        $this->bind  = $bind;
     }
 
     /**

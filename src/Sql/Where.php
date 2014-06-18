@@ -56,7 +56,7 @@ class Where
     public function __toString()
     {
         $where = '';
-        foreach( $$this->where as $w ) {
+        foreach( $this->where as $w ) {
             if( is_array( $w ) ) {
                 $where .= $this->formWhere( $w['col'], $w['val'], $w['rel'], $w['op'] );
             } elseif( is_string( $w ) ) {
@@ -65,7 +65,7 @@ class Where
         }
         $where = trim( $where );
         $where = preg_replace( '/^(and|or) /i', '', $where );
-        return $where;
+        return $where ? 'WHERE '.$where : '';
     }
 
     /**
