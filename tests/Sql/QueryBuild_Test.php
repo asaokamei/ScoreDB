@@ -100,12 +100,13 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @ test
+     * @test
      */
     function select_2()
     {
         $this->query
             ->table( 'testTable' )
+            ->alias( 'aliasTable' )
             ->forUpdate()
             ->distinct()
             ->column( 'colTest', 'aliasAs' )
@@ -116,6 +117,6 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->offset(10);
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
-        $this->assertEquals( 'UPDATE "testTable" SET "testCol"=:db_prep_2, "moreCol"=:db_prep_3 WHERE pKey = :db_prep_1', $sql );
+        $this->assertEquals( 'SELECT FOR UPDATE DISTINCT "colTest" AS "aliasAs" FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 GROUP BY "grouped" ORDER BY "pKey" ASC', $sql );
     }
 }
