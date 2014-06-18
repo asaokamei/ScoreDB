@@ -83,4 +83,39 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $values['testCol'], $bind[':db_prep_2'] );
         $this->assertEquals( $values['moreCol'], $bind[':db_prep_3'] );
     }
+
+    /**
+     * @test
+     */
+    function select()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->column( 'colTest', 'aliasAs' )
+            ->where()->name->like( 'bob' )->q()
+            ->order( 'pKey' );
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->b->getBinding();
+        $this->assertEquals( 'SELECT "colTest" AS "aliasAs" FROM "testTable" WHERE "name" LIKE :db_prep_1 ORDER BY pKey ASC', $sql );
+    }
+
+    /**
+     * @ test
+     */
+    function select_2()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->forUpdate()
+            ->distinct()
+            ->column( 'colTest', 'aliasAs' )
+            ->where()->name->like( 'bob' )->q()
+            ->group( 'grouped' )
+            ->order( 'pKey' )
+            ->limit(5)
+            ->offset(10);
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->b->getBinding();
+        $this->assertEquals( 'UPDATE "testTable" SET "testCol"=:db_prep_2, "moreCol"=:db_prep_3 WHERE pKey = :db_prep_1', $sql );
+    }
 }

@@ -146,7 +146,11 @@ class Query
      * @return Query
      */
     public function column( $column, $as=null ) {
-        $this->columns[ $column ] = $as;
+        if( $as ) {
+            $this->columns[ $as ] = $column;
+        } else {
+            $this->columns[] = $column;
+        }
         return $this;
     }
 

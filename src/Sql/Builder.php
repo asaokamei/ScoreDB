@@ -21,7 +21,7 @@ class Builder
     protected $select = [
         'flags',
         'column',
-        'table',
+        'from',
         'tableAlias',
         'join',
         'where',
@@ -221,6 +221,13 @@ class Builder
     /**
      * @return string
      */
+    protected function buildFrom() {
+        return 'FROM '.$this->quote->quote( $this->query->table );
+    }
+
+    /**
+     * @return string
+     */
     protected function buildTableAlias() {
         return $this->query->tableAlias ? $this->quote->quote( $this->query->tableAlias ) : '';
     }
@@ -240,7 +247,15 @@ class Builder
         if( !$this->query->columns ) {
             throw new \InvalidArgumentException('No column is set');
         }
-        return implode( ', ', $this->query->columns );
+        $columns = [];
+        foreach( $this->query->columns as $alias => $col ) {
+            $col = $this->quote->quote($col);
+            if( !is_numeric( $alias ) ) {
+                $col .= ' AS ' . $this->quote->quote($alias);
+            }
+            $columns[] = $col;
+        }
+        return implode( ', ', $columns );
     }
 
     /**
@@ -255,6 +270,13 @@ class Builder
      */
     protected function buildGroupBy() {
         return $this->query->group ? 'GROUP BY '.implode( ', ', $this->query->group ) : '';
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildHaving() {
+        return $this->query->having ? 'HAVING '.implode( ', ', $this->query->having ) : '';
     }
 
     /**
