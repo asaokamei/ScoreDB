@@ -9,6 +9,11 @@ class Where
     protected $bind;
 
     /**
+     * @var Quote
+     */
+    protected $quote;
+
+    /**
      * @var Query
      */
     protected $query;
@@ -26,6 +31,14 @@ class Where
     // +----------------------------------------------------------------------+
     //  managing objects.
     // +----------------------------------------------------------------------+
+    /**
+     * @param Quote $quote
+     */
+    public function __construct( $quote )
+    {
+        $this->quote = $quote;
+    }
+    
     /**
      * @param Query $q
      */
@@ -91,6 +104,9 @@ class Where
         }
         elseif( "$val" == "" && "$rel" == "" ) {
             return '';
+        }
+        else {
+            $col = $this->quote->quote($col);
         }
         $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
         return $where;
