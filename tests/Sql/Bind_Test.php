@@ -38,4 +38,21 @@ class Bind_Test extends \PHPUnit_Framework_TestCase
         $this->assertTrue( isset( $bind[$holder]) );
         $this->assertEquals( $value, $bind[$holder] );
     }
+
+    /**
+     * @test
+     */
+    function prepare_ignores_callable_value()
+    {
+        $value = $this->get();
+        $val = function() use( $value ) {
+            return $value;
+        };
+        $holder = $this->b->prepare($val);
+        $bind  = $this->b->getBinding();
+        
+        $this->assertTrue( is_callable($holder));
+        $this->assertEquals( $value, $val() );
+        $this->assertTrue( empty( $bind ) );
+    }
 }
