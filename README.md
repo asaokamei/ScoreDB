@@ -1,7 +1,81 @@
 WScore.DbAccess
 ===============
 
-Database access and query builder.
+A simple SQL query builder,
+
+and a database connection manager for AuraPHP/Sql component.
+
+
+
+WISHES WISHES WISHES
+====================
+
+Database Access
+---------------
+
+configuration.
+
+```php
+DbAccess::config( [
+    'mysql',
+    'host=localhost;dbname=name;charset=utf',
+    'username',
+    'password'
+] );
+```
+
+getting the connection.
+
+```php
+$dba = DbAccess::connect();
+```
+
+or, get another connection with different configuration.
+
+```php
+DbAccess::config( 'db2-name', [
+    'mysql',...
+] );
+$dba2 = DbAccess::connect( 'db2-name' );
+```
+
+transaction.
+
+```php
+$dba->beginTransaction();
+```
+
+
+Query
+-----
+
+for select.
+
+```php
+$dba->query()->table('myTable')->where()->status->eq('1');
+$found = $dba->get();
+```
+
+for insert.
+
+```php
+$dba->query()->table('my')->values(['name'=>'bob',...]);
+$dba->insert();
+```
+
+for update.
+
+```php
+$dba->query()->table('my')->values(['name'=>'Bob',...])->where()->name->eq('bob');
+$dba->update();
+```
+
+mmm, UGLY!
+
+
+OLD OLD OLD
+===========
+
 
 Connecting To Database via Pdo
 ------------------------------
