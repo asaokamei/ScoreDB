@@ -18,8 +18,8 @@
         "c9s/sqlbuilder": "*"
     },
     "autoload": {
-        "psr-0": {
-            "WScore\\DbAccess": "src/"
+        "psr-4": {
+            "WScore\\DbAccess\\": "src/"
         }
     }
 }

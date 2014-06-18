@@ -1,5 +1,5 @@
 <?php
-namespace WScore\Basic\Dba;
+namespace WScore\DbAccess\Sql;
 
 class Builder
 {
