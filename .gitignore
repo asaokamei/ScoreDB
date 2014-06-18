@@ -3,6 +3,8 @@
 
 #composer and other vendor staff
 vendor/*
+composer.phar
+composer.lock
 
 #sqlite data file
 *.sqlite
