@@ -1,6 +1,16 @@
 <?php
 namespace WScore\DbAccess\Sql;
 
+/**
+ * Class Where
+ * @package WScore\DbAccess\Sql
+ *
+ * @method Where ne( $value )
+ * @method Where lt( $value )
+ * @method Where le( $value )
+ * @method Where gt( $value )
+ * @method Where ge( $value )
+ */
 class Where
 {
     /**
@@ -17,6 +27,16 @@ class Where
      * @var string
      */
     protected $column;
+
+    protected $methods = [
+        'ne'      => '!=',
+        'lt'      => '<',
+        'gt'      => '>',
+        'le'      => '<=',
+        'ge'      => '>=',
+        'isNull'  => 'IS NULL',
+        'notNull' => 'IS NOT NULL',
+    ];
 
     // +----------------------------------------------------------------------+
     //  managing objects.
@@ -47,7 +67,15 @@ class Where
      * @param $args
      * @return mixed
      */
-    public function __call( $method, $args ) {
+    public function __call( $method, $args )
+    {
+        if( isset( $this->methods[$method] ) ) {
+            if( in_array( $method, ['isNull', 'notNull'] ) ) {
+                return $this->where( $this->column, null, $this->methods[$method] );
+            } else {
+                return $this->where( $this->column, $args[0], $this->methods[$method] );
+            }
+        }
         return call_user_func_array( [$this->query, $method ], $args );
     }
 
@@ -122,51 +150,6 @@ class Where
     }
 
     /**
-     * @param $val
-     * @return Where
-     */
-    public function ne( $val )
-    {
-        return $this->where( $this->column, $val, '!=' );
-    }
-
-    /**
-     * @param $val
-     * @return Where
-     */
-    public function lt( $val )
-    {
-        return $this->where( $this->column, $val, '<' );
-    }
-
-    /**
-     * @param $val
-     * @return Where
-     */
-    public function le( $val )
-    {
-        return $this->where( $this->column, $val, '<=' );
-    }
-
-    /**
-     * @param $val
-     * @return Where
-     */
-    public function gt( $val )
-    {
-        return $this->where( $this->column, $val, '>' );
-    }
-
-    /**
-     * @param $val
-     * @return Where
-     */
-    public function ge( $val )
-    {
-        return $this->where( $this->column, $val, '>=' );
-    }
-
-    /**
      * @param array $values
      * @return Where
      */
@@ -231,7 +214,7 @@ class Where
      */
     public function contain( $val )
     {
-        return $this->where( $this->column, "%{$val}%", 'LIKE' );
+        return $this->like( "%{$val}%" );
     }
 
     /**
@@ -240,7 +223,7 @@ class Where
      */
     public function startWith( $val )
     {
-        return $this->where( $this->column, $val . '%', 'LIKE' );
+        return $this->like( "{$val}%" );
     }
 
     /**
@@ -249,7 +232,7 @@ class Where
      */
     public function endWith( $val )
     {
-        return $this->where( $this->column, '%' . $val, 'LIKE' );
+        return $this->like( "%{$val}" );
     }
 
 }
