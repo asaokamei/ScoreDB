@@ -245,7 +245,7 @@ class Builder
      */
     protected function buildColumn() {
         if( !$this->query->columns ) {
-            throw new \InvalidArgumentException('No column is set');
+            return '*';
         }
         $columns = [];
         foreach( $this->query->columns as $alias => $col ) {
@@ -371,24 +371,18 @@ class Builder
      * @param string $op
      * @return string
      */
-    protected function formWhere( $col, $val, $rel='=', $op='AND' )
+    protected function formWhere( $col, $val, $rel, $op='AND' )
     {
+        if( !$rel ) return '';
         $where = '';
         $rel = strtoupper( $rel );
         if( $rel == 'IN' || $rel == 'NOT IN' ) {
+            $val = $this->bind->prepare( $val );
             $tmp = is_array( $val ) ? implode( ", ", $val ): "{$val}";
             $val = "( " . $tmp . " )";
         }
-        elseif( $col == '(' ) {
-            $val = $rel = '';
-        }
-        elseif( $col == ')' ) {
-            $op = $rel = $val = '';
-        }
-        elseif( "$val" == "" && "$rel" == "" ) {
-            return '';
-        }
         else {
+            $val = $this->bind->prepare( $val );
             $col = $this->quote->quote($col);
         }
         $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';

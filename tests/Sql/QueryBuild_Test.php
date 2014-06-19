@@ -79,11 +79,11 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $sql = $this->builder->toUpdate( $this->query );
         $bind = $this->b->getBinding();
         $this->assertEquals(
-            'UPDATE "testTable" SET "testCol"=:db_prep_2, "moreCol"=:db_prep_3 WHERE "pKey" = :db_prep_1',
+            'UPDATE "testTable" SET "testCol"=:db_prep_1, "moreCol"=:db_prep_2 WHERE "pKey" = :db_prep_3',
             $sql );
-        $this->assertEquals( $keyVal, $bind[':db_prep_1'] );
-        $this->assertEquals( $values['testCol'], $bind[':db_prep_2'] );
-        $this->assertEquals( $values['moreCol'], $bind[':db_prep_3'] );
+        $this->assertEquals( $keyVal, $bind[':db_prep_3'] );
+        $this->assertEquals( $values['testCol'], $bind[':db_prep_1'] );
+        $this->assertEquals( $values['moreCol'], $bind[':db_prep_2'] );
     }
 
     /**
@@ -103,6 +103,29 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             'WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC',
             $sql );
         $this->assertEquals( 'bob', $bind[':db_prep_1'] );
+    }
+
+    /**
+     * @test
+     */
+    function select_in()
+    {
+        $in = [
+            $this->get(),
+            $this->get(),
+        ];
+        $this->query
+            ->table( 'testTable' )
+            ->where()->name->contain( 'bob' )->status->in($in)->q()
+            ->order( 'pKey' );
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->b->getBinding();
+        $this->assertEquals(
+            'SELECT * FROM "testTable" ' .
+            'WHERE "name" LIKE :db_prep_1 AND status IN ( :db_prep_2, :db_prep_3 ) ' .
+            'ORDER BY "pKey" ASC',
+            $sql );
+        $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }
 
     /**

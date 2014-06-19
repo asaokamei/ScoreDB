@@ -4,11 +4,6 @@ namespace WScore\DbAccess\Sql;
 class Where
 {
     /**
-     * @var Bind
-     */
-    protected $bind;
-
-    /**
      * @var Query
      */
     protected $query;
@@ -72,13 +67,11 @@ class Where
      * @param string $col
      * @param string $val
      * @param string $rel
-     * @param null|string|bool $type
-     * @return $this
+     * @return Where
      */
-    public function where( $col, $val, $rel = '=', $type = null )
+    public function where( $col, $val, $rel = '=' )
     {
-        $holder = $this->bind->prepare( $val, $type, $col );
-        return $this->whereRaw( $col, $holder, $rel );
+        return $this->whereRaw( $col, $val, $rel );
     }
 
     /**
@@ -87,7 +80,7 @@ class Where
      * @param        $col
      * @param        $val
      * @param string $rel
-     * @return $this
+     * @return Where
      */
     public function whereRaw( $col, $val, $rel = '=' )
     {
@@ -98,7 +91,7 @@ class Where
 
     /**
      * @param string $name
-     * @return $this
+     * @return Where
      */
     public function __get( $name ) {
         return $this->col( $name );
@@ -106,7 +99,7 @@ class Where
 
     /**
      * @param string $col
-     * @return $this
+     * @return Where
      */
     public function col( $col )
     {
@@ -119,117 +112,109 @@ class Where
     // +----------------------------------------------------------------------+
     /**
      * @param string|array $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function id( $val, $type = null )
+    public function id( $val )
     {
         if ( is_array( $val ) ) {
-            return $this->col( $this->query->id_name )->in( $val, $type );
+            return $this->col( $this->query->id_name )->in( $val );
         }
-        return $this->where( $this->query->id_name, $val, '=', $type );
+        return $this->where( $this->query->id_name, $val, '=' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function eq( $val, $type = null )
+    public function eq( $val )
     {
         if ( is_array( $val ) ) {
-            return $this->in( $val, $type );
+            return $this->in( $val );
         }
-        return $this->where( $this->column, $val, '=', $type );
+        return $this->where( $this->column, $val, '=' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function ne( $val, $type = null )
+    public function ne( $val )
     {
-        return $this->where( $this->column, $val, '!=', $type );
+        return $this->where( $this->column, $val, '!=' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function lt( $val, $type = null )
+    public function lt( $val )
     {
-        return $this->where( $this->column, $val, '<', $type );
+        return $this->where( $this->column, $val, '<' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function le( $val, $type = null )
+    public function le( $val )
     {
-        return $this->where( $this->column, $val, '<=', $type );
+        return $this->where( $this->column, $val, '<=' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function gt( $val, $type = null )
+    public function gt( $val )
     {
-        return $this->where( $this->column, $val, '>', $type );
+        return $this->where( $this->column, $val, '>' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function ge( $val, $type = null )
+    public function ge( $val )
     {
-        return $this->where( $this->column, $val, '>=', $type );
+        return $this->where( $this->column, $val, '>=' );
     }
 
     /**
      * @param array $values
-     * @param bool $not
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function in( $values, $not=false, $type = null )
+    public function in( $values )
     {
-        $holders = $this->bind->prepare( $values );
-        $holders = '(' . implode( ', ', $holders ) . ')';
-        $rel = $not ? 'NOT IN' : 'IN';
-        return $this->whereRaw( $this->column, $holders, $rel, $type );
+        if( !is_array($values ) ) {
+            $values = func_get_args();
+        }
+        return $this->whereRaw( $this->column, $values, 'IN' );
     }
 
     /**
      * @param $values
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function notIn( $values, $type = null )
+    public function notIn( $values)
     {
-        return $this->in( $values, true, $type );
+        if( !is_array($values ) ) {
+            $values = func_get_args();
+        }
+        return $this->in( $this->column, $values, 'NOT IN' );
     }
 
     /**
      * @param $val1
      * @param $val2
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function between( $val1, $val2, $type = null )
+    public function between( $val1, $val2 )
     {
-        return $this->whereRaw( $this->column, false, "BETWEEN $val1 and $val2", $type );
+        return $this->whereRaw( $this->column, false, "BETWEEN $val1 and $val2" );
     }
 
     /**
-     * @return $this
+     * @return Where
      */
     public function isNull()
     {
@@ -237,7 +222,7 @@ class Where
     }
 
     /**
-     * @return $this
+     * @return Where
      */
     public function notNull()
     {
@@ -246,42 +231,38 @@ class Where
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function like( $val, $type = null )
+    public function like( $val )
     {
-        return $this->where( $this->column, $val, 'LIKE', $type );
+        return $this->where( $this->column, $val, 'LIKE' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function contain( $val, $type = null )
+    public function contain( $val )
     {
-        return $this->where( $this->column, "%{$val}%", 'LIKE', $type );
+        return $this->where( $this->column, "%{$val}%", 'LIKE' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function startWith( $val, $type = null )
+    public function startWith( $val )
     {
-        return $this->where( $this->column, $val . '%', 'LIKE', $type );
+        return $this->where( $this->column, $val . '%', 'LIKE' );
     }
 
     /**
      * @param $val
-     * @param null $type
-     * @return $this
+     * @return Where
      */
-    public function endWith( $val, $type = null )
+    public function endWith( $val )
     {
-        return $this->where( $this->column, '%' . $val, 'LIKE', $type );
+        return $this->where( $this->column, '%' . $val, 'LIKE' );
     }
 
 }
