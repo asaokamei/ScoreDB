@@ -24,7 +24,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     function setup()
     {
         $this->builder = new Builder( new Quote() );
-        $this->query   = new Query( new Where(), new Bind() );
+        $this->query   = new Query( new Bind() );
         Bind::reset();
     }
     
@@ -61,7 +61,9 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             'moreCol' => $this->get(),
         ];
         $keyVal = $this->get();
-        $this->query->table( 'testTable' )->value( $values )->where()->pKey->eq($keyVal);
+        $this->query->table( 'testTable' )->value( $values )->where(
+            Where::column('pKey')->eq($keyVal)
+        );
         $sql = $this->builder->toUpdate( $this->query );
         $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
@@ -80,7 +82,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->query
             ->table( 'testTable' )
             ->column( 'colTest', 'aliasAs' )
-            ->where()->col('"my table".name')->like( 'bob' )->q()
+            ->where( Where::column('"my table".name')->like( 'bob' ) )
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->query->bind()->getBinding();
@@ -102,7 +104,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         ];
         $this->query
             ->table( 'testTable' )
-            ->where()->name->contain( 'bob' )->status->in($in)->q()
+            ->where( Where::column('name')->contain( 'bob' )->status->in($in) )
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->query->bind()->getBinding();
@@ -121,7 +123,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     {
         $this->query
             ->table( 'testTable' )
-            ->where()->value->between(123,345)->q()
+            ->where( Where::column('value')->between(123,345) )
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->query->bind()->getBinding();
@@ -141,7 +143,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     {
         $this->query
             ->table( 'testTable' )
-            ->where()->value->isNull();
+            ->where( Where::column('value')->isNull() );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
@@ -158,7 +160,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     {
         $this->query
             ->table( 'testTable' )
-            ->where()->value->notNull();
+            ->where( Where::column('value')->notNull() );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
@@ -179,7 +181,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->forUpdate()
             ->distinct()
             ->column( 'colTest', 'aliasAs' )
-            ->where()->name->contain( 'bob' )->q()
+            ->where( Where::column('name')->contain( 'bob' ) )
             ->group( 'grouped' )
             ->order( 'pKey' )
             ->limit(5)

@@ -4,9 +4,9 @@ namespace WScore\DbAccess\Sql;
 class Query
 {
     /**
-     * @var Where
+     * @var Where[]
      */
-    protected $where;
+    protected $where = [];
 
     /**
      * design decision: bind is kept inside Query.
@@ -89,13 +89,10 @@ class Query
 
     // +----------------------------------------------------------------------+
     /**
-     * @param Where $where
      * @param Bind  $bind
      */
-    public function __construct( $where, $bind ) {
+    public function __construct( $bind ) {
         $this->bind  = $bind;
-        $where->setQuery( $this );
-        $this->where = $where;
     }
 
     /**
@@ -116,14 +113,16 @@ class Query
     }
 
     /**
-     * @return Where
+     * @param Where $where
+     * @return Query
      */
-    public function where() {
-        return $this->where;
+    public function where( $where ) {
+        $this->where[] = $where;
+        return $this;
     }
 
     /**
-     * @return Where
+     * @return Where[]
      */
     public function getWhere() {
         return $this->where;

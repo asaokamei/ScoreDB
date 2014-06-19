@@ -46,21 +46,6 @@ class Where
     }
     
     /**
-     * @param Query $q
-     */
-    public function setQuery( $q ) {
-        $this->query = $q;
-        $this->bind  = $q->bind();
-    }
-
-    /**
-     * @return Query
-     */
-    public function q() {
-        return $this->query;
-    }
-
-    /**
      * @param $method
      * @param $args
      * @return mixed
@@ -75,6 +60,18 @@ class Where
             }
         }
         return call_user_func_array( [$this->query, $method ], $args );
+    }
+
+    /**
+     * @param string $name
+     * @return Where
+     */
+    public static function column( $name )
+    {
+        /** @var self $where */
+        $where = new static;
+        $where->col( $name );
+        return $where;
     }
 
     /**

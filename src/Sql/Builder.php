@@ -348,8 +348,13 @@ class Builder
      */
     protected function buildWhere()
     {
-        $criteria = $this->query->getWhere();
-        return $this->buildCriteria( $criteria );
+        $list = $this->query->getWhere();
+        $sql  = [];
+        foreach( $list as $criteria ) {
+            $sql[] = $this->buildCriteria( $criteria );
+        }
+        $sql = implode( ' AND ', $sql );
+        return $sql ? 'WHERE '.$sql : '';
     }
 
     /**
@@ -369,7 +374,7 @@ class Builder
         }
         $sql = trim( $sql );
         $sql = preg_replace( '/^(and|or) /i', '', $sql );
-        return $sql ? 'WHERE '.$sql : '';
+        return $sql;
     }
 
     /**
