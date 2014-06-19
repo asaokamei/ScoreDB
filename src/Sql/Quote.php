@@ -17,6 +17,18 @@ class Quote
         $this->quote = $q;
         $this->format = $q . '%s' . $q;
     }
+
+    /**
+     * @param array $list
+     * @return array
+     */
+    public function map( $list )
+    {
+        $list = array_map( function($val) {
+            return $this->quote($val);
+        }, $list );
+        return $list;
+    }
     
     /**
      * @param string $name
