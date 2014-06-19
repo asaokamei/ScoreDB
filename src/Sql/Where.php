@@ -80,10 +80,69 @@ class Where
     public function getCriteria() {
         return $this->where;
     }
+
+    // +----------------------------------------------------------------------+
+    //  build sql statement.
+    // +----------------------------------------------------------------------+
+    /**
+     * @param Bind $bind
+     * @param Quote $quote
+     * @return string
+     */
+    public function build( $bind=null, $quote=null )
+    {
+        $where = $this->where;
+        $sql   = '';
+        foreach ( $where as $w ) {
+            if ( is_array( $w ) ) {
+                $op = isset( $w['op'] ) ? $w['op'] : 'and';
+                $sql .= $op . ' '. $this->formWhere( $bind, $quote, $w );
+            } elseif ( is_string( $w ) ) {
+                $sql .= 'and ' . $w;
+            }
+        }
+        $sql = trim( $sql );
+        $sql = preg_replace( '/^(and|or) /i', '', $sql );
+        return $sql;
+    }
+
+    /**
+     * @param Bind $bind
+     * @param Quote $quote
+     * @param array $w
+     * @return string
+     */
+    protected function formWhere( $bind, $quote, $w )
+    {
+        $col = $w[ 'col' ];
+        $val = $w[ 'val' ];
+        $rel = $w[ 'rel' ];
+        if ( !$rel ) return '';
+        $rel = strtoupper( $rel );
+
+        if ( $rel == 'IN' || $rel == 'NOT IN' ) {
+
+            $val = $bind ? $bind->prepare( $val ) : $val;
+            $tmp = is_array( $val ) ? implode( ", ", $val ) : "{$val}";
+            $val = "( " . $tmp . " )";
+
+        } elseif ( $rel == 'BETWEEN' ) {
+
+            $val = $bind ? $bind->prepare( $val ) : $val;
+            $val = "{$val[0]} AND {$val[1]}";
+
+        } elseif ( $val !== false ) {
+
+            $val = $bind ? $bind->prepare( $val ) : $val;
+        }
+        $col   = $quote ? $quote->quote( $col ) : $col;
+        $where = trim( "{$col} {$rel} {$val}" ) . ' ';
+        return $where;
+    }
+
     // +----------------------------------------------------------------------+
     //  setting columns.
     // +----------------------------------------------------------------------+
-
     /**
      * set where statement with values properly prepared/quoted.
      *

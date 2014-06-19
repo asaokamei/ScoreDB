@@ -369,56 +369,10 @@ class Builder
         $list = $this->query->getWhere();
         $sql  = [ ];
         foreach ( $list as $criteria ) {
-            $sql[ ] = $this->buildCriteria( $criteria );
+            $sql[ ] = $criteria->build( $this->bind, $this->quote );
         }
         $sql = implode( ' AND ', $sql );
         return $sql ? 'WHERE ' . $sql : '';
-    }
-
-    /**
-     * @param Where $criteria
-     * @return string
-     */
-    public function buildCriteria( $criteria )
-    {
-        $where = $criteria->getCriteria();
-        $sql   = '';
-        foreach ( $where as $w ) {
-            if ( is_array( $w ) ) {
-                $sql .= $this->formWhere( $w[ 'col' ], $w[ 'val' ], $w[ 'rel' ], $w[ 'op' ] );
-            } elseif ( is_string( $w ) ) {
-                $sql .= 'and ' . $w;
-            }
-        }
-        $sql = trim( $sql );
-        $sql = preg_replace( '/^(and|or) /i', '', $sql );
-        return $sql;
-    }
-
-    /**
-     * @param string $col
-     * @param string $val
-     * @param string $rel
-     * @param string $op
-     * @return string
-     */
-    protected function formWhere( $col, $val, $rel, $op = 'AND' )
-    {
-        if ( !$rel ) return '';
-        $rel = strtoupper( $rel );
-        if ( $rel == 'IN' || $rel == 'NOT IN' ) {
-            $val = $this->bind->prepare( $val );
-            $tmp = is_array( $val ) ? implode( ", ", $val ) : "{$val}";
-            $val = "( " . $tmp . " )";
-        } elseif ( $rel == 'BETWEEN' ) {
-            $val = $this->bind->prepare( $val );
-            $val = "{$val[0]} AND {$val[1]}";
-        } elseif ( $val !== false ) {
-            $val = $this->bind->prepare( $val );
-        }
-        $col   = $this->quote->quote( $col );
-        $where = trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
-        return $where;
     }
 
     // +----------------------------------------------------------------------+
