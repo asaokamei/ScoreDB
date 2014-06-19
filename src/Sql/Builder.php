@@ -382,7 +382,6 @@ class Builder
     protected function formWhere( $col, $val, $rel, $op='AND' )
     {
         if( !$rel ) return '';
-        $where = '';
         $rel = strtoupper( $rel );
         if( $rel == 'IN' || $rel == 'NOT IN' ) {
             $val = $this->bind->prepare( $val );
@@ -393,11 +392,11 @@ class Builder
             $val = $this->bind->prepare( $val );
             $val = "{$val[0]} AND {$val[1]}";
         }
-        else {
+        elseif( $val !== false ) {
             $val = $this->bind->prepare( $val );
         }
         $col = $this->quote->quote($col);
-        $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
+        $where = trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
         return $where;
     }
 

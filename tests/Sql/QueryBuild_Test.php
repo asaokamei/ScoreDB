@@ -114,7 +114,6 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }
 
-
     /**
      * @test
      */
@@ -133,6 +132,40 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             $sql );
         $this->assertEquals( '123', $bind[':db_prep_1'] );
         $this->assertEquals( '345', $bind[':db_prep_2'] );
+    }
+
+    /**
+     * @test
+     */
+    function select_isNull_and_no_value_will_be_bound()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->where()->value->isNull();
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->query->bind()->getBinding();
+        $this->assertEquals(
+            'SELECT * FROM "testTable" ' .
+            'WHERE "value" IS NULL',
+            $sql );
+        $this->assertEmpty( $bind );
+    }
+
+    /**
+     * @test
+     */
+    function select_isNotNull_and_no_value_will_be_bound()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->where()->value->notNull();
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->query->bind()->getBinding();
+        $this->assertEquals(
+            'SELECT * FROM "testTable" ' .
+            'WHERE "value" IS NOT NULL',
+            $sql );
+        $this->assertEmpty( $bind );
     }
 
     /**
