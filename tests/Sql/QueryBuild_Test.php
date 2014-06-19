@@ -169,9 +169,9 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
         $this->assertEquals(
-            'SELECT FOR UPDATE DISTINCT "colTest" AS "aliasAs" ' .
+            'SELECT DISTINCT "colTest" AS "aliasAs" ' .
             'FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 ' .
-            'GROUP BY "grouped" ORDER BY "pKey" ASC LIMIT 5 OFFSET 10',
+            'GROUP BY "grouped" ORDER BY "pKey" ASC LIMIT 5 OFFSET 10 FOR UPDATE',
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }

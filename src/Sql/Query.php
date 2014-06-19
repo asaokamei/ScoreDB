@@ -82,6 +82,11 @@ class Query
      */
     public $tableAlias;
 
+    /**
+     * @var bool
+     */
+    public $forUpdate = false;
+
     // +----------------------------------------------------------------------+
     /**
      * @param Where $where
@@ -231,11 +236,12 @@ class Query
     }
 
     /**
-     * creates SELECT for UPDATE statement.
+     * @param bool $for
      * @return Query
      */
-    public function forUpdate() {
-        return $this->flag( 'FOR UPDATE' );
+    public function forUpdate( $for=true ) {
+        $this->forUpdate = $for;
+        return $this;
     }
 
     /**

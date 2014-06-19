@@ -71,12 +71,14 @@ class Builder
             
             $this->quote->setQuote('`');
             $this->select[] = 'limitOffset';
+            $this->select[] = 'forUpdate';
             $this->update[] = 'limit';
             
         } elseif( $db == 'pgsql' ) {
             
             $this->select[] = 'limit';
             $this->select[] = 'offset';
+            $this->select[] = 'forUpdate';
             $this->insert[] = 'returning';
             $this->update[] = 'returning';
             
@@ -86,6 +88,7 @@ class Builder
 
             $this->select[] = 'limit';
             $this->select[] = 'offset';
+            $this->select[] = 'forUpdate';
         }
     }
 
@@ -333,6 +336,12 @@ class Builder
         return $this->query->returning ? 'RETURNING '.$this->query->returning:'';
     }
 
+    protected function buildForUpdate() {
+        if( $this->query->forUpdate ) {
+            return 'FOR UPDATE';
+        }
+        return '';
+    }
     // +----------------------------------------------------------------------+
     //  builders for where clause.
     // +----------------------------------------------------------------------+
