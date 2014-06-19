@@ -78,7 +78,9 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->query->table( 'testTable' )->value( $values )->where()->pKey->eq($keyVal);
         $sql = $this->builder->toUpdate( $this->query );
         $bind = $this->b->getBinding();
-        $this->assertEquals( 'UPDATE "testTable" SET "testCol"=:db_prep_2, "moreCol"=:db_prep_3 WHERE "pKey" = :db_prep_1', $sql );
+        $this->assertEquals(
+            'UPDATE "testTable" SET "testCol"=:db_prep_2, "moreCol"=:db_prep_3 WHERE "pKey" = :db_prep_1',
+            $sql );
         $this->assertEquals( $keyVal, $bind[':db_prep_1'] );
         $this->assertEquals( $values['testCol'], $bind[':db_prep_2'] );
         $this->assertEquals( $values['moreCol'], $bind[':db_prep_3'] );
@@ -96,7 +98,11 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
-        $this->assertEquals( 'SELECT "colTest" AS "aliasAs" FROM "testTable" WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC', $sql );
+        $this->assertEquals(
+            'SELECT "colTest" AS "aliasAs" FROM "testTable" ' .
+            'WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC',
+            $sql );
+        $this->assertEquals( 'bob', $bind[':db_prep_1'] );
     }
 
     /**
@@ -110,13 +116,18 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->forUpdate()
             ->distinct()
             ->column( 'colTest', 'aliasAs' )
-            ->where()->name->like( 'bob' )->q()
+            ->where()->name->contain( 'bob' )->q()
             ->group( 'grouped' )
             ->order( 'pKey' )
             ->limit(5)
             ->offset(10);
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
-        $this->assertEquals( 'SELECT FOR UPDATE DISTINCT "colTest" AS "aliasAs" FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 GROUP BY "grouped" ORDER BY "pKey" ASC', $sql );
+        $this->assertEquals(
+            'SELECT FOR UPDATE DISTINCT "colTest" AS "aliasAs" ' .
+            'FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 ' .
+            'GROUP BY "grouped" ORDER BY "pKey" ASC',
+            $sql );
+        $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }
 }
