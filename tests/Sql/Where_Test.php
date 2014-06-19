@@ -51,4 +51,42 @@ class Where_Test extends \PHPUnit_Framework_TestCase
         $sql = Where::column('test')->eq('tested')->or()->more->ne('moreD')->build();
         $this->assertEquals( '( test = tested OR more != moreD )', $sql );
     }
+
+    /**
+     * @test
+     */
+    function and_or_and()
+    {
+        $this->w
+            ->set(
+                Where::column( 'test' )->eq( 'tested' )->more->eq( 'moreD' )
+            )
+            ->or()->set(
+                Where::column( 'test' )->eq( 'good' )->more->eq( 'bad' )
+            );
+        $sql = $this->w->build();
+        $this->assertEquals(
+            '( ( test = tested AND more = moreD ) OR ( test = good AND more = bad ) )',
+            $sql
+        );
+    }
+
+    /**
+     * @test
+     */
+    function or_and_or()
+    {
+        $this->w
+            ->set(
+                Where::column( 'test' )->eq( 'tested' )->or()->more->eq( 'moreD' )
+            )
+            ->set(
+                Where::column( 'test' )->eq( 'good' )->or()->more->eq( 'bad' )
+            );
+        $sql = $this->w->build();
+        $this->assertEquals(
+            '( test = tested OR more = moreD ) AND ( test = good OR more = bad )',
+            $sql
+        );
+    }
 }

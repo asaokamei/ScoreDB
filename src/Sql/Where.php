@@ -92,6 +92,15 @@ class Where
         return $this->where;
     }
 
+    /**
+     * @param bool $para
+     * @return $this
+     */
+    public function parenthesis( $para=true ) {
+        $this->parenthesis = $para;
+        return $this;
+    }
+
     // +----------------------------------------------------------------------+
     /*  build sql statement.
 
@@ -140,8 +149,11 @@ class Where
         $val = $w[ 'val' ];
         $rel = $w[ 'rel' ];
         if ( !$rel ) return '';
+        if( $rel instanceof Where ) {
+            return $rel->build( $bind, $quote ) . ' ';
+        }
         if( is_callable( $rel ) ) {
-            return $rel();
+            return $rel() . ' ';
         }
         $rel = strtoupper( $rel );
 
@@ -209,13 +221,15 @@ class Where
     /**
      * set the where string as is.
      *
-     * @param $where
-     * @param string $op
+     * @param string|Where $where
      * @return Where
      */
-    public function setWhere( $where, $op='AND' )
+    public function set( $where )
     {
-        return $this->where( '', false, Query::raw($where), $op );
+        if( $where instanceof Where ) {
+            return $this->where( '', false, $where->parenthesis() );
+        }
+        return $this->where( '', false, Query::raw($where) );
     }
 
     // +----------------------------------------------------------------------+
