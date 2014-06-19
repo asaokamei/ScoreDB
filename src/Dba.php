@@ -5,7 +5,15 @@ use Aura\Sql\ExtendedPdo;
 use WScore\DbAccess\Sql\Bind;
 use WScore\DbAccess\Sql\Builder;
 use WScore\DbAccess\Sql\Quote;
+use WScore\DbAccess\Sql\Where;
 
+/**
+ * Class Dba
+ * @package WScore\DbAccess
+ *
+ * for DataBase Access.
+ *
+ */
 class Dba
 {
     /**
@@ -40,6 +48,25 @@ class Dba
     public static function buildPdo( $dsn, $user, $pass, $option, $attribute )
     {
         return new ExtendedPdo( $dsn, $user, $pass, $option, $attribute );
+    }
+
+    /**
+     * @return Where
+     */
+    public static function buildWhere()
+    {
+        return new Where();
+    }
+
+    /**
+     * @param $column
+     * @return Where
+     */
+    public static function where( $column )
+    {
+        $where = static::buildWhere();
+        $where->col( $column );
+        return $where;
     }
 
     /**
