@@ -10,6 +10,8 @@ namespace WScore\DbAccess\Sql;
  * @method Where le( $value )
  * @method Where gt( $value )
  * @method Where ge( $value )
+ * @method Where and()
+ * @method Where or()
  */
 class Where
 {
@@ -22,6 +24,10 @@ class Where
      * @var string
      */
     protected $column;
+
+    protected $andOr = 'AND';
+
+    protected $parenthesis = false;
 
     protected $methods = [
         'ne'      => '!=',
@@ -48,6 +54,15 @@ class Where
      */
     public function __call( $method, $args )
     {
+        if( $method == 'or' ) {
+            $this->andOr = 'OR';
+            $this->parenthesis = true;
+            return $this;
+        }
+        if( $method == 'and' ) {
+            $this->andOr = 'AND';
+            return $this;
+        }
         if( isset( $this->methods[$method] ) ) {
             if( in_array( $method, ['isNull', 'notNull'] ) ) {
                 return $this->where( $this->column, null, $this->methods[$method] );
@@ -78,7 +93,15 @@ class Where
     }
 
     // +----------------------------------------------------------------------+
-    //  build sql statement.
+    /*  build sql statement.
+
+        $this->where = [ [where-info], ...  ]
+        where-info contain following columns.
+         - op : and or or
+         - rel: type of relation. string or callable as raw statement.
+         - col: column name.
+         - val: value. set false to ignore, callable as raw value.
+    */
     // +----------------------------------------------------------------------+
     /**
      * @param Bind $bind
@@ -99,6 +122,9 @@ class Where
         }
         $sql = trim( $sql );
         $sql = preg_replace( '/^(and|or) /i', '', $sql );
+        if( $this->parenthesis ) {
+            $sql = '( ' . $sql . ' )';
+        }
         return $sql;
     }
 
@@ -114,8 +140,12 @@ class Where
         $val = $w[ 'val' ];
         $rel = $w[ 'rel' ];
         if ( !$rel ) return '';
+        if( is_callable( $rel ) ) {
+            return $rel();
+        }
         $rel = strtoupper( $rel );
 
+        // making $val.
         if ( $rel == 'IN' || $rel == 'NOT IN' ) {
 
             $val = $bind ? $bind->prepare( $val ) : $val;
@@ -126,6 +156,10 @@ class Where
 
             $val = $bind ? $bind->prepare( $val ) : $val;
             $val = "{$val[0]} AND {$val[1]}";
+
+        } elseif ( is_callable( $val ) ) {
+
+            $val = $val();
 
         } elseif ( $val !== false ) {
 
@@ -149,7 +183,7 @@ class Where
      */
     public function where( $col, $val, $rel = '=' )
     {
-        $where          = array( 'col' => $col, 'val' => $val, 'rel' => $rel, 'op' => 'AND' );
+        $where          = array( 'col' => $col, 'val' => $val, 'rel' => $rel, 'op' => $this->andOr );
         $this->where[ ] = $where;
         return $this;
     }
@@ -170,6 +204,18 @@ class Where
     {
         $this->column = $col;
         return $this;
+    }
+
+    /**
+     * set the where string as is.
+     *
+     * @param $where
+     * @param string $op
+     * @return Where
+     */
+    public function setWhere( $where, $op='AND' )
+    {
+        return $this->where( '', false, Query::raw($where), $op );
     }
 
     // +----------------------------------------------------------------------+

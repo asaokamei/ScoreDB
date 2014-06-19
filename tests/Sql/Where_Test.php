@@ -43,4 +43,12 @@ class Where_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( [ 'col' => 'ge', 'val' => 'ge', 'rel' => '>=', 'op' => 'AND' ], $where[ 5 ] );
     }
 
+    /**
+     * @test
+     */
+    function or_makes_or()
+    {
+        $sql = Where::column('test')->eq('tested')->or()->more->ne('moreD')->build();
+        $this->assertEquals( '( test = tested OR more != moreD )', $sql );
+    }
 }
