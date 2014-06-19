@@ -36,7 +36,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->b = new Bind();
         $this->q = new Quote();
         $this->builder = new Builder( $this->b, $this->q );
-        $this->query   = new Query( new Where( $this->q ), $this->b );
+        $this->query   = new Query( new Where(), $this->b );
         Bind::reset();
     }
     
@@ -165,12 +165,13 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->order( 'pKey' )
             ->limit(5)
             ->offset(10);
+        $this->builder->setDbType( 'pgsql' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
         $this->assertEquals(
             'SELECT FOR UPDATE DISTINCT "colTest" AS "aliasAs" ' .
             'FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 ' .
-            'GROUP BY "grouped" ORDER BY "pKey" ASC',
+            'GROUP BY "grouped" ORDER BY "pKey" ASC LIMIT 5 OFFSET 10',
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }
