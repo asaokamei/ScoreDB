@@ -280,21 +280,6 @@ class Builder
     }
 
     /**
-     * TODO: This is NOT having clause. It is WRONG!!!
-     *
-     * @throws \LogicException
-     * @return string
-     */
-    protected function buildHaving()
-    {
-        if ( !$this->query->having ) return '';
-        throw new \LogicException( 'Having not implemented, yet!!!' );
-        /** @noinspection PhpUnreachableStatementInspection */
-        $having = $this->quote->map( $this->query->having );
-        return $this->query->having ? 'HAVING ' . implode( ', ', $having ) : '';
-    }
-
-    /**
      * @return string
      */
     protected function buildOrderBy()
@@ -367,13 +352,31 @@ class Builder
     protected function buildWhere()
     {
         $list = $this->query->getWhere();
+        $sql  = $this->buildCriteria( $list );
+        return $sql ? 'WHERE ' . $sql : '';
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildHaving()
+    {
+        if ( !$this->query->having ) return '';
+        $sql  = $this->buildCriteria( $this->query->having );
+        return $sql ? 'HAVING ' . $sql : '';
+    }
+
+    /**
+     * @param Where[] $list
+     * @return string
+     */
+    protected function buildCriteria( $list )
+    {
         $sql  = [ ];
         foreach ( $list as $criteria ) {
             $sql[ ] = $criteria->build( $this->bind, $this->quote );
         }
-        $sql = implode( ' AND ', $sql );
-        return $sql ? 'WHERE ' . $sql : '';
+        return implode( ' AND ', $sql );
     }
-
     // +----------------------------------------------------------------------+
 }

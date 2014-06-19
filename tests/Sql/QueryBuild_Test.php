@@ -173,7 +173,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function select_2()
+    function select_complex_case()
     {
         $this->query
             ->table( 'testTable' )
@@ -182,6 +182,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->distinct()
             ->column( 'colTest', 'aliasAs' )
             ->where( Where::column('name')->contain( 'bob' ) )
+            ->having( Where::column( Query::raw('COUNT(*)'))->gt(5) )
             ->group( 'grouped' )
             ->order( 'pKey' )
             ->limit(5)
@@ -192,7 +193,8 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'SELECT DISTINCT "colTest" AS "aliasAs" ' .
             'FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 ' .
-            'GROUP BY "grouped" ORDER BY "pKey" ASC LIMIT 5 OFFSET 10 FOR UPDATE',
+            'GROUP BY "grouped" HAVING COUNT(*) > :db_prep_2 ' .
+            'ORDER BY "pKey" ASC LIMIT 5 OFFSET 10 FOR UPDATE',
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }

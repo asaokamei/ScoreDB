@@ -200,7 +200,7 @@ class Query
     }
 
     /**
-     * @param string $having
+     * @param Where $having
      * @return $this
      */
     public function having( $having ) {
