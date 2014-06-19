@@ -12,16 +12,6 @@ require_once( dirname(__DIR__).'/autoloader.php');
 class QueryBuild_Test extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Bind
-     */
-    var $b;
-
-    /**
-     * @var Quote
-     */
-    var $q;
-
-    /**
      * @var Builder
      */
     var $builder;
@@ -33,10 +23,8 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     
     function setup()
     {
-        $this->b = new Bind();
-        $this->q = new Quote();
-        $this->builder = new Builder( $this->b, $this->q );
-        $this->query   = new Query( new Where(), $this->b );
+        $this->builder = new Builder( new Quote() );
+        $this->query   = new Query( new Where(), new Bind() );
         Bind::reset();
     }
     
@@ -46,8 +34,6 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
     
     function test0()
     {
-        $this->assertEquals( 'WScore\DbAccess\Sql\Bind', get_class( $this->b ) );
-        $this->assertEquals( 'WScore\DbAccess\Sql\Quote', get_class( $this->q ) );
         $this->assertEquals( 'WScore\DbAccess\Sql\Builder', get_class( $this->builder ) );
         $this->assertEquals( 'WScore\DbAccess\Sql\Query', get_class( $this->query ) );
     }
@@ -60,7 +46,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $value = $this->get();
         $this->query->table( 'testTable' )->value( 'testCol', $value );
         $sql = $this->builder->toInsert( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals( 'INSERT INTO "testTable" ( "testCol" ) VALUES ( :db_prep_1 )', $sql );
         $this->assertEquals( $value, $bind[':db_prep_1'] );
     }
@@ -77,7 +63,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $keyVal = $this->get();
         $this->query->table( 'testTable' )->value( $values )->where()->pKey->eq($keyVal);
         $sql = $this->builder->toUpdate( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
             'UPDATE "testTable" SET "testCol"=:db_prep_1, "moreCol"=:db_prep_2 WHERE "pKey" = :db_prep_3',
             $sql );
@@ -97,7 +83,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->where()->col('"my table".name')->like( 'bob' )->q()
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
             'SELECT "colTest" AS "aliasAs" FROM "testTable" ' .
             'WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC',
@@ -119,7 +105,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->where()->name->contain( 'bob' )->status->in($in)->q()
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
             'SELECT * FROM "testTable" ' .
             'WHERE "name" LIKE :db_prep_1 AND "status" IN ( :db_prep_2, :db_prep_3 ) ' .
@@ -139,7 +125,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->where()->value->between(123,345)->q()
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
             'SELECT * FROM "testTable" ' .
             'WHERE "value" BETWEEN :db_prep_1 AND :db_prep_2 ' .
@@ -167,7 +153,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->offset(10);
         $this->builder->setDbType( 'pgsql' );
         $sql = $this->builder->toSelect( $this->query );
-        $bind = $this->b->getBinding();
+        $bind = $this->query->bind()->getBinding();
         $this->assertEquals(
             'SELECT DISTINCT "colTest" AS "aliasAs" ' .
             'FROM "testTable" "aliasTable" WHERE "name" LIKE :db_prep_1 ' .
