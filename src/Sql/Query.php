@@ -6,7 +6,7 @@ class Query
     /**
      * @var Where[]
      */
-    protected $where = [];
+    protected $where = [ ];
 
     /**
      * design decision: bind is kept inside Query.
@@ -30,37 +30,37 @@ class Query
     /**
      * @var array            join for table
      */
-    public $join = [];
+    public $join = [ ];
 
     /**
      * @var string|array     columns to select in array or string
      */
-    public $columns = [];
+    public $columns = [ ];
 
     /**
      * @var array            values for insert/update in array
      */
-    public $values = [];
+    public $values = [ ];
 
     /**
      * @var string[]         such as distinct, for update, etc.
      */
-    public $selFlags = [];
+    public $selFlags = [ ];
 
     /**
      * @var array            order by. [ [ order, dir ], [].. ]
      */
-    public $order = [];
+    public $order = [ ];
 
     /**
      * @var string           group by. [ group, group2, ...]
      */
-    public $group = [];
+    public $group = [ ];
 
     /**
      * @var string
      */
-    public $having = [];
+    public $having = [ ];
 
     /**
      * @var int
@@ -89,16 +89,18 @@ class Query
 
     // +----------------------------------------------------------------------+
     /**
-     * @param Bind  $bind
+     * @param Bind $bind
      */
-    public function __construct( $bind ) {
-        $this->bind  = $bind;
+    public function __construct( $bind )
+    {
+        $this->bind = $bind;
     }
 
     /**
      * @return Bind
      */
-    public function bind() {
+    public function bind()
+    {
         return $this->bind;
     }
 
@@ -106,8 +108,9 @@ class Query
      * @param $value
      * @return callable
      */
-    public static function raw( $value ) {
-        return function() use( $value ) {
+    public static function raw( $value )
+    {
+        return function () use ( $value ) {
             return $value;
         };
     }
@@ -116,15 +119,17 @@ class Query
      * @param Where $where
      * @return Query
      */
-    public function where( $where ) {
-        $this->where[] = $where;
+    public function where( $where )
+    {
+        $this->where[ ] = $where;
         return $this;
     }
 
     /**
      * @return Where[]
      */
-    public function getWhere() {
+    public function getWhere()
+    {
         return $this->where;
     }
 
@@ -136,9 +141,10 @@ class Query
      * @param string $id_name
      * @return Query
      */
-    public function table( $table, $id_name=null ) {
+    public function table( $table, $id_name = null )
+    {
         $this->table   = $this->table = $table;
-        $this->id_name = $id_name ?: null;
+        $this->id_name = $id_name ? : null;
         return $this;
     }
 
@@ -146,7 +152,8 @@ class Query
      * @param $alias
      * @return $this
      */
-    public function alias( $alias ) {
+    public function alias( $alias )
+    {
         $this->tableAlias = $alias;
         return $this;
     }
@@ -156,25 +163,26 @@ class Query
      * @param null|string $as
      * @return Query
      */
-    public function column( $column, $as=null ) {
-        if( $as ) {
+    public function column( $column, $as = null )
+    {
+        if ( $as ) {
             $this->columns[ $as ] = $column;
         } else {
-            $this->columns[] = $column;
+            $this->columns[ ] = $column;
         }
         return $this;
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string|array $name
+     * @param string|null $value
      * @return $this
      */
-    public function value( $name, $value=null ) {
-        if( is_array( $name ) ) {
+    public function value( $name, $value = null )
+    {
+        if ( is_array( $name ) ) {
             $this->values = $name;
-        }
-        elseif( func_num_args() > 1 ) {
+        } elseif ( func_num_args() > 1 ) {
             $this->values[ $name ] = $value;
         }
         return $this;
@@ -185,8 +193,9 @@ class Query
      * @param string $sort
      * @return $this
      */
-    public function order( $order, $sort='ASC' ) {
-        $this->order[] = [ $order, $sort ];
+    public function order( $order, $sort = 'ASC' )
+    {
+        $this->order[ ] = [ $order, $sort ];
         return $this;
     }
 
@@ -194,8 +203,9 @@ class Query
      * @param string $group
      * @return $this
      */
-    public function group( $group ) {
-        $this->group[] = $group;
+    public function group( $group )
+    {
+        $this->group[ ] = $group;
         return $this;
     }
 
@@ -203,8 +213,9 @@ class Query
      * @param Where $having
      * @return $this
      */
-    public function having( $having ) {
-        $this->having[] = $having;
+    public function having( $having )
+    {
+        $this->having[ ] = $having;
         return $this;
     }
 
@@ -212,8 +223,9 @@ class Query
      * @param int $limit
      * @return $this
      */
-    public function limit( $limit ) {
-        $this->limit  = ( is_numeric( $limit ) ) ? $limit: null;
+    public function limit( $limit )
+    {
+        $this->limit = ( is_numeric( $limit ) ) ? $limit : null;
         return $this;
     }
 
@@ -221,8 +233,9 @@ class Query
      * @param int $offset
      * @return $this
      */
-    public function offset( $offset ) {
-        $this->offset = ( is_numeric( $offset ) ) ? $offset: 0;
+    public function offset( $offset )
+    {
+        $this->offset = ( is_numeric( $offset ) ) ? $offset : 0;
         return $this;
     }
 
@@ -230,7 +243,8 @@ class Query
      * creates SELECT DISTINCT statement.
      * @return Query
      */
-    public function distinct() {
+    public function distinct()
+    {
         return $this->flag( 'DISTINCT' );
     }
 
@@ -238,7 +252,8 @@ class Query
      * @param bool $for
      * @return Query
      */
-    public function forUpdate( $for=true ) {
+    public function forUpdate( $for = true )
+    {
         $this->forUpdate = $for;
         return $this;
     }
@@ -247,8 +262,9 @@ class Query
      * @param $flag
      * @return $this
      */
-    public function flag( $flag ) {
-        $this->selFlags[] = $flag;
+    public function flag( $flag )
+    {
+        $this->selFlags[ ] = $flag;
         return $this;
     }
 
@@ -256,7 +272,8 @@ class Query
      * @param string $return
      * @return $this
      */
-    public function returning( $return ) {
+    public function returning( $return )
+    {
         $this->returning = $return;
         return $this;
     }
