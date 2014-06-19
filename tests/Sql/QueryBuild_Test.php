@@ -96,7 +96,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             ->order( 'pKey' );
         $sql = $this->builder->toSelect( $this->query );
         $bind = $this->b->getBinding();
-        $this->assertEquals( 'SELECT "colTest" AS "aliasAs" FROM "testTable" WHERE "my table"."name" LIKE :db_prep_1 ORDER BY pKey ASC', $sql );
+        $this->assertEquals( 'SELECT "colTest" AS "aliasAs" FROM "testTable" WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC', $sql );
     }
 
     /**

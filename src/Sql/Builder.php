@@ -262,14 +262,23 @@ class Builder
      * @return string
      */
     protected function buildGroupBy() {
-        return $this->query->group ? 'GROUP BY '.implode( ', ', $this->query->group ) : '';
+        if( !$this->query->group ) return '';
+        $group = $this->quote->map( $this->query->group );
+        return $this->query->group ? 'GROUP BY '.implode( ', ', $group ) : '';
     }
 
     /**
+     * TODO: This is NOT having clause. It is WRONG!!!
+     *
+     * @throws \LogicException
      * @return string
      */
     protected function buildHaving() {
-        return $this->query->having ? 'HAVING '.implode( ', ', $this->query->having ) : '';
+        if( !$this->query->having ) return '';
+        throw new \LogicException( 'Having not implemented, yet!!!' );
+        /** @noinspection PhpUnreachableStatementInspection */
+        $having = $this->quote->map( $this->query->having );
+        return $this->query->having ? 'HAVING '.implode( ', ', $having ) : '';
     }
 
     /**
@@ -279,7 +288,7 @@ class Builder
         if( !$this->query->order ) return '';
         $sql = [];
         foreach( $this->query->order as $order ) {
-            $sql[] = $order[0]." ".$order[1];
+            $sql[] = $this->quote->quote($order[0])." ".$order[1];
         }
         return 'ORDER BY ' . implode( ', ', $sql );
     }
