@@ -62,8 +62,16 @@ class Quote_Test extends \PHPUnit_Framework_TestCase
      */
     function quote_split_as_and_space_and_period()
     {
-        $token = "test.more as quote";
-        $quoted = $this->q->quote($token);
+        $quoted = $this->q->quote("test more");
+        $this->assertEquals( '"test more"', $quoted );
+
+        $quoted = $this->q->quote("\"test more\".col");
+        $this->assertEquals( '"test more"."col"', $quoted );
+
+        $quoted = $this->q->quote("test.more as quote");
         $this->assertEquals( '"test"."more" as "quote"', $quoted );
+
+        $quoted = $this->q->quote("test.more AS quote");
+        $this->assertEquals( '"test"."more" AS "quote"', $quoted );
     }
 }

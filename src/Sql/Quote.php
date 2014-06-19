@@ -35,7 +35,7 @@ class Quote
      * @param array|string $separator
      * @return string
      */
-    public function quote( $name, $separator=[' as ', '.'] )
+    public function quote( $name, $separator=[' AS ', ' as ', '.'] )
     {
         if( !$name ) return $name;
         if( !$separator ) return $this->quoteString( $name );
