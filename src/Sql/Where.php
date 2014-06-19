@@ -177,7 +177,11 @@ class Where
 
             $val = $bind ? $bind->prepare( $val ) : $val;
         }
-        $col   = $quote ? $quote->quote( $col ) : $col;
+        if( is_string($col) ) {
+            $col = $quote ? $quote->quote( $col ) : $col;
+        } elseif( is_callable( $col ) ) {
+            $col = $col();
+        }
         $where = trim( "{$col} {$rel} {$val}" ) . ' ';
         return $where;
     }
