@@ -1,6 +1,8 @@
 <?php
 namespace tests\Sql;
 
+use WScore\DbAccess\Sql\Bind;
+use WScore\DbAccess\Sql\Quote;
 use WScore\DbAccess\Sql\Where;
 
 require_once( dirname( __DIR__ ) . '/autoloader.php' );
@@ -14,6 +16,7 @@ class Where_Test extends \PHPUnit_Framework_TestCase
 
     function setup()
     {
+        Bind::reset();
         $this->w = new Where();
     }
 
@@ -64,11 +67,16 @@ class Where_Test extends \PHPUnit_Framework_TestCase
             ->or()->set(
                 Where::column( 'test' )->eq( 'good' )->more->eq( 'bad' )
             );
-        $sql = $this->w->build();
+        $sql = $this->w->build( $bind=new Bind(), new Quote() );
         $this->assertEquals(
-            '( ( test = tested AND more = moreD ) OR ( test = good AND more = bad ) )',
+            '( ( "test" = :db_prep_1 AND "more" = :db_prep_2 ) OR ( "test" = :db_prep_3 AND "more" = :db_prep_4 ) )',
             $sql
         );
+        $bound = $bind->getBinding();
+        $this->assertEquals( 'tested', $bound[':db_prep_1'] );
+        $this->assertEquals( 'moreD', $bound[':db_prep_2'] );
+        $this->assertEquals( 'good', $bound[':db_prep_3'] );
+        $this->assertEquals( 'bad', $bound[':db_prep_4'] );
     }
 
     /**
@@ -83,10 +91,15 @@ class Where_Test extends \PHPUnit_Framework_TestCase
             ->set(
                 Where::column( 'test' )->eq( 'good' )->or()->more->eq( 'bad' )
             );
-        $sql = $this->w->build();
+        $sql = $this->w->build(  $bind=new Bind(), new Quote() );
         $this->assertEquals(
-            '( test = tested OR more = moreD ) AND ( test = good OR more = bad )',
+            '( "test" = :db_prep_1 OR "more" = :db_prep_2 ) AND ( "test" = :db_prep_3 OR "more" = :db_prep_4 )',
             $sql
         );
+        $bound = $bind->getBinding();
+        $this->assertEquals( 'tested', $bound[':db_prep_1'] );
+        $this->assertEquals( 'moreD', $bound[':db_prep_2'] );
+        $this->assertEquals( 'good', $bound[':db_prep_3'] );
+        $this->assertEquals( 'bad', $bound[':db_prep_4'] );
     }
 }
