@@ -122,10 +122,31 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $bind = $this->b->getBinding();
         $this->assertEquals(
             'SELECT * FROM "testTable" ' .
-            'WHERE "name" LIKE :db_prep_1 AND status IN ( :db_prep_2, :db_prep_3 ) ' .
+            'WHERE "name" LIKE :db_prep_1 AND "status" IN ( :db_prep_2, :db_prep_3 ) ' .
             'ORDER BY "pKey" ASC',
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
+    }
+
+
+    /**
+     * @test
+     */
+    function select_between()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->where()->value->between(123,345)->q()
+            ->order( 'pKey' );
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->b->getBinding();
+        $this->assertEquals(
+            'SELECT * FROM "testTable" ' .
+            'WHERE "value" BETWEEN :db_prep_1 AND :db_prep_2 ' .
+            'ORDER BY "pKey" ASC',
+            $sql );
+        $this->assertEquals( '123', $bind[':db_prep_1'] );
+        $this->assertEquals( '345', $bind[':db_prep_2'] );
     }
 
     /**

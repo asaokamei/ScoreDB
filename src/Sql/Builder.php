@@ -339,7 +339,8 @@ class Builder
     /**
      * @return string
      */
-    protected function buildWhere() {
+    protected function buildWhere()
+    {
         $criteria = $this->query->getWhere();
         return $this->buildCriteria( $criteria );
     }
@@ -381,10 +382,14 @@ class Builder
             $tmp = is_array( $val ) ? implode( ", ", $val ): "{$val}";
             $val = "( " . $tmp . " )";
         }
+        elseif( $rel == 'BETWEEN' ) {
+            $val = $this->bind->prepare( $val );
+            $val = "{$val[0]} AND {$val[1]}";
+        }
         else {
             $val = $this->bind->prepare( $val );
-            $col = $this->quote->quote($col);
         }
+        $col = $this->quote->quote($col);
         $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
         return $where;
     }
