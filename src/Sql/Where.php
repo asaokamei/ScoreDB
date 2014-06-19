@@ -14,11 +14,6 @@ namespace WScore\DbAccess\Sql;
 class Where
 {
     /**
-     * @var Query
-     */
-    protected $query;
-
-    /**
      * @var array
      */
     protected $where = array();
@@ -44,10 +39,11 @@ class Where
     public function __construct()
     {
     }
-    
+
     /**
      * @param $method
      * @param $args
+     * @throws \InvalidArgumentException
      * @return mixed
      */
     public function __call( $method, $args )
@@ -59,7 +55,7 @@ class Where
                 return $this->where( $this->column, $args[0], $this->methods[$method] );
             }
         }
-        return call_user_func_array( [$this->query, $method ], $args );
+        throw new \InvalidArgumentException('no such where relation: '.$method);
     }
 
     /**
@@ -179,18 +175,6 @@ class Where
     // +----------------------------------------------------------------------+
     //  where clause.
     // +----------------------------------------------------------------------+
-    /**
-     * @param string|array $val
-     * @return Where
-     */
-    public function id( $val )
-    {
-        if ( is_array( $val ) ) {
-            return $this->col( $this->query->id_name )->in( $val );
-        }
-        return $this->where( $this->query->id_name, $val, '=' );
-    }
-
     /**
      * @param $val
      * @return Where

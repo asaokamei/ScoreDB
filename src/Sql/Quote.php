@@ -37,6 +37,7 @@ class Quote
      */
     public function quote( $name, $separator=[' as ', '.'] )
     {
+        if( !$name ) return $name;
         if( !$separator ) return $this->quoteString( $name );
         if( !is_array( $separator ) ) $separator = array($separator);
         while( $sep = array_shift( $separator ) ) {
