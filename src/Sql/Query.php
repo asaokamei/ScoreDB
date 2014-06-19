@@ -117,6 +117,13 @@ class Query
         return $this->where;
     }
 
+    /**
+     * @return Where
+     */
+    public function getWhere() {
+        return $this->where;
+    }
+
     // +----------------------------------------------------------------------+
     //  Setting string, array, and data to build SQL statement.
     // +----------------------------------------------------------------------+

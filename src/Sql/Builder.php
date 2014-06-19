@@ -261,13 +261,6 @@ class Builder
     /**
      * @return string
      */
-    protected function buildWhere() {
-        return $this->query->where()->__toString();
-    }
-
-    /**
-     * @return string
-     */
     protected function buildGroupBy() {
         return $this->query->group ? 'GROUP BY '.implode( ', ', $this->query->group ) : '';
     }
@@ -330,6 +323,68 @@ class Builder
     protected function buildReturning() {
         return $this->query->returning ? 'RETURNING '.$this->query->returning:'';
     }
-    
+
+    // +----------------------------------------------------------------------+
+    //  builders for where clause.
+    // +----------------------------------------------------------------------+
+    /**
+     * @return string
+     */
+    protected function buildWhere() {
+        $criteria = $this->query->getWhere();
+        return $this->buildCriteria( $criteria );
+    }
+
+    /**
+     * @param Where $criteria
+     * @return string
+     */
+    public function buildCriteria( $criteria )
+    {
+        $where = $criteria->getCriteria();
+        $sql   = '';
+        foreach( $where as $w ) {
+            if( is_array( $w ) ) {
+                $sql .= $this->formWhere( $w['col'], $w['val'], $w['rel'], $w['op'] );
+            } elseif( is_string( $w ) ) {
+                $sql .= 'and ' .$w;
+            }
+        }
+        $sql = trim( $sql );
+        $sql = preg_replace( '/^(and|or) /i', '', $sql );
+        return $sql ? 'WHERE '.$sql : '';
+    }
+
+    /**
+     * @param string $col
+     * @param string $val
+     * @param string $rel
+     * @param string $op
+     * @return string
+     */
+    protected function formWhere( $col, $val, $rel='=', $op='AND' )
+    {
+        $where = '';
+        $rel = strtoupper( $rel );
+        if( $rel == 'IN' || $rel == 'NOT IN' ) {
+            $tmp = is_array( $val ) ? implode( ", ", $val ): "{$val}";
+            $val = "( " . $tmp . " )";
+        }
+        elseif( $col == '(' ) {
+            $val = $rel = '';
+        }
+        elseif( $col == ')' ) {
+            $op = $rel = $val = '';
+        }
+        elseif( "$val" == "" && "$rel" == "" ) {
+            return '';
+        }
+        else {
+            $col = $this->quote->quote($col);
+        }
+        $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
+        return $where;
+    }
+
     // +----------------------------------------------------------------------+
 }

@@ -9,17 +9,12 @@ class Where
     protected $bind;
 
     /**
-     * @var Quote
-     */
-    protected $quote;
-
-    /**
      * @var Query
      */
     protected $query;
 
     /**
-     * @var array|string
+     * @var array
      */
     protected $where = array();
 
@@ -32,11 +27,9 @@ class Where
     //  managing objects.
     // +----------------------------------------------------------------------+
     /**
-     * @param Quote $quote
      */
-    public function __construct( $quote )
+    public function __construct()
     {
-        $this->quote = $quote;
     }
     
     /**
@@ -64,54 +57,11 @@ class Where
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function __toString()
-    {
-        $where = '';
-        foreach( $this->where as $w ) {
-            if( is_array( $w ) ) {
-                $where .= $this->formWhere( $w['col'], $w['val'], $w['rel'], $w['op'] );
-            } elseif( is_string( $w ) ) {
-                $where .= 'and ' .$w;
-            }
-        }
-        $where = trim( $where );
-        $where = preg_replace( '/^(and|or) /i', '', $where );
-        return $where ? 'WHERE '.$where : '';
+    public function getCriteria() {
+        return $this->where;
     }
-
-    /**
-     * @param string $col
-     * @param string $val
-     * @param string $rel
-     * @param string $op
-     * @return string
-     */
-    protected function formWhere( $col, $val, $rel='=', $op='AND' )
-    {
-        $where = '';
-        $rel = strtoupper( $rel );
-        if( $rel == 'IN' || $rel == 'NOT IN' ) {
-            $tmp = is_array( $val ) ? implode( ", ", $val ): "{$val}";
-            $val = "( " . $tmp . " )";
-        }
-        elseif( $col == '(' ) {
-            $val = $rel = '';
-        }
-        elseif( $col == ')' ) {
-            $op = $rel = $val = '';
-        }
-        elseif( "$val" == "" && "$rel" == "" ) {
-            return '';
-        }
-        else {
-            $col = $this->quote->quote($col);
-        }
-        $where .= trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
-        return $where;
-    }
-
     // +----------------------------------------------------------------------+
     //  setting columns.
     // +----------------------------------------------------------------------+
