@@ -49,6 +49,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $bind = $this->query->bind()->getBinding();
         $this->assertEquals( 'INSERT INTO "testTable" ( "testCol" ) VALUES ( :db_prep_1 )', $sql );
         $this->assertEquals( $value, $bind[':db_prep_1'] );
+        $this->assertEquals( 1, count( $bind ) );
     }
 
     /**
@@ -72,6 +73,25 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $keyVal, $bind[':db_prep_3'] );
         $this->assertEquals( $values['testCol'], $bind[':db_prep_1'] );
         $this->assertEquals( $values['moreCol'], $bind[':db_prep_2'] );
+        $this->assertEquals( 3, count( $bind ) );
+    }
+
+    /**
+     * @test
+     */
+    function delete()
+    {
+        $keyVal = $this->get();
+        $this->query->table( 'testTable' )->where(
+            Where::column('pKey')->eq($keyVal)
+        );
+        $sql = $this->builder->toDelete( $this->query );
+        $bind = $this->query->bind()->getBinding();
+        $this->assertEquals(
+            'DELETE "testTable" WHERE "pKey" = :db_prep_1',
+            $sql );
+        $this->assertEquals( $keyVal, $bind[':db_prep_1'] );
+        $this->assertEquals( 1, count( $bind ) );
     }
 
     /**
@@ -91,6 +111,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             'WHERE "my table"."name" LIKE :db_prep_1 ORDER BY "pKey" ASC',
             $sql );
         $this->assertEquals( 'bob', $bind[':db_prep_1'] );
+        $this->assertEquals( 1, count( $bind ) );
     }
 
     /**
@@ -114,6 +135,9 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             'ORDER BY "pKey" ASC',
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
+        $this->assertEquals( $in[0], $bind[':db_prep_2'] );
+        $this->assertEquals( $in[1], $bind[':db_prep_3'] );
+        $this->assertEquals( 3, count( $bind ) );
     }
 
     /**
@@ -134,6 +158,7 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             $sql );
         $this->assertEquals( '123', $bind[':db_prep_1'] );
         $this->assertEquals( '345', $bind[':db_prep_2'] );
+        $this->assertEquals( 2, count( $bind ) );
     }
 
     /**
