@@ -17,7 +17,7 @@ class Builder
      * @var Query
      */
     protected $query;
-    
+
     protected $select = [
         'flags',
         'column',
@@ -29,7 +29,7 @@ class Builder
         'having',
         'orderBy',
     ];
-    
+
     protected $insert = [
         'table',
         'insertCol',
@@ -51,7 +51,7 @@ class Builder
     //  construction
     // +----------------------------------------------------------------------+
     /**
-     * @param Quote  $quote
+     * @param Quote $quote
      */
     public function __construct( $quote )
     {
@@ -65,35 +65,36 @@ class Builder
      */
     public function setDbType( $db )
     {
-        if( $db == 'mysql' ) {
-            
-            $this->quote->setQuote('`');
-            $this->select[] = 'limitOffset';
-            $this->select[] = 'forUpdate';
-            $this->update[] = 'limit';
-            
-        } elseif( $db == 'pgsql' ) {
-            
-            $this->select[] = 'limit';
-            $this->select[] = 'offset';
-            $this->select[] = 'forUpdate';
-            $this->insert[] = 'returning';
-            $this->update[] = 'returning';
-            
-        } elseif( $db == 'sqlite' ) {
-            
+        if ( $db == 'mysql' ) {
+
+            $this->quote->setQuote( '`' );
+            $this->select[ ] = 'limitOffset';
+            $this->select[ ] = 'forUpdate';
+            $this->update[ ] = 'limit';
+
+        } elseif ( $db == 'pgsql' ) {
+
+            $this->select[ ] = 'limit';
+            $this->select[ ] = 'offset';
+            $this->select[ ] = 'forUpdate';
+            $this->insert[ ] = 'returning';
+            $this->update[ ] = 'returning';
+
+        } elseif ( $db == 'sqlite' ) {
+
         } else {
 
-            $this->select[] = 'limit';
-            $this->select[] = 'offset';
-            $this->select[] = 'forUpdate';
+            $this->select[ ] = 'limit';
+            $this->select[ ] = 'offset';
+            $this->select[ ] = 'forUpdate';
         }
     }
 
     /**
      * @param Query $query
      */
-    protected function setQuery( $query ) {
+    protected function setQuery( $query )
+    {
         $this->query = $query;
         $this->bind  = $query->bind();
     }
@@ -155,9 +156,9 @@ class Builder
     protected function buildByList( $list )
     {
         $statement = '';
-        foreach( $list as $item ) {
-            $method = 'build'.ucwords($item);
-            if( $sql = $this->$method() ) {
+        foreach ( $list as $item ) {
+            $method = 'build' . ucwords( $item );
+            if ( $sql = $this->$method() ) {
                 $statement .= ' ' . $sql;
             }
         }
@@ -167,76 +168,84 @@ class Builder
     /**
      * @return string
      */
-    protected function buildInsertCol() {
-        $keys = array_keys( $this->query->values );
-        $columns = [];
-        foreach( $keys as $col ) {
-            $columns[] = $this->quote->quote($col);
+    protected function buildInsertCol()
+    {
+        $keys    = array_keys( $this->query->values );
+        $columns = [ ];
+        foreach ( $keys as $col ) {
+            $columns[ ] = $this->quote->quote( $col );
         }
-        return '( '.implode( ', ', $columns ).' )';
+        return '( ' . implode( ', ', $columns ) . ' )';
     }
 
     /**
      * @return string
      */
-    protected function buildInsertVal() {
-        $columns = [];
-        foreach( $this->query->values as $col => $val ) {
+    protected function buildInsertVal()
+    {
+        $columns = [ ];
+        foreach ( $this->query->values as $col => $val ) {
             $val = $this->bind->prepare( $val, $col );
-            if( is_callable($val) ) {
-                $columns[] = $val();
+            if ( is_callable( $val ) ) {
+                $columns[ ] = $val();
             } else {
-                $columns[] = $val;
+                $columns[ ] = $val;
             }
         }
-        return 'VALUES ( '.implode( ', ', $columns ).' )';
+        return 'VALUES ( ' . implode( ', ', $columns ) . ' )';
     }
-    
-    protected function buildUpdateSet() {
-        $setter = [];
-        foreach( $this->query->values as $col => $val ) {
+
+    protected function buildUpdateSet()
+    {
+        $setter = [ ];
+        foreach ( $this->query->values as $col => $val ) {
             $val = $this->bind->prepare( $val, $col );
-            if( is_callable($val) ) {
+            if ( is_callable( $val ) ) {
                 $val = $val();
             }
-            $col = $this->quote->quote($col);
-            $setter[] = $this->quote->quote($col).'='.$val;
+            $col       = $this->quote->quote( $col );
+            $setter[ ] = $this->quote->quote( $col ) . '=' . $val;
         }
-        return 'SET '.implode( ', ', $setter );
+        return 'SET ' . implode( ', ', $setter );
     }
-    
+
     /**
      * @return string
      */
-    protected function buildFlags() {
+    protected function buildFlags()
+    {
         return $this->query->selFlags ? implode( ' ', $this->query->selFlags ) : '';
     }
-    
+
     /**
      * @return string
      */
-    protected function buildTable() {
+    protected function buildTable()
+    {
         return $this->quote->quote( $this->query->table );
     }
 
     /**
      * @return string
      */
-    protected function buildFrom() {
-        return 'FROM '.$this->quote->quote( $this->query->table );
+    protected function buildFrom()
+    {
+        return 'FROM ' . $this->quote->quote( $this->query->table );
     }
 
     /**
      * @return string
      */
-    protected function buildTableAlias() {
+    protected function buildTableAlias()
+    {
         return $this->query->tableAlias ? $this->quote->quote( $this->query->tableAlias ) : '';
     }
 
     /**
      * @return string
      */
-    protected function buildJoin() {
+    protected function buildJoin()
+    {
         return '';
     }
 
@@ -244,17 +253,18 @@ class Builder
      * @throws \InvalidArgumentException
      * @return string
      */
-    protected function buildColumn() {
-        if( !$this->query->columns ) {
+    protected function buildColumn()
+    {
+        if ( !$this->query->columns ) {
             return '*';
         }
-        $columns = [];
-        foreach( $this->query->columns as $alias => $col ) {
-            $col = $this->quote->quote($col);
-            if( !is_numeric( $alias ) ) {
-                $col .= ' AS ' . $this->quote->quote($alias);
+        $columns = [ ];
+        foreach ( $this->query->columns as $alias => $col ) {
+            $col = $this->quote->quote( $col );
+            if ( !is_numeric( $alias ) ) {
+                $col .= ' AS ' . $this->quote->quote( $alias );
             }
-            $columns[] = $col;
+            $columns[ ] = $col;
         }
         return implode( ', ', $columns );
     }
@@ -262,10 +272,11 @@ class Builder
     /**
      * @return string
      */
-    protected function buildGroupBy() {
-        if( !$this->query->group ) return '';
+    protected function buildGroupBy()
+    {
+        if ( !$this->query->group ) return '';
         $group = $this->quote->map( $this->query->group );
-        return $this->query->group ? 'GROUP BY '.implode( ', ', $group ) : '';
+        return $this->query->group ? 'GROUP BY ' . implode( ', ', $group ) : '';
     }
 
     /**
@@ -274,22 +285,24 @@ class Builder
      * @throws \LogicException
      * @return string
      */
-    protected function buildHaving() {
-        if( !$this->query->having ) return '';
+    protected function buildHaving()
+    {
+        if ( !$this->query->having ) return '';
         throw new \LogicException( 'Having not implemented, yet!!!' );
         /** @noinspection PhpUnreachableStatementInspection */
         $having = $this->quote->map( $this->query->having );
-        return $this->query->having ? 'HAVING '.implode( ', ', $having ) : '';
+        return $this->query->having ? 'HAVING ' . implode( ', ', $having ) : '';
     }
 
     /**
      * @return string
      */
-    protected function buildOrderBy() {
-        if( !$this->query->order ) return '';
-        $sql = [];
-        foreach( $this->query->order as $order ) {
-            $sql[] = $this->quote->quote($order[0])." ".$order[1];
+    protected function buildOrderBy()
+    {
+        if ( !$this->query->order ) return '';
+        $sql = [ ];
+        foreach ( $this->query->order as $order ) {
+            $sql[ ] = $this->quote->quote( $order[ 0 ] ) . " " . $order[ 1 ];
         }
         return 'ORDER BY ' . implode( ', ', $sql );
     }
@@ -297,9 +310,10 @@ class Builder
     /**
      * @return string
      */
-    protected function buildLimit() {
-        if( is_numeric( $this->query->limit ) && $this->query->limit > 0 ) {
-            return "LIMIT ".$this->query->limit;
+    protected function buildLimit()
+    {
+        if ( is_numeric( $this->query->limit ) && $this->query->limit > 0 ) {
+            return "LIMIT " . $this->query->limit;
         }
         return '';
     }
@@ -307,9 +321,10 @@ class Builder
     /**
      * @return string
      */
-    protected function buildOffset() {
-        if( is_numeric( $this->query->offset ) && $this->query->offset > 0 ) {
-            return "OFFSET ".$this->query->offset;
+    protected function buildOffset()
+    {
+        if ( is_numeric( $this->query->offset ) && $this->query->offset > 0 ) {
+            return "OFFSET " . $this->query->offset;
         }
         return '';
     }
@@ -317,7 +332,8 @@ class Builder
     /**
      * @return string
      */
-    protected function buildLimitOffset() {
+    protected function buildLimitOffset()
+    {
         $sql = '';
         if ( $this->query->limit && $this->query->offset ) {
             $sql .= ' LIMIT ' . $this->query->offset . ' , ' . $this->query->limit;
@@ -330,12 +346,14 @@ class Builder
     /**
      * @return string
      */
-    protected function buildReturning() {
-        return $this->query->returning ? 'RETURNING '.$this->query->returning:'';
+    protected function buildReturning()
+    {
+        return $this->query->returning ? 'RETURNING ' . $this->query->returning : '';
     }
 
-    protected function buildForUpdate() {
-        if( $this->query->forUpdate ) {
+    protected function buildForUpdate()
+    {
+        if ( $this->query->forUpdate ) {
             return 'FOR UPDATE';
         }
         return '';
@@ -349,12 +367,12 @@ class Builder
     protected function buildWhere()
     {
         $list = $this->query->getWhere();
-        $sql  = [];
-        foreach( $list as $criteria ) {
-            $sql[] = $this->buildCriteria( $criteria );
+        $sql  = [ ];
+        foreach ( $list as $criteria ) {
+            $sql[ ] = $this->buildCriteria( $criteria );
         }
         $sql = implode( ' AND ', $sql );
-        return $sql ? 'WHERE '.$sql : '';
+        return $sql ? 'WHERE ' . $sql : '';
     }
 
     /**
@@ -365,11 +383,11 @@ class Builder
     {
         $where = $criteria->getCriteria();
         $sql   = '';
-        foreach( $where as $w ) {
-            if( is_array( $w ) ) {
-                $sql .= $this->formWhere( $w['col'], $w['val'], $w['rel'], $w['op'] );
-            } elseif( is_string( $w ) ) {
-                $sql .= 'and ' .$w;
+        foreach ( $where as $w ) {
+            if ( is_array( $w ) ) {
+                $sql .= $this->formWhere( $w[ 'col' ], $w[ 'val' ], $w[ 'rel' ], $w[ 'op' ] );
+            } elseif ( is_string( $w ) ) {
+                $sql .= 'and ' . $w;
             }
         }
         $sql = trim( $sql );
@@ -384,23 +402,21 @@ class Builder
      * @param string $op
      * @return string
      */
-    protected function formWhere( $col, $val, $rel, $op='AND' )
+    protected function formWhere( $col, $val, $rel, $op = 'AND' )
     {
-        if( !$rel ) return '';
+        if ( !$rel ) return '';
         $rel = strtoupper( $rel );
-        if( $rel == 'IN' || $rel == 'NOT IN' ) {
+        if ( $rel == 'IN' || $rel == 'NOT IN' ) {
             $val = $this->bind->prepare( $val );
-            $tmp = is_array( $val ) ? implode( ", ", $val ): "{$val}";
+            $tmp = is_array( $val ) ? implode( ", ", $val ) : "{$val}";
             $val = "( " . $tmp . " )";
-        }
-        elseif( $rel == 'BETWEEN' ) {
+        } elseif ( $rel == 'BETWEEN' ) {
             $val = $this->bind->prepare( $val );
             $val = "{$val[0]} AND {$val[1]}";
-        }
-        elseif( $val !== false ) {
+        } elseif ( $val !== false ) {
             $val = $this->bind->prepare( $val );
         }
-        $col = $this->quote->quote($col);
+        $col   = $this->quote->quote( $col );
         $where = trim( "{$op} {$col} {$rel} {$val}" ) . ' ';
         return $where;
     }
