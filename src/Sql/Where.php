@@ -71,19 +71,6 @@ class Where
      */
     public function where( $col, $val, $rel = '=' )
     {
-        return $this->whereRaw( $col, $val, $rel );
-    }
-
-    /**
-     * set where statement as is.
-     *
-     * @param        $col
-     * @param        $val
-     * @param string $rel
-     * @return Where
-     */
-    public function whereRaw( $col, $val, $rel = '=' )
-    {
         $where          = array( 'col' => $col, 'val' => $val, 'rel' => $rel, 'op' => 'AND' );
         $this->where[ ] = $where;
         return $this;
@@ -188,7 +175,7 @@ class Where
         if( !is_array($values ) ) {
             $values = func_get_args();
         }
-        return $this->whereRaw( $this->column, $values, 'IN' );
+        return $this->where( $this->column, $values, 'IN' );
     }
 
     /**
@@ -210,7 +197,7 @@ class Where
      */
     public function between( $val1, $val2 )
     {
-        return $this->whereRaw( $this->column, false, "BETWEEN $val1 and $val2" );
+        return $this->where( $this->column, [$val1, $val2], "BETWEEN" );
     }
 
     /**
@@ -218,7 +205,7 @@ class Where
      */
     public function isNull()
     {
-        return $this->whereRaw( $this->column, false, 'IS NULL' );
+        return $this->where( $this->column, false, 'IS NULL' );
     }
 
     /**
@@ -226,7 +213,7 @@ class Where
      */
     public function notNull()
     {
-        return $this->whereRaw( $this->column, false, 'IS NOT NULL' );
+        return $this->where( $this->column, false, 'IS NOT NULL' );
     }
 
     /**
