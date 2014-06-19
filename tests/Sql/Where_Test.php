@@ -82,6 +82,30 @@ class Where_Test extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    function and_or_and_using_setting_where()
+    {
+        $this->w
+            ->set(
+                Where::column( 'test' )->eq( 'tested' )->more->eq( 'moreD' )
+            )
+            ->set(
+                Where::column( 'test' )->eq( 'good' )->more->eq( 'bad' ), 'or'
+            );
+        $sql = $this->w->build( $bind=new Bind(), new Quote() );
+        $this->assertEquals(
+            '( "test" = :db_prep_1 AND "more" = :db_prep_2 ) OR ( "test" = :db_prep_3 AND "more" = :db_prep_4 )',
+            $sql
+        );
+        $bound = $bind->getBinding();
+        $this->assertEquals( 'tested', $bound[':db_prep_1'] );
+        $this->assertEquals( 'moreD', $bound[':db_prep_2'] );
+        $this->assertEquals( 'good', $bound[':db_prep_3'] );
+        $this->assertEquals( 'bad', $bound[':db_prep_4'] );
+    }
+
+    /**
+     * @test
+     */
     function or_and_or()
     {
         $this->w

@@ -124,7 +124,7 @@ class Where
         foreach ( $where as $w ) {
             if ( is_array( $w ) ) {
                 $op = isset( $w['op'] ) ? $w['op'] : 'and';
-                $sql .= $op . ' '. $this->formWhere( $bind, $quote, $w );
+                $sql .= strtoupper($op) . ' '. $this->formWhere( $bind, $quote, $w );
             } elseif ( is_string( $w ) ) {
                 $sql .= 'and ' . $w;
             }
@@ -195,11 +195,13 @@ class Where
      * @param string $col
      * @param string $val
      * @param string $rel
+     * @param null|string $op
      * @return Where
      */
-    public function where( $col, $val, $rel = '=' )
+    public function where( $col, $val, $rel = '=', $op=null )
     {
-        $where          = array( 'col' => $col, 'val' => $val, 'rel' => $rel, 'op' => $this->andOr );
+        if( !$op ) $op = $this->andOr;
+        $where          = array( 'col' => $col, 'val' => $val, 'rel' => $rel, 'op' => $op );
         $this->where[ ] = $where;
         return $this;
     }
@@ -226,16 +228,27 @@ class Where
      * set the where string as is.
      *
      * @param string|Where $where
+     * @param null|string  $andOr
      * @return Where
      */
-    public function set( $where )
+    public function set( $where, $andOr=null )
     {
         if( $where instanceof Where ) {
-            return $this->where( '', false, $where->parenthesis() );
+            if( $where->countCriteria() > 1 ) {
+                $where->parenthesis();
+            }
+            return $this->where( '', false, $where, $andOr );
         }
-        return $this->where( '', false, Query::raw($where) );
+        return $this->where( '', false, Query::raw($where), $andOr );
     }
 
+    /**
+     * @return int
+     */
+    public function countCriteria()
+    {
+        return count( $this->where );
+    }
     // +----------------------------------------------------------------------+
     //  where clause.
     // +----------------------------------------------------------------------+

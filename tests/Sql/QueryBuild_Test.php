@@ -223,4 +223,23 @@ class QueryBuild_Test extends \PHPUnit_Framework_TestCase
             $sql );
         $this->assertEquals( '%bob%', $bind[':db_prep_1'] );
     }
+
+    /**
+     * @test
+     */
+    function select_using_multiple_set_where()
+    {
+        $this->query
+            ->table( 'testTable' )
+            ->where( Where::column('value')->isNull() )
+            ->where( Where::column('value')->eq(''), 'or' );
+        $sql = $this->builder->toSelect( $this->query );
+        $bind = $this->query->bind()->getBinding();
+        $this->assertEquals(
+            'SELECT * FROM "testTable" ' .
+            'WHERE "value" IS NULL OR "value" = :db_prep_1',
+            $sql );
+        $this->assertEquals( '', $bind[':db_prep_1'] );
+
+    }
 }

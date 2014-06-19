@@ -336,6 +336,9 @@ class Builder
         return $this->query->returning ? 'RETURNING ' . $this->query->returning : '';
     }
 
+    /**
+     * @return string
+     */
     protected function buildForUpdate()
     {
         if ( $this->query->forUpdate ) {
@@ -351,8 +354,8 @@ class Builder
      */
     protected function buildWhere()
     {
-        $list = $this->query->getWhere();
-        $sql  = $this->buildCriteria( $list );
+        $criteria = $this->query->getWhere();
+        $sql  = $criteria->build( $this->bind, $this->quote );
         return $sql ? 'WHERE ' . $sql : '';
     }
 
@@ -362,21 +365,9 @@ class Builder
     protected function buildHaving()
     {
         if ( !$this->query->having ) return '';
-        $sql  = $this->buildCriteria( $this->query->having );
+        $criteria = $this->query->having;
+        $sql  = $criteria->build( $this->bind, $this->quote );
         return $sql ? 'HAVING ' . $sql : '';
-    }
-
-    /**
-     * @param Where[] $list
-     * @return string
-     */
-    protected function buildCriteria( $list )
-    {
-        $sql  = [ ];
-        foreach ( $list as $criteria ) {
-            $sql[ ] = $criteria->build( $this->bind, $this->quote );
-        }
-        return implode( ' AND ', $sql );
     }
     // +----------------------------------------------------------------------+
 }

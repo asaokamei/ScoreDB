@@ -4,9 +4,9 @@ namespace WScore\DbAccess\Sql;
 class Query
 {
     /**
-     * @var Where[]
+     * @var Where
      */
-    protected $where = [ ];
+    protected $where;
 
     /**
      * design decision: bind is kept inside Query.
@@ -58,9 +58,9 @@ class Query
     public $group = [ ];
 
     /**
-     * @var string
+     * @var Where
      */
-    public $having = [ ];
+    public $having;
 
     /**
      * @var int
@@ -116,17 +116,22 @@ class Query
     }
 
     /**
-     * @param Where $where
+     * @param Where       $where
+     * @param string|null $andOr
      * @return Query
      */
-    public function where( $where )
+    public function where( $where, $andOr=null )
     {
-        $this->where[ ] = $where;
+        if( !$this->where ) {
+            $this->where = $where;
+        } else {
+            $this->where->set( $where, $andOr );
+        }
         return $this;
     }
 
     /**
-     * @return Where[]
+     * @return Where
      */
     public function getWhere()
     {
@@ -215,7 +220,7 @@ class Query
      */
     public function having( $having )
     {
-        $this->having[ ] = $having;
+        $this->having = $having;
         return $this;
     }
 
