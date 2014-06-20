@@ -46,32 +46,6 @@ $dba->beginTransaction();
 ```
 
 
-Query
------
-
-for select.
-
-```php
-$dba->query()->table('myTable')->where()->status->eq('1');
-$found = $dba->get();
-```
-
-for insert.
-
-```php
-$dba->query()->table('my')->values(['name'=>'bob',...]);
-$dba->insert();
-```
-
-for update.
-
-```php
-$dba->query()->table('my')->values(['name'=>'Bob',...])->where()->name->eq('bob');
-$dba->update();
-```
-
-mmm, UGLY!
-
 
 OLD OLD OLD
 ===========

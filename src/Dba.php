@@ -2,10 +2,8 @@
 namespace WScore\DbAccess;
 
 use Aura\Sql\ExtendedPdo;
-use WScore\DbAccess\Sql\Bind;
-use WScore\DbAccess\Sql\Builder;
-use WScore\DbAccess\Sql\Quote;
-use WScore\DbAccess\Sql\Where;
+use WScore\SqlBuilder\Factory;
+use WScore\SqlBuilder\Sql\Where;
 
 /**
  * Class Dba
@@ -21,62 +19,30 @@ class Dba
      */
     static $dba;
 
-    /**
-     * @return DbSql
-     */
-    public static function buildQuery()
+    protected static function getDba()
     {
-        return new DbSql( new Bind() );
+        if( !static::$dba ) {
+            static::$dba = new DbAccess();
+        }
+        return static::$dba;
     }
 
     /**
-     * @return Builder
-     */
-    public static function buildBuilder()
-    {
-        return new Builder( new Quote() );
-    }
-
-    /**
-     * @param $dsn
-     * @param $user
-     * @param $pass
-     * @param $option
-     * @param $attribute
+     * @param string $name
      * @return ExtendedPdo
      */
-    public static function buildPdo( $dsn, $user, $pass, $option, $attribute )
+    public static function db($name=null)
     {
-        return new ExtendedPdo( $dsn, $user, $pass, $option, $attribute );
+        static::getDba()->connect($name);
     }
 
     /**
-     * @return Where
+     * @param string $name
+     * @return ExtendedPdo
      */
-    public static function buildWhere()
+    public static function dbWrite($name=null)
     {
-        return new Where();
-    }
-
-    /**
-     * @param $column
-     * @return Where
-     */
-    public static function where( $column )
-    {
-        $where = static::buildWhere();
-        $where->col( $column );
-        return $where;
-    }
-
-    /**
-     * @return DbAccess
-     */
-    public static function db()
-    {
-        if( static::$dba ) return static::$dba;
-        static::$dba = new DbAccess();
-        return static::$dba;
+        static::getDba()->connectWrite($name);
     }
 
     /**
@@ -85,18 +51,19 @@ class Dba
      */
     public static function config( $name, $config=null )
     {
-        $dba = static::db();
-        $dba->config( $name, $config );
+        static::getDba()->config( $name, $config );
     }
 
     /**
-     * @param string      $table
-     * @param string|null $alias
-     * @return \PdoStatement|DbSql
+     * @param string $table
+     * @param string $key
+     * @param string $alias
+     * @return DbSql
      */
-    public static function query( $table, $alias=null )
+    public static function query( $table, $key=null, $alias=null )
     {
-        $dba = static::db();
-        return $dba->query( $table, $alias );
+        $query = new DbSql();
+        $query->table( $table, $alias )->setKeyName( $key );
+        return $query;
     }
 }
