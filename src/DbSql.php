@@ -42,7 +42,10 @@ class DbSql extends Sql implements \IteratorAggregate
     public function select($limit=null)
     {
         if( $limit ) $this->limit($limit);
-        return $this->performRead( 'fetchAll' );
+        $this->hooks( 'selecting', $limit );
+        $data = $this->performRead( 'fetchAll' );
+        $data = $this->hooks( 'selected', $data );
+        return $data;
     }
 
     /**
@@ -52,10 +55,10 @@ class DbSql extends Sql implements \IteratorAggregate
     public function insert( $data=array() )
     {
         if( $data ) $this->value($data);
-        $data = $this->hooks( 'inserting' );
+        $this->hooks( 'inserting', $data );
         $this->performWrite( 'insert' );
         $id = $this->getLastId();
-        $this->hooks( 'inserted', $data );
+        $id = $this->hooks( 'inserted', $id );
         return $id;
     }
 
@@ -80,9 +83,9 @@ class DbSql extends Sql implements \IteratorAggregate
     public function update( $data=array() )
     {
         if( $data ) $this->value($data);
-        $this->hooks( 'updating' );
+        $this->hooks( 'updating', $data );
         $stmt = $this->performWrite( 'update' );
-        $this->hooks( 'updated' );
+        $stmt = $this->hooks( 'updated', $stmt );
         return $stmt;
     }
 
@@ -97,9 +100,9 @@ class DbSql extends Sql implements \IteratorAggregate
             $column ?: $column = $this->keyName;
             $this->$column->eq( $id );
         }
-        $this->hooks( 'deleting' );
+        $this->hooks( 'deleting', $id, $column );
         $stmt = $this->performWrite( 'delete' );
-        $this->hooks( 'deleted' );
+        $stmt = $this->hooks( 'deleted', $stmt );
         return $stmt;
     }
 
@@ -150,7 +153,7 @@ class DbSql extends Sql implements \IteratorAggregate
      * - selecting, selected, inserting, inserted,
      * - updating, updated, deleting, deleted,
      *
-     * @param string $event
+     * @param string       $event
      * @param mixed|null   $data
      * @return mixed|null
      */
