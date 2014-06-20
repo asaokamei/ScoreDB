@@ -4,36 +4,25 @@ namespace WScore\DbAccess;
 use Aura\Sql\ExtendedPdo;
 use PdoStatement;
 use Traversable;
-use WScore\SqlBuilder\Builder;
-use WScore\SqlBuilder\Query;
+use WScore\SqlBuilder\Builder\Builder;
+use WScore\SqlBuilder\Factory;
+use WScore\SqlBuilder\Sql\Sql;
 
-class DbSql extends Query implements \IteratorAggregate
+class DbSql extends Sql implements \IteratorAggregate
 {
     /**
-     * @var ExtendedPdo
+     * @var string
      */
-    protected $pdo;
+    protected $connectName = '';
 
     /**
-     * @var ExtendedPdo
+     * @param string $name
+     * @return $this
      */
-    protected $pdoWrite;
-
-    /**
-     * @var Builder
-     */
-    protected $builder;
-
-    /**
-     * @param ExtendedPdo $pdo
-     * @param Builder     $builder
-     * @param ExtendedPdo $pdoWrite
-     */
-    public function setup( $pdo, $builder, $pdoWrite=null )
+    public function connect( $name=null )
     {
-        $this->pdo = $pdo;
-        $this->builder = $builder;
-        $this->pdoWrite = $pdoWrite;
+        $this->connectName = $name;
+        return $this;
     }
 
     /**
@@ -43,9 +32,7 @@ class DbSql extends Query implements \IteratorAggregate
     public function select($limit=null)
     {
         if( $limit ) $this->limit($limit);
-        $sql  = $this->builder->toInsert( $this );
-        $bind = $this->bind()->getBinding();
-        return $this->pdo->fetchAll( $sql, $bind );
+        return $this->performRead( 'fetchAll' );
     }
 
     /**
@@ -55,9 +42,7 @@ class DbSql extends Query implements \IteratorAggregate
     public function insert( $data=array() )
     {
         if( $data ) $this->value($data);
-        $sql  = $this->builder->toInsert( $this );
-        $bind = $this->bind()->getBinding();
-        return $this->performWrite( $sql, $bind );
+        return $this->performWrite( 'insert' );
     }
 
     /**
@@ -67,9 +52,7 @@ class DbSql extends Query implements \IteratorAggregate
     public function update( $data=array() )
     {
         if( $data ) $this->value($data);
-        $sql  = $this->builder->toUpdate( $this );
-        $bind = $this->bind()->getBinding();
-        return $this->performWrite( $sql, $bind );
+        return $this->performWrite( 'update' );
     }
 
     /**
@@ -77,20 +60,44 @@ class DbSql extends Query implements \IteratorAggregate
      */
     public function delete()
     {
-        $sql  = $this->builder->toDelete( $this );
-        $bind = $this->bind()->getBinding();
-        return $this->performWrite( $sql, $bind );
+        return $this->performWrite( 'delete' );
     }
 
     /**
-     * @param string $sql
-     * @param array  $bind
+     * @param $method
+     * @return mixed
+     */
+    protected function performRead( $method )
+    {
+        $pdo     = Dba::db( $this->connectName );
+        $builder = $this->getBuilder( $pdo );
+        $sql     = $builder->toSelect( $this );
+        $bind    = $builder->getBind()->getBinding();
+        return $pdo->$method( $sql, $bind );
+    }
+
+    /**
+     * @param string $type
      * @return PDOStatement
      */
-    protected function performWrite( $sql, $bind )
+    protected function performWrite( $type )
     {
-        $pdo = $this->pdoWrite ?: $this->pdo;
+        $pdo     = Dba::dbWrite( $this->connectName );
+        $builder = $this->getBuilder( $pdo );
+        $toSql   = 'to' . ucwords($type);
+        $sql     = $builder->$toSql( $this );
+        $bind    = $builder->getBind()->getBinding();
         return $pdo->perform( $sql, $bind );
+    }
+
+    /**
+     * @param ExtendedPdo $pdo
+     * @return Builder
+     */
+    protected function getBuilder( $pdo )
+    {
+        $type    = $pdo->getAttribute( \PDO::ATTR_DRIVER_NAME );
+        return Factory::buildBuilder( $type );
     }
 
     /**
@@ -99,8 +106,6 @@ class DbSql extends Query implements \IteratorAggregate
      */
     public function getIterator()
     {
-        $sql  = $this->builder->toInsert( $this );
-        $bind = $this->bind()->getBinding();
-        return $this->pdo->perform( $sql, $bind );
+        return $this->performRead( 'perform' );
     }
 }
