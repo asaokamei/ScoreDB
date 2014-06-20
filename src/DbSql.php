@@ -2,10 +2,12 @@
 namespace WScore\DbAccess;
 
 use Aura\Sql\ExtendedPdo;
-use WScore\DbAccess\Sql\Builder;
-use WScore\DbAccess\Sql\Query;
+use PdoStatement;
+use Traversable;
+use WScore\SqlBuilder\Builder;
+use WScore\SqlBuilder\Query;
 
-class DbSql extends Query
+class DbSql extends Query implements \IteratorAggregate
 {
     /**
      * @var ExtendedPdo
@@ -48,7 +50,7 @@ class DbSql extends Query
 
     /**
      * @param array $data
-     * @return \PDOStatement
+     * @return PDOStatement
      */
     public function insert( $data=array() )
     {
@@ -60,7 +62,7 @@ class DbSql extends Query
 
     /**
      * @param array $data
-     * @return \PDOStatement
+     * @return PDOStatement
      */
     public function update( $data=array() )
     {
@@ -71,7 +73,7 @@ class DbSql extends Query
     }
 
     /**
-     * @return \PDOStatement
+     * @return PDOStatement
      */
     public function delete()
     {
@@ -83,11 +85,22 @@ class DbSql extends Query
     /**
      * @param string $sql
      * @param array  $bind
-     * @return \PDOStatement
+     * @return PDOStatement
      */
     protected function performWrite( $sql, $bind )
     {
         $pdo = $this->pdoWrite ?: $this->pdo;
         return $pdo->perform( $sql, $bind );
+    }
+
+    /**
+     * Retrieve an external iterator
+     * @return Traversable|PdoStatement
+     */
+    public function getIterator()
+    {
+        $sql  = $this->builder->toInsert( $this );
+        $bind = $this->bind()->getBinding();
+        return $this->pdo->perform( $sql, $bind );
     }
 }

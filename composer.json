@@ -11,12 +11,8 @@
     "require": {
         "aura/sql":"2.*",
         "psr/log": "~1.0",
-        "monolog/monolog":"1.5.x"
-    },
-    "require-dev": {
-        "aura/sqlquery":"2.0.x-dev",
-        "c9s/sqlbuilder": "*",
-        "illuminate/database": "dev-master"
+        "monolog/monolog":"1.5.x",
+        "wscore/sqlbuilder":"dev"
     },
     "autoload": {
         "psr-4": {
