@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class DbAccess implements \Serializable
+class xxxDbAccess implements \Serializable
 {
     /**
      * @Inject
