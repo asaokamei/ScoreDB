@@ -40,10 +40,12 @@ class DbAccess
             $name   = self::DEFAULT_KEY;
         }
         if( !isset( $this->configs[$name] )) {
-            $this->configs[$name] = new ConnectionLocator();
+            $this->configs[$name] = $this->buildConnectionLocator();
         }
-        if( strtolower( $this->get( $config, 'for' ) == 'write' ) ) {
-            $this->configs[$name]->setWrite(
+        if( $for = ucwords( $this->get( $config, 'for' ) ) ) {
+            
+            $for = 'set'.$for;
+            $this->configs[$name]->$for(
                 'db'.$this->counter++,
                 $this->buildPdo( $config )
             );
@@ -102,6 +104,14 @@ class DbAccess
             return new ExtendedPdo(
                 $dsn, $user, $pass, $option, $attribute );
         };
+    }
+
+    /**
+     * @return ConnectionLocator
+     */
+    protected function buildConnectionLocator()
+    {
+        return new ConnectionLocator();
     }
 
 }
