@@ -58,11 +58,11 @@ class Dba
      * @param string $table
      * @param string $key
      * @param string $alias
-     * @return DbSql
+     * @return Query
      */
     public static function query( $table, $key=null, $alias=null )
     {
-        $query = new DbSql();
+        $query = new Query();
         $query->table( $table, $alias )->setKeyName( $key );
         return $query;
     }

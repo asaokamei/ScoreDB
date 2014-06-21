@@ -8,7 +8,7 @@ use WScore\SqlBuilder\Builder\Builder;
 use WScore\SqlBuilder\Factory;
 use WScore\SqlBuilder\Sql\Sql;
 
-class DbSql extends Sql implements \IteratorAggregate
+class Query extends Sql implements \IteratorAggregate
 {
     /**
      * @var Hooks
