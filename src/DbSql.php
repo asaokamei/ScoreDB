@@ -26,14 +26,6 @@ class DbSql extends Sql implements \IteratorAggregate
     protected $returnLastId = true;
 
     /**
-     * @param Hooks $hook
-     */
-    public function setHook( $hook=null )
-    {
-        $this->hooks = $hook;
-    }
-    
-    /**
      * @param string $name
      * @return $this
      */
@@ -57,13 +49,27 @@ class DbSql extends Sql implements \IteratorAggregate
     }
 
     /**
+     * @param int    $id
+     * @param string $column
+     * @return array
+     */
+    public function load( $id, $column=null )
+    {
+        $id = $this->hooks->hook( 'loading', $id, $column );
+        $this->setId($id, $column);
+        $found = $this->select();
+        $found = $this->hooks->hook( 'loaded', $found );
+        return $found;
+    }
+
+    /**
      * @param array $data
      * @return int|bool
      */
     public function insert( $data=array() )
     {
+        $data = $this->hooks( 'inserting', $data );
         if( $data ) $this->value($data);
-        $this->hooks( 'inserting', $data );
         $this->performWrite( 'insert' );
         $id = $this->getLastId();
         $id = $this->hooks( 'inserted', $id );
@@ -85,22 +91,24 @@ class DbSql extends Sql implements \IteratorAggregate
     }
 
     /**
-     * @param null  $id
+     * @param        $id
+     * @param string $column
+     */
+    protected function setId( $id, $column=null )
+    {
+        if( !$id ) return;
+        $column = $column ?: $this->keyName;
+        $this->where( $this->$column->eq( $id ) );
+    }
+
+    /**
      * @param array $data
      * @return PDOStatement
      */
-    public function update( $id=null, $data=array() )
+    public function update( $data=array() )
     {
-        if( $column = $this->keyName ) {
-            if( is_array( $id ) ) {
-                $data = $id;
-                $id   = null;
-                $this->value($data);
-            } else {
-                $this->where( $this->$column->eq( $id ) )->value($data);
-            }
-        }
-        $this->hooks( 'updating', $id, $data );
+        $data = $this->hooks( 'updating', $data );
+        if( $data ) $this->value($data);
         $stmt = $this->performWrite( 'update' );
         $stmt = $this->hooks( 'updated', $stmt );
         return $stmt;
@@ -112,10 +120,8 @@ class DbSql extends Sql implements \IteratorAggregate
      */
     public function delete( $id=null )
     {
-        if( $id && $column = $this->keyName ) {
-            $this->where( $this->$column->eq( $id ) );
-        }
-        $this->hooks( 'deleting', $id );
+        $id = $this->hooks( 'deleting', $id );
+        $this->setId($id);
         $stmt = $this->performWrite( 'delete' );
         $stmt = $this->hooks( 'deleted', $stmt );
         return $stmt;
@@ -179,6 +185,15 @@ class DbSql extends Sql implements \IteratorAggregate
             $data = call_user_func_array( [$this->hooks, 'hook'], $args );
         }
         return $data;
+    }
+
+    /**
+     * @param Hooks $hook
+     */
+    public function setHook( $hook )
+    {
+        $this->hooks = $hook;
+        $this->hooks->setHook( $this );
     }
 
     // +----------------------------------------------------------------------+
