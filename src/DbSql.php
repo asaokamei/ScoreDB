@@ -11,9 +11,9 @@ use WScore\SqlBuilder\Sql\Sql;
 class DbSql extends Sql implements \IteratorAggregate
 {
     /**
-     * @var array
+     * @var Hooks
      */
-    protected $hooks = [];
+    protected $hooks;
     
     /**
      * @var string
@@ -25,6 +25,14 @@ class DbSql extends Sql implements \IteratorAggregate
      */
     protected $returnLastId = true;
 
+    /**
+     * @param Hooks $hook
+     */
+    public function setHook( $hook=null )
+    {
+        $this->hooks = $hook;
+    }
+    
     /**
      * @param string $name
      * @return $this
@@ -166,25 +174,11 @@ class DbSql extends Sql implements \IteratorAggregate
      */
     protected function hooks( $event, $data=null )
     {
-        $args = func_get_args();
-        array_shift($args);
-        foreach( $this->hooks as $hook ) {
-            if( method_exists( $hook, $method = 'on'.ucfirst($event).'Hook' ) ) {
-                call_user_func_array( [$hook, $method], $args );
-            }
-            if( method_exists( $hook, $method = 'on'.ucfirst($event).'Filter' ) ) {
-                $data = call_user_func_array( [$hook, $method], $args );
-            }
+        if( $this->hooks ) {
+            $args = func_get_args();
+            $data = call_user_func_array( [$this->hooks, 'hook'], $args );
         }
         return $data;
-    }
-
-    /**
-     * @param object $hook
-     */
-    public function setHook( $hook )
-    {
-        $this->hooks[] = $hook;
     }
 
     // +----------------------------------------------------------------------+
