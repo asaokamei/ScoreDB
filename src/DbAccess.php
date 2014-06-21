@@ -46,15 +46,18 @@ class DbAccess
         if( !isset( $this->configs[$name] )) {
             $this->configs[$name] = $this->buildConnectionLocator();
         }
+        if( !is_callable( $config ) ) {
+            $config = $this->buildPdo( $config );
+        }
         if( $for = ucwords( $this->get( $config, 'for' ) ) ) {
             
             $for = 'set'.$for;
             $this->configs[$name]->$for(
-                'db'.$this->counter++,
-                $this->buildPdo( $config )
+                'db'.$this->counter++, 
+                $config
             );
         } else {
-            $this->configs[$name]->setDefault( $this->buildPdo( $config ) );
+            $this->configs[$name]->setDefault( $config );
         }
     }
 
