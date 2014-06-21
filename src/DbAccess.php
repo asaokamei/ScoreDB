@@ -3,6 +3,7 @@ namespace WScore\DbAccess;
 
 use Aura\Sql\ConnectionLocator;
 use Aura\Sql\ExtendedPdo;
+use Aura\Sql\Profiler;
 use WScore\SqlBuilder\Factory;
 use WScore\SqlBuilder\Query;
 
@@ -30,6 +31,11 @@ class DbAccess
     protected $counter = 1;
 
     /**
+     * @var Profiler
+     */
+    protected $profiler;
+    
+    /**
      * @param string|array $name
      * @param array|null   $config
      */
@@ -55,6 +61,14 @@ class DbAccess
     }
 
     /**
+     * 
+     */
+    public function useProfile()
+    {
+        $this->profiler = $this->buildProfiler();
+    }
+
+    /**
      * @param $name
      * @return DbAccess
      */
@@ -62,8 +76,9 @@ class DbAccess
     {
         if( !$name ) $name = self::DEFAULT_KEY;
         $locator = $this->configs[ $name ];
-        $locator->getRead( $name );
-        return $this;
+        $pdo = $locator->getRead( $name );
+        if( $this->profiler ) $pdo->setProfiler( $this->profiler );
+        return $pdo;
     }
 
     /**
@@ -74,8 +89,9 @@ class DbAccess
     {
         if( !$name ) $name = self::DEFAULT_KEY;
         $locator = $this->configs[ $name ];
-        $locator->getWrite( $name );
-        return $this;
+        $pdo = $locator->getWrite( $name );
+        if( $this->profiler ) $pdo->setProfiler( $this->profiler );
+        return $pdo;
     }
 
     /**
@@ -114,4 +130,11 @@ class DbAccess
         return new ConnectionLocator();
     }
 
+    /**
+     * @return Profiler
+     */
+    protected function buildProfiler()
+    {
+        return new Profiler();
+    }
 }
