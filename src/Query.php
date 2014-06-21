@@ -62,6 +62,11 @@ class Query extends Sql implements \IteratorAggregate
     }
 
     /**
+     * for paginate. 
+     * 
+     * $perPage is a default number of rows per page, but 
+     * does not override the $limit if already set. 
+     * 
      * @param int $page
      * @param int $perPage
      * @return $this
@@ -69,9 +74,18 @@ class Query extends Sql implements \IteratorAggregate
     public function page( $page, $perPage=20 )
     {
         $page = (int) ( $page > 0 ?: 1 );
-        $this->limit( $perPage );
+        if( !$this->limit ) {
+            $this->limit( $perPage );
+        }
         $this->offset( $perPage * ($page - 1) );
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit() {
+        return $this->limit;
     }
 
     /**
