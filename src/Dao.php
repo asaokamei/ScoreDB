@@ -3,7 +3,7 @@ namespace WScore\DbAccess;
 
 use DateTime;
 
-class Dao extends DbSql
+class Dao extends Query
 {
     /**
      * @var string
@@ -27,8 +27,8 @@ class Dao extends DbSql
      * @var array
      */
     protected $timeStamps = array(
-        'created_at' => 'created_at',
-        'updated_at' => 'updated_at',
+        'created_at' => ['created_at' => 'Y-m-d H:i:s' ],
+        'updated_at' => ['updated_at' => 'Y-m-d H:i:s' ],
     );
 
     /**
@@ -60,8 +60,12 @@ class Dao extends DbSql
      */
     public function onInsertingFilter( $data )
     {
-        if( $at = $this->timeStamps['created_at'] ) $data[ $at ] = $this->getNow();
-        if( $at = $this->timeStamps['updated_at'] ) $data[ $at ] = $this->getNow();
+        if( $at = $this->timeStamps['created_at'] ) {
+            $data = $this->onTimeStampFilter( $data, $at );
+        }
+        if( $at = $this->timeStamps['updated_at'] ) {
+            $data = $this->onTimeStampFilter( $data, $at );
+        }
         return $data;
     }
 
@@ -71,19 +75,30 @@ class Dao extends DbSql
      */
     public function onUpdatingFilter( $data )
     {
-        if( $at = $this->timeStamps['updated_at'] ) $data[ $at ] = $this->getNow();
+        if( $at = $this->timeStamps['updated_at'] ) {
+            $data = $this->onTimeStampFilter( $data, $at );
+        }
         return $data;
     }
 
     /**
-     * @return string
+     * @param array $data
+     * @param array $filters
+     * @return array
      */
-    protected function getNow()
+    protected function onTimeStampFilter( $data, $filters ) 
     {
         if( !$this->now ) $this->now = new DateTime();
-        return $this->now->format( $this->dateTimeFormat );
+        foreach( $filters as $column => $format ) {
+            if( is_numeric( $column ) ) {
+                $column = $format;
+                $format = 'Y-m-d H:i:s';
+            }
+            $data[ $column ] = $this->now->format( $format );
+        }
+        return $data;
     }
-    
+
     /**
      * @param $method
      * @param $args
