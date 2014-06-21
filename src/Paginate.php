@@ -53,18 +53,16 @@ class Paginate
     }
 
     /**
-     * @param null $pager
-     * @param null $perPage
-     * @param null $url
+     * @param $key
+     * @param $value
+     * @return $this
      */
-    public function setup( $pager=null, $perPage=null, $url=null )
+    public function set( $key, $value )
     {
-        if( $pager ) $this->pager = $pager;
-        if( $perPage ) $this->perPage = $perPage;
-        if( $url ) {
-            $this->currUri = $url;
-            $this->setSaveId();
+        if( isset( $this->$key ) ) {
+            $this->key = $value;
         }
+        return $this;
     }
 
     /**
@@ -146,7 +144,7 @@ class Paginate
 
 /*
 
-$pager = new Paginate()->setup( $url, 25 );
+$pager = new Paginate()->set( 'perPage', 25 );
 if( !$query = $pager->loadQuery() ) {
     $query = new Query;
     // ... prepare query...
