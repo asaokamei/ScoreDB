@@ -49,6 +49,19 @@ class DbSql extends Sql implements \IteratorAggregate
     }
 
     /**
+     * @return int
+     */
+    public function count()
+    {
+        $this->column( false ); // reset columns
+        $this->column( $this::raw( 'COUNT(*)'), 'count' );
+        $this->hooks( 'counting' );
+        $count = $this->performRead( 'fetchValue' );
+        $count = $this->hooks( 'counted', $count );
+        return $count;
+    }
+
+    /**
      * @param int    $id
      * @param string $column
      * @return array
