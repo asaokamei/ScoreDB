@@ -62,6 +62,19 @@ class Query extends Sql implements \IteratorAggregate
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
+     * @return $this
+     */
+    public function page( $page, $perPage=20 )
+    {
+        $page = (int) ( $page > 0 ?: 1 );
+        $this->limit( $perPage );
+        $this->offset( $perPage * ($page - 1) );
+        return $this;
+    }
+
+    /**
      * @param int    $id
      * @param string $column
      * @return array
