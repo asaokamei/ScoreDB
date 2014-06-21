@@ -66,18 +66,6 @@ class Paginate
     }
 
     /**
-     * @param Query $query
-     * @param int   $perPage
-     * @return $this
-     */
-    public function setQuery( $query, $perPage=20 )
-    {
-        $query->limit( $perPage );
-        $this->query = $query;
-        return $this;
-    }
-
-    /**
      * @param int $page
      * @return Query
      */
@@ -89,22 +77,61 @@ class Paginate
         
         $this->currPage = $page;
         /** @var Query $query */
-        $query = $this->session[$this->saveID];
-        $query->page( $page );
-        $this->perPage = $query->getLimit();
+        $this->query = $this->session[$this->saveID];
+        $this->queryPage( $page );
+        $this->perPage = $this->queryGetLimit();
         return $query;
     }
 
     /**
      * @param Query $query
+     * @return $this
      */
     public function saveQuery( $query )
     {
-        $query->limit( $this->perPage );
+        $this->query = $query;
+        $this->queryGetLimit( $this->perPage );
         $this->session[$this->saveID] = $query;
-        $this->total = $query->count();
+        return $this;
     }
 
+    /**
+     * @param int $page
+     */
+    protected function queryPage( $page )
+    {
+        $this->query->page( $page );
+    }
+
+    /**
+     * @return int
+     */
+    protected function queryGetLimit() 
+    {
+        return $this->query->getLimit();
+    }
+    
+    /**
+     * @return $this
+     */
+    public function countTotal() {
+        $this->total = $this->query->count();
+        return $this;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getTotal() {
+        return $this->total;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrPage() {
+        return $this->currPage;
+    }
     // +----------------------------------------------------------------------+
     //  preparing for pagination list
     // +----------------------------------------------------------------------+
@@ -115,8 +142,8 @@ class Paginate
     function getPages( $numLinks = 5 )
     {
         $pages = [
-            'found' => $this->total,
-            'curr_page' => $this->currPage,
+            'found' => $this->getTotal(),
+            'curr_page' => $this->getCurrPage(),
         ];
         $pages[ 'top_page'  ] = 1;
         $pages[ 'last_page' ] = $lastPage = $this->total ? 
@@ -150,6 +177,7 @@ if( !$query = $pager->loadQuery() ) {
     // ... prepare query...
 }
 $pager->saveQuery( $query );
+$pager->setTotal();
 $data = $query->select();
 $info = $pager->getPages();
  */
