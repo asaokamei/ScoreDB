@@ -16,11 +16,6 @@ class Dao extends Query
     protected $now;
 
     /**
-     * @var string      format for created/updated at stamps.
-     */
-    protected $dateTimeFormat = 'Y-m-d H:i:s';
-
-    /**
      * time stamps config.
      * [ type => [ column, format ], type => column ]
      *

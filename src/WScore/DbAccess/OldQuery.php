@@ -1,7 +1,7 @@
 <?php
 namespace WScore\DbAccess;
 
-class Query implements QueryInterface, \Serializable
+class OldQuery implements QueryInterface, \Serializable
 {
     // PdObject for executing and fetching result from DB.
 
