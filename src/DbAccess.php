@@ -4,8 +4,6 @@ namespace WScore\DbAccess;
 use Aura\Sql\ConnectionLocator;
 use Aura\Sql\ExtendedPdo;
 use Aura\Sql\Profiler;
-use WScore\SqlBuilder\Factory;
-use WScore\SqlBuilder\Query;
 
 /**
  * Class DbAccess
