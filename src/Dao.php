@@ -108,25 +108,5 @@ class Dao extends Query
         }
         throw new \BadMethodCallException( 'no such method: '.$method );
     }
-
-    /**
-     * 
-     */
-    public function resetQuery()
-    {
-        $this->table     = $this->originalTable;
-        $this->where     = null;
-        $this->join      = [ ];
-        $this->columns   = [ ];
-        $this->values    = [ ];
-        $this->selFlags  = [ ];
-        $this->order     = [ ];
-        $this->group     = [ ];
-        $this->having    = null;
-        $this->limit     = null;
-        $this->offset    = 0;
-        $this->returning = null;
-        $this->forUpdate = false;
-    }
     
 }

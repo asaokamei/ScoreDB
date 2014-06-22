@@ -27,6 +27,26 @@ class Query extends Sql implements \IteratorAggregate
     protected $returnLastId = true;
 
     /**
+     *
+     */
+    public function resetQuery()
+    {
+        $this->table     = $this->originalTable;
+        $this->where     = null;
+        $this->join      = [ ];
+        $this->columns   = [ ];
+        $this->values    = [ ];
+        $this->selFlags  = [ ];
+        $this->order     = [ ];
+        $this->group     = [ ];
+        $this->having    = null;
+        $this->limit     = null;
+        $this->offset    = 0;
+        $this->returning = null;
+        $this->forUpdate = false;
+    }
+
+    /**
      * @param $column
      * @return Where
      */
@@ -188,7 +208,9 @@ class Query extends Sql implements \IteratorAggregate
         $builder = $this->getBuilder( $pdo );
         $sql     = $builder->toSelect( $this );
         $bind    = $builder->getBind()->getBinding();
-        return $pdo->$method( $sql, $bind );
+        $found   = $pdo->$method( $sql, $bind );
+        $this->resetQuery();
+        return $found;
     }
 
     /**
@@ -202,7 +224,9 @@ class Query extends Sql implements \IteratorAggregate
         $toSql   = 'to' . ucwords($type);
         $sql     = $builder->$toSql( $this );
         $bind    = $builder->getBind()->getBinding();
-        return $pdo->perform( $sql, $bind );
+        $found   = $pdo->perform( $sql, $bind );
+        $this->resetQuery();
+        return $found;
     }
 
     /**
