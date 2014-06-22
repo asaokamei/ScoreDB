@@ -7,6 +7,7 @@ use Traversable;
 use WScore\SqlBuilder\Builder\Builder;
 use WScore\SqlBuilder\Factory;
 use WScore\SqlBuilder\Sql\Sql;
+use WScore\SqlBuilder\Sql\Where;
 
 class Query extends Sql implements \IteratorAggregate
 {
@@ -24,6 +25,16 @@ class Query extends Sql implements \IteratorAggregate
      * @var bool
      */
     protected $returnLastId = true;
+
+    /**
+     * @param $column
+     * @return Where
+     */
+    public function __get( $column )
+    {
+        $where = new Where();
+        return $where->col( $column );
+    }
 
     /**
      * @param string $name
@@ -95,10 +106,10 @@ class Query extends Sql implements \IteratorAggregate
      */
     public function load( $id, $column=null )
     {
-        $id = $this->hooks->hook( 'loading', $id, $column );
+        $id = $this->hooks( 'loading', $id, $column );
         $this->setId($id, $column);
         $found = $this->select();
-        $found = $this->hooks->hook( 'loaded', $found );
+        $found = $this->hooks( 'loaded', $found );
         return $found;
     }
 

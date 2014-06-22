@@ -40,10 +40,18 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals( 'tests\DbAccess\Dao\User', get_class( $this->user ) );
     }
-    
-    function test_insert()
+
+    /**
+     * @test
+     */
+    function insert_data_and_select_it()
     {
         $user = $this->makeUserData();
         $id = $this->user->insert( $user );
+        $this->assertEquals( 1, $id );
+        
+        $found = $this->user->load( $id )[0];
+        $this->assertEquals( $user['name'], $found['name'] );
+        $this->assertEquals( $user['no_null'], $found['no_null'] );
     }
 }
