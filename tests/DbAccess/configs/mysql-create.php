@@ -8,6 +8,7 @@ return '
             age  int,
             bday date,
             no_null text NOT NULL,
+            open_date   date,
             created_at  datetime,
             updated_at  datetime,
             PRIMARY KEY (user_id)

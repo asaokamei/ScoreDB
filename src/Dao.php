@@ -13,7 +13,7 @@ class Dao extends Query
     /**
      * @var DateTime
      */
-    protected $now;
+    public static $now;
 
     /**
      * time stamps config.
@@ -83,13 +83,13 @@ class Dao extends Query
      */
     protected function onTimeStampFilter( $data, $filters ) 
     {
-        if( !$this->now ) $this->now = new DateTime();
+        if( !static::$now ) static::$now = new DateTime();
         foreach( $filters as $column => $format ) {
             if( is_numeric( $column ) ) {
                 $column = $format;
                 $format = 'Y-m-d H:i:s';
             }
-            $data[ $column ] = $this->now->format( $format );
+            $data[ $column ] = static::$now->format( $format );
         }
         return $data;
     }

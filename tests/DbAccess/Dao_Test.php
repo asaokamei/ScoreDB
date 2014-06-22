@@ -69,9 +69,26 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
         $id = $this->user->insert( $user );
         $this->assertEquals( 1, $id );
         
+        // check if the data is loaded.
         $found = $this->user->load( $id )[0];
         $this->assertEquals( $user['name'], $found['name'] );
         $this->assertEquals( $user['no_null'], $found['no_null'] );
+        
+        // is created and updated at filled?
+        $now = User::$now;
+        $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['created_at'] );
+        $this->assertEquals( $now->format('Y-m-d'), $found['open_date'] );
+        $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['updated_at'] );
+
+        $upTime = clone( $now );
+        User::$now = $upTime->add(new \DateInterval('P1D') );
+        $this->user->where( $this->user->user_id->eq($id) )->update( ['name'=>'updated'] );
+
+        $found = $this->user->load( $id )[0];
+        $this->assertEquals( 'updated', $found['name'] );
+        $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['created_at'] );
+        $this->assertEquals( $now->format('Y-m-d'), $found['open_date'] );
+        $this->assertEquals( $upTime->format('Y-m-d H:i:s'), $found['updated_at'] );
     }
 
     /**
