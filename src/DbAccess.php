@@ -35,11 +35,11 @@ class DbAccess
     
     /**
      * @param string|array $name
-     * @param array|null   $config
+     * @param array|callable|null   $config
      */
     public function config( $name, $config=null )
     {
-        if( is_array($name) ) {
+        if( is_array($name) || is_callable( $name ) ) {
             $config = $name;
             $name   = self::DEFAULT_KEY;
         }
@@ -76,6 +76,7 @@ class DbAccess
     public function connect( $name=null )
     {
         if( !$name ) $name = self::DEFAULT_KEY;
+        if( !isset( $this->configs[ $name ] ) ) return null;
         $locator = $this->configs[ $name ];
         $pdo = $locator->getRead( $name );
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );
@@ -89,6 +90,7 @@ class DbAccess
     public function connectWrite( $name=null )
     {
         if( !$name ) $name = self::DEFAULT_KEY;
+        if( !isset( $this->configs[ $name ] ) ) return null;
         $locator = $this->configs[ $name ];
         $pdo = $locator->getWrite( $name );
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );

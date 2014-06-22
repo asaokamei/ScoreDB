@@ -17,8 +17,11 @@ class Dba
     /**
      * @var DbAccess
      */
-    static $dba;
+    protected static $dba;
 
+    /**
+     * @return DbAccess
+     */
     protected static function getDba()
     {
         if( !static::$dba ) {
@@ -28,12 +31,20 @@ class Dba
     }
 
     /**
+     * 
+     */
+    public static function reset()
+    {
+        static::$dba = null;
+    }
+
+    /**
      * @param string $name
      * @return ExtendedPdo
      */
     public static function db($name=null)
     {
-        static::getDba()->connect($name);
+        return static::getDba()->connect($name);
     }
 
     /**
@@ -42,12 +53,12 @@ class Dba
      */
     public static function dbWrite($name=null)
     {
-        static::getDba()->connectWrite($name);
+        return static::getDba()->connectWrite($name);
     }
 
     /**
-     * @param string|array $name
-     * @param array|null   $config
+     * @param string|array|callable $name
+     * @param array|callable|null   $config
      */
     public static function config( $name, $config=null )
     {
