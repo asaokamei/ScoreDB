@@ -12,7 +12,7 @@
         >
     <testsuites>
         <testsuite name="WScore/DbAccess Test Suite">
-            <directory>./tests/Sql</directory>
+            <directory>./tests/DbAccess</directory>
         </testsuite>
     </testsuites>
 </phpunit>
