@@ -12,8 +12,14 @@
         "aura/sql":"2.*",
         "psr/log": "~1.0",
         "monolog/monolog":"1.5.x",
-        "wscore/sqlbuilder":"dev"
+        "wscore/sqlbuilder":"dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/asaokamei/WScore.SqlBuilder"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "WScore\\DbAccess\\": "src/"

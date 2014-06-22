@@ -12,6 +12,6 @@ else {
 require_once( VENDOR_DIRECTORY . 'autoload.php' );
 $loader = new \Composer\Autoload\ClassLoader();
 
-$loader->add( 'WSTest',   __DIR__ );
+$loader->addPsr4( 'tests\\',  __DIR__ );
 $loader->register();
 

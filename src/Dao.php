@@ -42,8 +42,8 @@ class Dao extends Query
                 $this->table = substr( $this->table, strrpos($this->table,'\\')+1 );
             }
         }
-        if( !$this->primaryKey ) {
-            $this->primaryKey = $this->table . '_id';
+        if( !$this->keyName ) {
+            $this->keyName = $this->table . '_id';
         }
         $this->originalTable = $this->table;
         $this->hooks( 'constructed' );

@@ -1,11 +1,13 @@
 <?php
 return '
         CREATE TABLE test_WScore (
-            id int NOT NULL AUTO_INCREMENT,
+            user_id int NOT NULL AUTO_INCREMENT,
             name CHAR(30),
             age  int,
-            bdate date,
+            bday date,
             no_null text NOT NULL,
-            PRIMARY KEY (id)
+            created_at  datetime,
+            updated_at  datetime,
+            PRIMARY KEY (user_id)
         );
         ';
