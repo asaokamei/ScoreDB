@@ -77,19 +77,63 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    function select()
+    function select_update_and_delete()
     {
         $this->saveUser(10);
         $d = $this->user;
+        // selecting gender is 1.
         $found = $d->where( $d->gender->eq(1) )->select();
         $this->assertEquals( 5, count( $found ) );
         foreach( $found as $user ) {
             $this->assertEquals( 1, $user['gender'] );
         }
+        // selecting status is 1.
         $found = $d->load( 1, 'status' );
         $this->assertEquals( 3, count( $found ) );
         foreach( $found as $user ) {
             $this->assertEquals( 1, $user['status'] );
         }
+        // updating status is 2.
+        $d->where( $d->status->eq(1) )->update( ['status' => 9 ] );
+        $found = $d->load( 1, 'status' );
+        $this->assertEquals( 0, count( $found ) );
+        $found = $d->load( 9, 'status' );
+        $this->assertEquals( 3, count( $found ) );
+        
+        // deleting one of status 9.
+        $id_to_del = $found[1]['user_id'];
+        $d->delete( $id_to_del );
+        $found = $d->load( 9, 'status' );
+        $this->assertEquals( 2, count( $found ) );
+    }
+
+    /**
+     * @test
+     */
+    function inserting_null_to_bday()
+    {
+        $user = $this->makeUserData();
+        $user['bday'] = null;
+        $id = $this->user->insert( $user );
+        $this->assertEquals( 1, $id );
+        $found = $this->user->load( $id )[0];
+        $this->assertEquals( $user['name'], $found['name'] );
+        $this->assertEquals( null, $found['bday'] );
+    }
+
+    /**
+     * @test
+     */
+    function count_returns_number_and_query_still_works()
+    {
+        $this->saveUser(10);
+        $d = $this->user;
+        $count = $d->where( $d->gender->eq(1) )->count();
+        $found = $d->select();
+        $this->assertEquals( $count, count( $found ) );
+        foreach( $found as $user ) {
+            $this->assertEquals( 1, $user['gender'] );
+        }
+
     }
 }

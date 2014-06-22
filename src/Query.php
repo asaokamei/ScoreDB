@@ -84,11 +84,13 @@ class Query extends Sql implements \IteratorAggregate
      */
     public function count()
     {
+        $origColumn = $this->columns;
         $this->column( false ); // reset columns
         $this->column( $this::raw( 'COUNT(*)'), 'count' );
         $this->hooks( 'counting' );
-        $count = $this->performRead( 'fetchValue' );
+        $count = $this->performRead( 'fetchValue', false );
         $count = $this->hooks( 'counted', $count );
+        $this->columns = $origColumn;
         return $count;
     }
 
@@ -199,17 +201,18 @@ class Query extends Sql implements \IteratorAggregate
     }
 
     /**
-     * @param $method
+     * @param      $method
+     * @param bool $reset
      * @return mixed
      */
-    protected function performRead( $method )
+    protected function performRead( $method, $reset=true )
     {
         $pdo     = Dba::db( $this->connectName );
         $builder = $this->getBuilder( $pdo );
         $sql     = $builder->toSelect( $this );
         $bind    = $builder->getBind()->getBinding();
         $found   = $pdo->$method( $sql, $bind );
-        $this->resetQuery();
+        if( $reset ) $this->resetQuery();
         return $found;
     }
 
