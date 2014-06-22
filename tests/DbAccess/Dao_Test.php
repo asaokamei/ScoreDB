@@ -175,8 +175,7 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
     function useIterator()
     {
         $this->saveUser(10);
-        $d = $this->user;
-        $d->status();
+        $d = $this->user->status();
         
         $count = 0;
         foreach( $d as $user ) {
@@ -184,5 +183,9 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
             $count++;
         }
         $this->assertEquals( 3, $count );
+
+        $d = $this->user->status();
+        $stmt = $d->getIterator();
+        $this->assertEquals( 'PDOStatement', get_class( $stmt ) );
     }
 }
