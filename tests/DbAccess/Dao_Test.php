@@ -151,6 +151,21 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
         foreach( $found as $user ) {
             $this->assertEquals( 1, $user['gender'] );
         }
+    }
 
+    /**
+     * @test
+     */
+    function scopeStatus_selects_by_status()
+    {
+        $this->saveUser(10);
+        $d = $this->user;
+
+        // selecting status is 1.
+        $found = $d->status()->select();
+        $this->assertEquals( 3, count( $found ) );
+        foreach( $found as $user ) {
+            $this->assertEquals( 1, $user['status'] );
+        }
     }
 }
