@@ -168,4 +168,21 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
             $this->assertEquals( 1, $user['status'] );
         }
     }
+
+    /**
+     * @test
+     */
+    function useIterator()
+    {
+        $this->saveUser(10);
+        $d = $this->user;
+        $d->status();
+        
+        $count = 0;
+        foreach( $d as $user ) {
+            $this->assertEquals( 1, $user['status'] );
+            $count++;
+        }
+        $this->assertEquals( 3, $count );
+    }
 }
