@@ -150,18 +150,27 @@ class Query extends Sql implements \IteratorAggregate
     }
 
     /**
+     * @param string $name
+     * @return int
+     */
+    public function lastId( $name=null )
+    {
+        $pdo = Dba::dbWrite( $this->connectName );
+        if ( $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME ) == 'pgsql' && !$name ) {
+            $name = implode( '_', [ $this->table, $this->keyName, 'seq' ] );
+        } else {
+            $name = null;
+        }
+        return $pdo->lastInsertId( $name );
+    }
+
+    /**
      * @return bool|int
      */
     protected function getLastId()
     {
         if( $this->returnLastId ) {
-            $pdo = Dba::dbWrite( $this->connectName );
-            if( $pdo->getAttribute(\Pdo::ATTR_DRIVER_NAME) == 'pgsql' ) {
-                $name = implode( '_', [ $this->table, $this->keyName, 'seq' ] );
-            } else {
-                $name = null;
-            }
-            return $pdo->lastInsertId( $name );
+            return $this->lastId();
         }
         return true;
     }
