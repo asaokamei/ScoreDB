@@ -1,8 +1,8 @@
 <?php
 return '
-        CREATE TABLE test_WScore (
+        CREATE TABLE dao_user (
             user_id int NOT NULL AUTO_INCREMENT,
-            name CHAR(30),
+            name VARCHAR(30),
             gender int,
             status int,
             age  int,

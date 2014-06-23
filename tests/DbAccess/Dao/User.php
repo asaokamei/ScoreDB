@@ -13,7 +13,7 @@ use WScore\DbAccess\Hooks;
  */
 class User extends Dao
 {
-    public $table = 'test_WScore';
+    public $table = 'dao_user';
     
     public $keyName = 'user_id';
     

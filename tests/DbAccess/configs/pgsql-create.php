@@ -1,11 +1,16 @@
 <?php
 return '
-        CREATE TABLE test_WScore (
-            id SERIAL,
-            name CHAR(30),
+        CREATE TABLE dao_user (
+            user_id SERIAL,
+            name VARCHAR(30),
+            gender int,
+            status int,
             age  int,
-            bdate date,
+            bday date,
             no_null text NOT NULL,
-            PRIMARY KEY (id)
+            open_date   date,
+            created_at  timestamp,
+            updated_at  timestamp,
+            PRIMARY KEY (user_id)
         );
         ';

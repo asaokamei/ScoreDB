@@ -12,7 +12,8 @@
         >
     <testsuites>
         <testsuite name="WScore/DbAccess Test Suite">
-            <directory>./tests/DbAccess</directory>
+            <directory>tests/DbAccess</directory>
+            <exclude>tests/DbAccess/Dao_DbType.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>
