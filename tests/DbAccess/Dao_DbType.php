@@ -12,6 +12,13 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
      */
     var $user;
 
+    static function setupBeforeClass()
+    {
+        class_exists( 'WScore\DbAccess\Dba' );
+        class_exists( 'WScore\DbAccess\DbAccess' );
+        Dba::reset();
+    }
+
     function setup()
     {
         throw new \Exception( 'WHAT?' );
