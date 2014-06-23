@@ -50,6 +50,17 @@ class Dao extends Query
     }
 
     /**
+     * @return $this
+     */
+    public static function forge()
+    {
+        /** @var Dao $self */
+        $self = new static();
+        $self->setHook( new Hooks() );
+        return $self;
+    }
+
+    /**
      * @param array $data
      * @return array
      */

@@ -28,16 +28,6 @@ class User extends Dao
     ];
 
     /**
-     * @return User
-     */
-    public static function forge()
-    {
-        $self = new self();
-        $self->setHook( new Hooks() );
-        return $self;
-    }
-
-    /**
      * @param int $status
      */
     public function scopeStatus($status=1)
