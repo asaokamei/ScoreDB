@@ -144,7 +144,7 @@ class Query extends Sql implements \IteratorAggregate
         $data = $this->hooks( 'inserting', $data );
         if( $data ) $this->value($data);
         $this->performWrite( 'insert' );
-        $id = $this->getLastId();
+        $id = ( $this->returnLastId ) ? $this->lastId() : true;
         $id = $this->hooks( 'inserted', $id );
         return $id;
     }
@@ -162,17 +162,6 @@ class Query extends Sql implements \IteratorAggregate
             $name = null;
         }
         return $pdo->lastInsertId( $name );
-    }
-
-    /**
-     * @return bool|int
-     */
-    protected function getLastId()
-    {
-        if( $this->returnLastId ) {
-            return $this->lastId();
-        }
-        return true;
     }
 
     /**
