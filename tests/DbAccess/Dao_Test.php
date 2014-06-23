@@ -2,6 +2,7 @@
 namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\DaoClean;
+use WScore\DbAccess\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
@@ -18,5 +19,25 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'DaoClean_id',$dao->keyName );
     }
 
+    /**
+     * @test
+     */
+    function Hook_onDaoClean_fires_events()
+    {
+        $dao = new DaoClean();
+        $hook = new Hooks();
+        $hook->setHook( $dao );
+
+        $this->assertEquals( false, $dao->tested );
+        $this->assertEquals( false, $dao->filtered );
+
+        $hook->hook( 'test' );
+        $this->assertEquals( true, $dao->tested );
+        $this->assertEquals( false, $dao->filtered );
+
+        $hook->hook( 'more' );
+        $this->assertEquals( true, $dao->tested );
+        $this->assertEquals( true, $dao->filtered );
+    }
 
 }
