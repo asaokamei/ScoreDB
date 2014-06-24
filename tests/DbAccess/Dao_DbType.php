@@ -183,4 +183,27 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $stmt = $d->getIterator();
         $this->assertEquals( 'PDOStatement', get_class( $stmt ) );
     }
+
+    /**
+     * @test
+     */
+    function update_using_magic_set()
+    {
+        $this->saveUser(10);
+        $d = $this->user;
+        // selecting gender is 1.
+        $found = $d->where( $d->gender->eq(1) )->select();
+        $this->assertEquals( 5, count( $found ) );
+        foreach( $found as $user ) {
+            $this->assertEquals( 1, $user['gender'] );
+        }
+        // updating status is 2.
+        $d->status = 9;
+        $d->where( $d->status->eq(1) )->update();
+        $found = $d->load( 1, 'status' );
+        $this->assertEquals( 0, count( $found ) );
+        $found = $d->load( 9, 'status' );
+        $this->assertEquals( 3, count( $found ) );
+    }
+
 }

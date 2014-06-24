@@ -15,8 +15,8 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
     {
         $dao = new DaoClean();
         $this->assertEquals( 'tests\DbAccess\Dao\DaoClean', get_class( $dao ) );
-        $this->assertEquals( 'DaoClean',$dao->table );
-        $this->assertEquals( 'DaoClean_id',$dao->keyName );
+        $this->assertEquals( 'DaoClean',$dao->magicGet('table') );
+        $this->assertEquals( 'DaoClean_id',$dao->magicGet('keyName') );
     }
 
     /**
