@@ -1,133 +1,247 @@
 WScore.DbAccess
 ===============
 
-A simple SQL query builder,
+A simple Database Access Manager and Data Access Object class.
 
-and a database connection manager for AuraPHP/Sql component.
+AuraPHP/Sql component is used for pdo access, and WScore/SqlBuilder
+ for sql manipulation.
 
 
+### license
 
-WISHES WISHES WISHES
-====================
+MIT License
 
-Database Access
----------------
+
+Sample Usage
+------------
 
 ### configuration
 
-configure the database connection. .
+Uses static Dba class as a gateway (aka facade) to database
+manager (DbAccess class).
+
+Use ```config()``` method to configure the db connection.
 
 ```php
 Dba::config( [
     'dsn'  => 'mysql:host=localhost;dbname=name;charset=utf',
     'user' => 'username',
     'pass' => 'password',
+    'option' => [],
+    'attribute' => []
 ] );
 ```
 
-for reading and writing,
+Please refer to Aura/Sql components for details of the each
+configuration.
+
+Specify ```for``` in the configuration to connect to different
+databases for reading and writing.
 
 ```php
 Dba::config( [
-    'dsn'  => 'mysql:host=localhost;dbname=name;charset=utf',
-    'user' => 'username',
-    'pass' => 'password',
+    'dsn'  => '...',
+] );
+Dba::config( [
+    'dsn'  => '...',
     'for'  => 'write',
 ] );
 ```
 
 ### get connection (i.e. Pdo)
 
-getting the connection.
+getting the Pdo object for db connection.
 
 ```php
 $pdo = Dba::db();
 $pdo2 = Dba::dbWrite();
 ```
 
-uses AuraPHP's ExtendedPdo and ConnectionLocator as default.
+returns the connection for reading if write connection is not set.
 
 
 ### get named connection
 
-get another connection with different configuration.
+Configure different database connection using names.
 
 ```php
 Dba::config( 'log', [
     'dsn' => 'mysql',...
 ] );
-// ...
+// then get PDO as:
 $pdo = Dba::db( 'log' );
 ```
+
+Data Access Object
+------------------
+
+### sample dao class
+
+```php
+/**
+ * @method User status( $status=1 )
+ */
+class User extends Dao
+{
+    protected $table = 'dao_user';
+    protected $keyName = 'user_id';
+    protected $timeStamps = [
+        'created_at' => [
+            'created_at',
+            'open_date' => 'Y-m-d'
+        ],
+        'updated_at' => [
+            'updated_at'
+        ],
+    ];
+
+    /**
+     * @param int $status
+     */
+    public function scopeActive() {
+        $this->where( $this->status->is( 1 ) );
+    }
+}
+```
+
+##### table name and primary key
+
+specify table name as ```class::$table```, and primary key
+name as ```class::$keyName```.
+
+If these are not set, class name is used as table name, and
+  ```tableName_id``` is used as key name.
+
+
+##### timestamps
+
+Use ```class::$timeStamps``` to indicate stamps:
+ ```created_at``` for at the creation of data,
+ and ```updated_at``` for updating and creation time.
+
+Specify the date format if different
+
+
+### accessing database
+
+Use $dao object just like a Query object in WScore.SqlBuilder.
+
+selecting:
+
+```php
+// list all users with status=1.
+$found = $user->where(
+    $user->status->is(1)
+)->select();
+```
+
+or use $dao object as an iterator.
+
+```php
+$users = User::forge();
+foreach( $users as $user ) {
+    echo $user->name;
+}
+```
+
+updating:
+
+```php
+// update active people to status=2.
+$user->active()->update('status'=>2);
+```
+
+inserting:
+
+```php
+$user->insert( [ 'name' => 'bob', 'status'=>0 ] );
+```
+
+
+
+Scopes and Events in Dao
+------------------------
+
+### scopes
+
+Scopes are functions starting with ```scope```. In the scope
+function, influence the query to get what is desired.
+
+```php
+$user = User::forge();
+// use $dao as iterator.
+foreach( $user->active() as $applied ) {
+    echo $applied->name;
+}
+```
+
+### hooks
+
+Hook methods starts with ```on```, event name,
+and end with ```Hook```.
+
+```php
+class User extends
+    public function on{EventName}Hook( $data ) {
+    }
+}
+```
+
+
+### filters
+
+Filter methods starts with ```on```, event name,
+and end with ```Filter```.
+
+Filters are for modifying the input or output;
+ make very sure that filters return what is given
+ (or modified value) or nothing will happen.
+
+```php
+class User extends
+    public function on{EventName}Filter( $data ) {
+        return $data;
+    }
+}
+```
+
+
+### hook objects
+
+The Dao class may become too large with lots of scopes
+ and event hooks. To simplify the dao class, these
+ methods can be transferred to another object (hook object)
+ using ```setHook()``` method, such as:
+
+```php
+// $hookObject has the events and scopes.
+$user->setHook( $hookObject );
+```
+
+### available events
+
+whenever accessing database, start with ```~ing```,
+and followed by ```~ed```.
+
+*   selecting, selected,
+*   loading, loaded,
+*   counting, counted,
+*   inserting, inserted,
+*   updating, updated,
+*   deleting, deleted,
+
+
+WISHES WISHES WISHES
+====================
+
 
 ### transaction
 
 for transaction, use the Pdo (ExtendedPdo)'s transaction method.
 
 ```php
-Dba::db()->beginTransaction();
-```
-
-Query
------
-
-please refer to the WScore.SqlBuilder's Query object.
-the API's are the same, but this Query connects to the
-database and performs the query, then returns the result.
-
-### getting query
-
-```php
-$query = Dba::query( 'myTable', 'my_key', 'aliased' )
-```
-
-get query connecting to another db.
-
-```php
-$query = Dba::query( 'myTable', 'my_key' )->connect('log');
-```
-
-### simple select statement
-
-```php
-$found = $query
-    ->table('myTable')
-    ->column('col1', 'col2')
-    ->where(
-        $query->status->eq('1')
-    )
-    ->select();
-```
-
-you alternatively use it in for loops.
-
-```php
-$query->table('myTable')->where( $query->status->eq('1') );
-foreach( $query as $data ) {
-    var_dump( $data );
-}
-```
-
-
-### simple insert statement
-
-```php
-$query
-    ->table('myTable')
-    ->insert( [ 'col1' => 'val1', 'col2'=>'val2' ] );
-```
-
-### simple update statement
-
-```php
-$query
-    ->table('myTable')
-    ->where(
-        $query->name->like('bob')->or()->status->eq('1')
-    )
-    ->update( [
-        'date' => Query::raw('NOW()'),
-        'col2'=>'val2'
-    ] );
+Dba::db()->transaction( function() {
+    // do database access.
+} );
 ```
 

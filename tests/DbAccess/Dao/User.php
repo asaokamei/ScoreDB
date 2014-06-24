@@ -13,9 +13,9 @@ use WScore\DbAccess\Hooks;
  */
 class User extends Dao
 {
-    public $table = 'dao_user';
-    
-    public $keyName = 'user_id';
+    protected $table = 'dao_user';
+
+    protected $keyName = 'user_id';
     
     protected $timeStamps = [
         'created_at' => [
