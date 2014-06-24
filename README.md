@@ -246,6 +246,12 @@ and followed by ```~ed```.
 *   updating, updated,
 *   deleting, deleted,
 
+hidden (or already used) events:
+
+*   createStamp, updateStamp:
+
+for adding timestamps to data when inserting or updating data.
+
 
 WISHES WISHES WISHES
 ====================

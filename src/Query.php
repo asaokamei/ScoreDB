@@ -133,6 +133,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     public function insert( $data=array() )
     {
         $this->setPdoAndDbType('write');
+        $data = $this->hooks( 'createStamp', $data );
         $data = $this->hooks( 'inserting', $data );
         $sql = parent::insert($data);
         $this->perform( $sql );
@@ -162,6 +163,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     public function update( $data=array() )
     {
         $this->setPdoAndDbType('write');
+        $data = $this->hooks( 'updateStamp', $data );
         $data = $this->hooks( 'updating', $data );
         $sql = parent::update($data);
         $stmt = $this->perform( $sql );

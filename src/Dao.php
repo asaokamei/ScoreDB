@@ -64,7 +64,7 @@ class Dao extends Query
      * @param array $data
      * @return array
      */
-    public function onInsertingFilter( $data )
+    public function onCreateStampFilter( $data )
     {
         if( $at = $this->timeStamps['created_at'] ) {
             $data = $this->onTimeStampFilter( $data, $at );
@@ -79,7 +79,7 @@ class Dao extends Query
      * @param array $data
      * @return array
      */
-    public function onUpdatingFilter( $data )
+    public function onUpdateStampFilter( $data )
     {
         if( $at = $this->timeStamps['updated_at'] ) {
             $data = $this->onTimeStampFilter( $data, $at );
