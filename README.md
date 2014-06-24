@@ -50,7 +50,8 @@ Dba::config( [
 
 ### get connection (i.e. Pdo)
 
-getting the Pdo object for db connection.
+getting the Pdo object for db connection. The ```ExtendedPdo```
+ in Aura/Sql is returned.
 
 ```php
 $pdo = Dba::db();
@@ -126,7 +127,7 @@ Specify the date format if different
 
 Use $dao object just like a Query object in WScore.SqlBuilder.
 
-selecting:
+##### selecting:
 
 ```php
 // list all users with status=1.
@@ -144,19 +145,34 @@ foreach( $users as $user ) {
 }
 ```
 
-updating:
+##### updating:
 
 ```php
 // update active people to status=2.
 $user->active()->update('status'=>2);
 ```
 
-inserting:
+or,
+
+```php
+$user->status = 2;
+$user->active()->update();
+```
+
+
+##### inserting:
 
 ```php
 $user->insert( [ 'name' => 'bob', 'status'=>0 ] );
 ```
 
+or,
+
+```php
+$user->name = 'bob';
+$user->status = 0;
+$user->insert();
+```
 
 
 Scopes and Events in Dao
