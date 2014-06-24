@@ -2,14 +2,13 @@
 namespace WScore\DbAccess;
 
 use Aura\Sql\ExtendedPdo;
+use IteratorAggregate;
 use PdoStatement;
 use Traversable;
-use WScore\SqlBuilder\Builder\Builder;
-use WScore\SqlBuilder\Factory;
 use WScore\SqlBuilder\QueryInterface;
-use WScore\SqlBuilder\Sql\Sql;
+use WScore\SqlBuilder\Query as SqlQuery;
 
-class Query extends Sql implements \IteratorAggregate, QueryInterface
+class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 {
     /**
      * @var Hooks
@@ -27,25 +26,13 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
     protected $returnLastId = true;
 
     /**
-     *
+     * @var ExtendedPdo
      */
-    public function resetQuery()
-    {
-        $this->table     = $this->originalTable;
-        $this->where     = null;
-        $this->join      = [ ];
-        $this->columns   = [ ];
-        $this->values    = [ ];
-        $this->selFlags  = [ ];
-        $this->order     = [ ];
-        $this->group     = [ ];
-        $this->having    = null;
-        $this->limit     = null;
-        $this->offset    = 0;
-        $this->returning = null;
-        $this->forUpdate = false;
-    }
+    protected $pdo;
 
+    // +----------------------------------------------------------------------+
+    //  managing database connection, etc.
+    // +----------------------------------------------------------------------+
     /**
      * @param string $name
      * @return $this
@@ -57,16 +44,58 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
     }
 
     /**
+     * @param string $type
+     */
+    protected function setPdoAndDbType( $type='' )
+    {
+        $method = 'db'.ucwords($type);
+        /** @var ExtendedPdo $pdo */
+        $this->pdo = $pdo = Dba::$method( $this->connectName );
+        $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
+    }
+
+    /**
+     * @param $sql
+     * @param string $method
+     * @return PDOStatement|array
+     */
+    protected function perform( $sql, $method='perform' )
+    {
+        $bind  = $this->getBind();
+        return $this->pdo->$method( $sql, $bind );
+    }
+
+    protected function performFetch( $sql, $method='fetchAll' )
+    {
+
+    }
+
+    // +----------------------------------------------------------------------+
+    //  execute sql.
+    // +----------------------------------------------------------------------+
+    /**
      * @param null|int $limit
      * @return array
      */
     public function select($limit=null)
     {
-        if( $limit ) $this->limit($limit);
+        $this->setPdoAndDbType();
+        $sql = parent::select($limit);
         $this->hooks( 'selecting', $limit );
-        $data = $this->performRead( 'fetchAll' );
+        $data = $this->perform( $sql, 'fetchAll' );
         $data = $this->hooks( 'selected', $data );
         return $data;
+    }
+
+    /**
+     * Retrieve an external iterator
+     * @return Traversable|PdoStatement
+     */
+    public function getIterator()
+    {
+        $this->setPdoAndDbType();
+        $sql = parent::select();
+        return $this->perform( $sql, 'perform' );
     }
 
     /**
@@ -74,41 +103,12 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function count()
     {
-        $origColumn = $this->columns;
-        $this->column( false ); // reset columns
-        $this->column( $this::raw( 'COUNT(*)'), 'count' );
+        $this->setPdoAndDbType();
         $this->hooks( 'counting' );
-        $count = $this->performRead( 'fetchValue', false );
+        $sql   = parent::count();
+        $count = $this->perform( $sql, 'fetchValue' );
         $count = $this->hooks( 'counted', $count );
-        $this->columns = $origColumn;
         return $count;
-    }
-
-    /**
-     * for paginate. 
-     * 
-     * $perPage is a default number of rows per page, but 
-     * does not override the $limit if already set. 
-     * 
-     * @param int $page
-     * @param int $perPage
-     * @return $this
-     */
-    public function page( $page, $perPage=20 )
-    {
-        $page = (int) ( $page > 0 ?: 1 );
-        if( !$this->limit ) {
-            $this->limit( $perPage );
-        }
-        $this->offset( $perPage * ($page - 1) );
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLimit() {
-        return $this->limit;
     }
 
     /**
@@ -118,11 +118,12 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function load( $id, $column=null )
     {
-        $id = $this->hooks( 'loading', $id, $column );
-        $this->setId($id, $column);
-        $found = $this->select();
-        $found = $this->hooks( 'loaded', $found );
-        return $found;
+        $this->setPdoAndDbType();
+        $id   = $this->hooks( 'loading', $id, $column );
+        $sql  = parent::load( $id, $column );
+        $data = $this->perform( $sql, 'fetchAll' );
+        $data = $this->hooks( 'loaded', $data );
+        return $data;
     }
 
     /**
@@ -131,9 +132,10 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function insert( $data=array() )
     {
+        $this->setPdoAndDbType('write');
         $data = $this->hooks( 'inserting', $data );
-        if( $data ) $this->value($data);
-        $this->performWrite( 'insert' );
+        $sql = parent::insert($data);
+        $this->perform( $sql );
         $id = ( $this->returnLastId ) ? $this->lastId() : true;
         $id = $this->hooks( 'inserted', $id );
         return $id;
@@ -145,24 +147,12 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function lastId( $name=null )
     {
-        $pdo = Dba::dbWrite( $this->connectName );
-        if ( $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME ) == 'pgsql' && !$name ) {
+        if ( $this->dbType == 'pgsql' && !$name ) {
             $name = implode( '_', [ $this->table, $this->keyName, 'seq' ] );
         } else {
             $name = null;
         }
-        return $pdo->lastInsertId( $name );
-    }
-
-    /**
-     * @param        $id
-     * @param string $column
-     */
-    protected function setId( $id, $column=null )
-    {
-        if( !$id ) return;
-        $column = $column ?: $this->keyName;
-        $this->where( $this->$column->eq( $id ) );
+        return $this->pdo->lastInsertId( $name );
     }
 
     /**
@@ -171,9 +161,10 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function update( $data=array() )
     {
+        $this->setPdoAndDbType('write');
         $data = $this->hooks( 'updating', $data );
-        if( $data ) $this->value($data);
-        $stmt = $this->performWrite( 'update' );
+        $sql = parent::update($data);
+        $stmt = $this->perform( $sql );
         $stmt = $this->hooks( 'updated', $stmt );
         return $stmt;
     }
@@ -184,53 +175,12 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
      */
     public function delete( $id=null )
     {
+        $this->setPdoAndDbType('write');
         $id = $this->hooks( 'deleting', $id );
-        $this->setId($id);
-        $stmt = $this->performWrite( 'delete' );
+        $sql = parent::delete($id);
+        $stmt = $this->perform( $sql );
         $stmt = $this->hooks( 'deleted', $stmt );
         return $stmt;
-    }
-
-    /**
-     * @param      $method
-     * @param bool $reset
-     * @return mixed
-     */
-    protected function performRead( $method, $reset=true )
-    {
-        $pdo     = Dba::db( $this->connectName );
-        $builder = $this->getBuilder( $pdo );
-        $sql     = $builder->toSelect( $this );
-        $bind    = $builder->getBind()->getBinding();
-        $found   = $pdo->$method( $sql, $bind );
-        if( $reset ) $this->resetQuery();
-        return $found;
-    }
-
-    /**
-     * @param string $type
-     * @return PDOStatement
-     */
-    protected function performWrite( $type )
-    {
-        $pdo     = Dba::dbWrite( $this->connectName );
-        $builder = $this->getBuilder( $pdo );
-        $toSql   = 'to' . ucwords($type);
-        $sql     = $builder->$toSql( $this );
-        $bind    = $builder->getBind()->getBinding();
-        $found   = $pdo->perform( $sql, $bind );
-        $this->resetQuery();
-        return $found;
-    }
-
-    /**
-     * @param ExtendedPdo $pdo
-     * @return Builder
-     */
-    protected function getBuilder( $pdo )
-    {
-        $type    = $pdo->getAttribute( \PDO::ATTR_DRIVER_NAME );
-        return Factory::buildBuilder( $type );
     }
 
     // +----------------------------------------------------------------------+
@@ -263,16 +213,6 @@ class Query extends Sql implements \IteratorAggregate, QueryInterface
     {
         $this->hooks = $hook;
         $this->hooks->setHook( $this );
-    }
-
-    // +----------------------------------------------------------------------+
-    /**
-     * Retrieve an external iterator
-     * @return Traversable|PdoStatement
-     */
-    public function getIterator()
-    {
-        return $this->performRead( 'perform' );
     }
 
     // +----------------------------------------------------------------------+

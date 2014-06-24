@@ -74,7 +74,7 @@ class Dba
     public static function query( $table, $key=null, $alias=null )
     {
         $query = new Query();
-        $query->table( $table, $alias )->setKeyName( $key );
+        $query->table( $table, $alias )->keyName( $key );
         return $query;
     }
 }
