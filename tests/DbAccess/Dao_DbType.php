@@ -206,4 +206,17 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 3, count( $found ) );
     }
 
+    /**
+     * @test
+     */
+    function limit_and_offset()
+    {
+        $this->saveUser(10);
+        $d = $this->user;
+        $d->order('user_id')->offset(3)->limit(2);
+        $found = $d->select();
+        $this->assertEquals( 2, count( $found ) );
+        $this->assertEquals( 4, $found[0]['user_id'] );
+        $this->assertEquals( 5, $found[1]['user_id'] );
+    }
 }
