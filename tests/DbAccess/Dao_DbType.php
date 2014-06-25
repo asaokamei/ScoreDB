@@ -220,4 +220,26 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 4, $found[0]['user_id'] );
         $this->assertEquals( 5, $found[1]['user_id'] );
     }
+
+    /**
+     * @test
+     */
+    function security()
+    {
+        $data = $this->makeUserData();
+        $data['no_null'] = 'any\' OR \'x\'=\'x';
+        $id = $this->user->insert( $data );
+        $saved = $this->user->load($id);
+        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+
+        $data['no_null'] = "t'' OR ''t''=''t'";
+        $id = $this->user->insert( $data );
+        $saved = $this->user->load($id);
+        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+
+        $data['no_null'] = "\'' OR 1=1 --";
+        $id = $this->user->insert( $data );
+        $saved = $this->user->load($id);
+        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+    }
 }
