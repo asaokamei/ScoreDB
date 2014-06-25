@@ -4,12 +4,23 @@ namespace WScore\DbAccess;
 use Aura\Sql\ExtendedPdo;
 use IteratorAggregate;
 use PdoStatement;
-use InvalidArgumentException;
 use Traversable;
-use WScore\SqlBuilder\Query as SqlQuery;
+use WScore\SqlBuilder\Builder\Builder;
+use WScore\SqlBuilder\Factory;
+use WScore\SqlBuilder\Sql\Sql;
 
-class Query extends SqlQuery implements IteratorAggregate
+class Query extends Sql implements IteratorAggregate
 {
+    /**
+     * @var Builder
+     */
+    protected $builder;
+
+    /**
+     * @var string
+     */
+    protected $dbType;
+
     /**
      * @var Hooks
      */
@@ -52,22 +63,97 @@ class Query extends SqlQuery implements IteratorAggregate
         /** @var ExtendedPdo $pdo */
         $this->pdo = $pdo = Dba::$method( $this->connectName );
         $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
+        $this->builder = Factory::buildBuilder( $this->dbType );
     }
 
     /**
-     * @param $sql
-     * @param string $method
-     * @return PDOStatement|array
+     * @param string $sqlType
+     * @return mixed
      */
-    protected function perform( $sql, $method='perform' )
+    protected function performWrite( $sqlType )
     {
-        $bind  = $this->getBind();
+        $this->setPdoAndDbType('write');
+        return $this->perform( 'perform', $sqlType );
+    }
+
+    /**
+     * @param string $method
+     * @return mixed
+     */
+    protected function performRead( $method='fetchAll' )
+    {
+        $this->setPdoAndDbType();
+        return $this->perform( $method, 'select' );
+    }
+
+    /**
+     * @param string $method
+     * @param string $sqlType
+     * @return mixed
+     */
+    protected function perform( $method, $sqlType )
+    {
+        $sqlType = 'to' . ucwords( $sqlType );
+        $sql = $this->builder->$sqlType( $this );
+        $bind  = $this->builder->getBind()->getBinding();
         return $this->pdo->$method( $sql, $bind );
     }
 
-    protected function performFetch( $sql, $method='fetchAll' )
+    /**
+     *
+     */
+    public function reset()
     {
+        $this->where     = null;
+        $this->join      = [ ];
+        $this->columns   = [ ];
+        $this->values    = [ ];
+        $this->selFlags  = [ ];
+        $this->order     = [ ];
+        $this->group     = [ ];
+        $this->having    = null;
+        $this->limit     = null;
+        $this->offset    = 0;
+        $this->returning = null;
+        $this->forUpdate = false;
+    }
 
+    /**
+     * for paginate.
+     *
+     * $perPage is a default number of rows per page, but
+     * does not override the $limit if already set.
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return $this
+     */
+    public function page( $page, $perPage=20 )
+    {
+        $page = (int) ( $page > 0 ?: 1 );
+        if( !$this->limit ) {
+            $this->limit( $perPage );
+        }
+        $this->offset( $perPage * ($page - 1) );
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit() {
+        return $this->limit;
+    }
+
+    /**
+     * @param        $id
+     * @param string $column
+     */
+    protected function setId( $id, $column=null )
+    {
+        if( !$id ) return;
+        $column = $column ?: $this->keyName;
+        $this->where( $this->$column->eq( $id ) );
     }
 
     // +----------------------------------------------------------------------+
@@ -79,11 +165,9 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function select($limit=null)
     {
-        $this->setPdoAndDbType();
-        $sql = parent::select($limit);
-        $this->hooks( 'selecting', $limit );
-        $data = $this->perform( $sql, 'fetchAll' );
-        $data = $this->hooks( 'selected', $data );
+        if( $limit ) $this->limit($limit);
+        $data = $this->performRead( 'fetchAll' );
+        $this->reset();
         return $data;
     }
 
@@ -93,9 +177,7 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function getIterator()
     {
-        $this->setPdoAndDbType();
-        $sql = parent::select();
-        return $this->perform( $sql, 'perform' );
+        return $this->performRead( 'perform' );
     }
 
     /**
@@ -103,11 +185,11 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function count()
     {
-        $this->setPdoAndDbType();
-        $this->hooks( 'counting' );
-        $sql   = parent::count();
-        $count = $this->perform( $sql, 'fetchValue' );
-        $count = $this->hooks( 'counted', $count );
+        $origColumn = $this->columns;
+        $this->column( false ); // reset columns
+        $this->column( $this::raw( 'COUNT(*)'), 'count' );
+        $count = $this->performRead( 'fetchValue' );
+        $this->columns = $origColumn;
         return $count;
     }
 
@@ -118,11 +200,9 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function load( $id, $column=null )
     {
-        $this->setPdoAndDbType();
-        $id   = $this->hooks( 'loading', $id, $column );
-        $sql  = parent::load( $id, $column );
-        $data = $this->perform( $sql, 'fetchAll' );
-        $data = $this->hooks( 'loaded', $data );
+        $this->setId($id, $column);
+        $data = $this->performRead( 'fetchAll' );
+        $this->reset();
         return $data;
     }
 
@@ -132,13 +212,10 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function insert( $data=array() )
     {
-        $this->setPdoAndDbType('write');
-        $data = $this->hooks( 'createStamp', $data );
-        $data = $this->hooks( 'inserting', $data );
-        $sql = parent::insert($data);
-        $this->perform( $sql );
+        if( $data ) $this->value($data);
+        $this->performWrite( 'insert' );
         $id = ( $this->returnLastId ) ? $this->lastId() : true;
-        $id = $this->hooks( 'inserted', $id );
+        $this->reset();
         return $id;
     }
 
@@ -162,12 +239,9 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function update( $data=array() )
     {
-        $this->setPdoAndDbType('write');
-        $data = $this->hooks( 'updateStamp', $data );
-        $data = $this->hooks( 'updating', $data );
-        $sql = parent::update($data);
-        $stmt = $this->perform( $sql );
-        $stmt = $this->hooks( 'updated', $stmt );
+        if( $data ) $this->value($data);
+        $stmt = $this->performWrite( 'update' );
+        $this->reset();
         return $stmt;
     }
 
@@ -178,62 +252,10 @@ class Query extends SqlQuery implements IteratorAggregate
      */
     public function delete( $id=null, $column=null )
     {
-        $this->setPdoAndDbType('write');
-        $id = $this->hooks( 'deleting', $id, $column );
-        $sql = parent::delete($id, $column);
-        $stmt = $this->perform( $sql );
-        $stmt = $this->hooks( 'deleted', $stmt );
+        $this->setId($id, $column);
+        $stmt = $this->performWrite( 'delete' );
+        $this->reset();
         return $stmt;
-    }
-
-    /**
-     * @param $data
-     * @throws InvalidArgumentException
-     * @return int|PdoStatement
-     */
-    public function save( $data )
-    {
-        $this->setPdoAndDbType('write');
-        $by   = $this->hooks( 'saveBy', $data );
-        if( !$by ) {
-            throw new InvalidArgumentException( 'save method not defined. ' );
-        }
-        $data = $this->hooks( 'saving', $data );
-        $stmt = $this->$by($data);
-        $stmt = $this->hooks( 'saved', $stmt );
-        return $stmt;
-    }
-
-    // +----------------------------------------------------------------------+
-    //  hooks
-    // +----------------------------------------------------------------------+
-    /**
-     * dumb hooks for various events. $data are all string.
-     * available events are:
-     * - constructing, constructed, newQuery,
-     * - selecting, selected, inserting, inserted,
-     * - updating, updated, deleting, deleted,
-     *
-     * @param string       $event
-     * @param mixed|null   $data
-     * @return mixed|null
-     */
-    protected function hooks( $event, $data=null )
-    {
-        if( $this->hooks ) {
-            $args = func_get_args();
-            $data = call_user_func_array( [$this->hooks, 'hook'], $args );
-        }
-        return $data;
-    }
-
-    /**
-     * @param Hooks $hook
-     */
-    public function setHook( $hook )
-    {
-        $this->hooks = $hook;
-        $this->hooks->setHook( $this );
     }
 
     // +----------------------------------------------------------------------+

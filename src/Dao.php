@@ -2,14 +2,11 @@
 namespace WScore\DbAccess;
 
 use DateTime;
+use InvalidArgumentException;
+use PDOStatement;
 
 class Dao extends Query
 {
-    /**
-     * @var string
-     */
-    protected $originalTable;
-
     /**
      * @var DateTime
      */
@@ -45,7 +42,6 @@ class Dao extends Query
         if( !$this->keyName ) {
             $this->keyName = $this->table . '_id';
         }
-        $this->originalTable = $this->table;
         $this->hooks( 'constructed' );
     }
 
@@ -119,5 +115,131 @@ class Dao extends Query
         }
         throw new \BadMethodCallException( 'no such method: '.$method );
     }
-    
+
+    // +----------------------------------------------------------------------+
+    //  execute sql.
+    // +----------------------------------------------------------------------+
+    /**
+     * @param null|int $limit
+     * @return array
+     */
+    public function select($limit=null)
+    {
+        $this->hooks( 'selecting', $limit );
+        $data = parent::select( $limit );
+        $data = $this->hooks( 'selected', $data );
+        return $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        $this->hooks( 'counting' );
+        $count = parent::count();
+        $count = $this->hooks( 'counted', $count );
+        return $count;
+    }
+
+    /**
+     * @param int    $id
+     * @param string $column
+     * @return array
+     */
+    public function load( $id, $column=null )
+    {
+        $id   = $this->hooks( 'loading', $id, $column );
+        $data = parent::load( $id, $column );
+        $data = $this->hooks( 'loaded', $data );
+        return $data;
+    }
+
+    /**
+     * @param $data
+     * @throws InvalidArgumentException
+     * @return int|PdoStatement
+     */
+    public function save( $data )
+    {
+        $by   = $this->hooks( 'saveBy', $data );
+        if( !$by ) {
+            throw new InvalidArgumentException( 'save method not defined. ' );
+        }
+        $data = $this->hooks( 'saving', $data );
+        $stmt = $this->$by($data);
+        $stmt = $this->hooks( 'saved', $stmt );
+        return $stmt;
+    }
+
+    /**
+     * @param array $data
+     * @return int|bool
+     */
+    public function insert( $data=array() )
+    {
+        $data = $this->hooks( 'createStamp', $data );
+        $data = $this->hooks( 'inserting', $data );
+        $id = parent::insert( $data );
+        $id = $this->hooks( 'inserted', $id );
+        return $id;
+    }
+
+    /**
+     * @param array $data
+     * @return PDOStatement
+     */
+    public function update( $data=array() )
+    {
+        $data = $this->hooks( 'updateStamp', $data );
+        $data = $this->hooks( 'updating', $data );
+        $stmt = parent::update( $data );
+        $stmt = $this->hooks( 'updated', $stmt );
+        return $stmt;
+    }
+
+    /**
+     * @param int $id
+     * @param string $column
+     * @return string
+     */
+    public function delete( $id=null, $column=null )
+    {
+        $id = $this->hooks( 'deleting', $id, $column );
+        $stmt = parent::delete( $id, $column );
+        $stmt = $this->hooks( 'deleted', $stmt );
+        return $stmt;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  hooks
+    // +----------------------------------------------------------------------+
+    /**
+     * dumb hooks for various events. $data are all string.
+     * available events are:
+     * - constructing, constructed, newQuery,
+     * - selecting, selected, inserting, inserted,
+     * - updating, updated, deleting, deleted,
+     *
+     * @param string       $event
+     * @param mixed|null   $data
+     * @return mixed|null
+     */
+    protected function hooks( $event, $data=null )
+    {
+        if( $this->hooks ) {
+            $args = func_get_args();
+            $data = call_user_func_array( [$this->hooks, 'hook'], $args );
+        }
+        return $data;
+    }
+
+    /**
+     * @param Hooks $hook
+     */
+    public function setHook( $hook )
+    {
+        $this->hooks = $hook;
+        $this->hooks->setHook( $this );
+    }
 }
