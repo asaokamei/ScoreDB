@@ -172,14 +172,15 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     }
 
     /**
-     * @param null|int     $id
-     * @return PDOStatement
+     * @param int $id
+     * @param string $column
+     * @return string
      */
-    public function delete( $id=null )
+    public function delete( $id=null, $column=null )
     {
         $this->setPdoAndDbType('write');
-        $id = $this->hooks( 'deleting', $id );
-        $sql = parent::delete($id);
+        $id = $this->hooks( 'deleting', $id, $column );
+        $sql = parent::delete($id, $column);
         $stmt = $this->perform( $sql );
         $stmt = $this->hooks( 'deleted', $stmt );
         return $stmt;
