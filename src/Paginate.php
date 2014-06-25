@@ -32,15 +32,16 @@ class Paginate
     // +----------------------------------------------------------------------+
     /**
      * @param array|null $session
+     * @param string|null $uri
      */
-    public function __construct( $session=null )
+    public function __construct( &$session=null, $uri=null )
     {
         if( is_null( $session ) ) {
             $this->session = $_SESSION;
         } else {
-            $this->session = $session;
+            $this->session = &$session;
         }
-        $this->currUri = $_SERVER['REQUEST_URI'];
+        $this->currUri = $uri ?: $_SERVER['REQUEST_URI'];
         $this->setSaveId();
         if( $limit = filter_input( INPUT_GET, $this->limiter ) ) {
             $this->perPage = $limit;
@@ -60,7 +61,7 @@ class Paginate
     public function set( $key, $value )
     {
         if( isset( $this->$key ) ) {
-            $this->key = $value;
+            $this->$key = $value;
         }
         return $this;
     }
@@ -77,10 +78,11 @@ class Paginate
         
         $this->currPage = $page;
         /** @var Query $query */
-        $this->query = $this->session[$this->saveID];
+        $this->query   = $this->session[$this->saveID]['query'];
+        $this->perPage = $this->session[$this->saveID]['perPage'];
         $this->queryPage( $page );
         $this->perPage = $this->queryGetLimit();
-        return $query;
+        return $this->query;
     }
 
     /**
@@ -90,8 +92,11 @@ class Paginate
     public function saveQuery( $query )
     {
         $this->query = $query;
-        $this->queryGetLimit( $this->perPage );
-        $this->session[$this->saveID] = $query;
+        $this->query->page( 1, $this->perPage );
+        $this->session[$this->saveID] = [
+            'perPage' => $this->perPage,
+            'query'   => $query,
+        ];
         return $this;
     }
 
@@ -100,7 +105,7 @@ class Paginate
      */
     protected function queryPage( $page )
     {
-        $this->query->page( $page );
+        $this->query->page( $page, $this->perPage );
     }
 
     /**

@@ -130,7 +130,7 @@ class Query extends Sql implements IteratorAggregate
      */
     public function page( $page, $perPage=20 )
     {
-        $page = (int) ( $page > 0 ?: 1 );
+        $page = (int) ( ( $page > 0 ) ? $page: 1 );
         if( !$this->limit ) {
             $this->limit( $perPage );
         }
@@ -185,11 +185,14 @@ class Query extends Sql implements IteratorAggregate
      */
     public function count()
     {
-        $origColumn = $this->columns;
+        $origColumn    = $this->columns;
+        $origOrder     = $this->order;
+        $this->order   = [];    // reset columns
         $this->column( false ); // reset columns
         $this->column( $this::raw( 'COUNT(*)'), 'count' );
         $count = $this->performRead( 'fetchValue' );
         $this->columns = $origColumn;
+        $this->order   = $origOrder;
         return $count;
     }
 

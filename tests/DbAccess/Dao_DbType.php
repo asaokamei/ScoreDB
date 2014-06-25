@@ -3,6 +3,7 @@ namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\User;
 use WScore\DbAccess\Dba;
+use WScore\DbAccess\Paginate;
 
 class Dao_DbType extends \PHPUnit_Framework_TestCase
 {
@@ -255,5 +256,38 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $id = $this->user->insert( $data );
         $saved = $this->user->load($id);
         $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+    }
+
+    /**
+     * @test
+     */
+    function page()
+    {
+        $this->saveUser(10);
+        $session = [];
+        $pager = new Paginate( $session, '/test/' );
+        $pager->set( 'perPage', 3 );
+        $this->assertEquals( null, $pager->loadQuery() );
+
+        $user = $this->user->order('user_id');
+        $pager->saveQuery( $user );
+        $pager->countTotal( $user );
+
+        $found1 = $user->select();
+        $this->assertEquals( 3, count( $found1 ) );
+        for( $i=0; $i< count($found1) ; $i++ ) {
+            $this->assertEquals( $i+1, $found1[$i]['user_id'] );
+        }
+
+        $pager = new Paginate( $session, '/test/' );
+        $user2 = $pager->loadQuery(2);
+        $this->assertEquals( 'tests\DbAccess\Dao\User', get_class($user2) );
+
+        $found2 = $user->select();
+        $this->assertEquals( 3, count( $found2 ) );
+        $this->assertNotEquals( $found1, $found2 );
+        for( $i=0; $i< count($found2) ; $i++ ) {
+            $this->assertEquals( $i+4, $found2[$i]['user_id'] );
+        }
     }
 }
