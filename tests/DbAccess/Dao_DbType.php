@@ -188,6 +188,20 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    function useEmptyIterator()
+    {
+        $count = 0;
+        $d = $this->user->status();
+        foreach( $d as $user ) {
+            $this->assertEquals( 1, $user['status'] );
+            $count++;
+        }
+        $this->assertEquals( 0, $count );
+    }
+
+    /**
+     * @test
+     */
     function update_using_magic_set()
     {
         $this->saveUser(10);
