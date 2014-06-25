@@ -4,6 +4,7 @@ namespace WScore\DbAccess;
 use Aura\Sql\ExtendedPdo;
 use IteratorAggregate;
 use PdoStatement;
+use InvalidArgumentException;
 use Traversable;
 use WScore\SqlBuilder\QueryInterface;
 use WScore\SqlBuilder\Query as SqlQuery;
@@ -183,6 +184,24 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         $sql = parent::delete($id, $column);
         $stmt = $this->perform( $sql );
         $stmt = $this->hooks( 'deleted', $stmt );
+        return $stmt;
+    }
+
+    /**
+     * @param $data
+     * @throws InvalidArgumentException
+     * @return int|PdoStatement
+     */
+    public function save( $data )
+    {
+        $this->setPdoAndDbType('write');
+        $by   = $this->hooks( 'saveBy', $data );
+        if( !$by ) {
+            throw new InvalidArgumentException( 'save method not defined. ' );
+        }
+        $data = $this->hooks( 'saving', $data );
+        $stmt = $this->$by($data);
+        $stmt = $this->hooks( 'saved', $stmt );
         return $stmt;
     }
 
