@@ -6,10 +6,9 @@ use IteratorAggregate;
 use PdoStatement;
 use InvalidArgumentException;
 use Traversable;
-use WScore\SqlBuilder\QueryInterface;
 use WScore\SqlBuilder\Query as SqlQuery;
 
-class Query extends SqlQuery implements IteratorAggregate, QueryInterface
+class Query extends SqlQuery implements IteratorAggregate
 {
     /**
      * @var Hooks
