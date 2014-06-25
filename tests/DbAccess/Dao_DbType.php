@@ -1,7 +1,6 @@
 <?php
 namespace tests\DbAccess;
 
-use tests\DbAccess\Dao\DaoClean;
 use tests\DbAccess\Dao\User;
 use WScore\DbAccess\Dba;
 
@@ -27,10 +26,12 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
     function prepareTest( $dbType )
     {
         Dba::reset();
+        /** @noinspection PhpIncludeInspection */
         Dba::config( include(__DIR__."/configs/{$dbType}-config.php" ) );
         $pdo = Dba::db();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
+        /** @noinspection PhpIncludeInspection */
         $pdo->query( include(__DIR__."/configs/{$dbType}-create.php" ) );
         $this->user = User::forge();
     }

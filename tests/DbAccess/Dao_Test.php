@@ -2,6 +2,7 @@
 namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\DaoClean;
+use tests\DbAccess\Dao\User;
 use WScore\DbAccess\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
