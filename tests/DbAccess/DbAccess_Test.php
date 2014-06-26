@@ -58,4 +58,22 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( null, Dba::db('named') );
         $this->assertEquals( null, Dba::dbWrite('named') );
     }
+
+    /**
+     * @test
+     */
+    function config_for_read_and_write()
+    {
+        $configMy = include( __DIR__.'/configs/mysql-config.php' );
+        $configPg = include( __DIR__.'/configs/pgsql-config.php' );
+        $configPg['for'] = 'write';
+        $this->dba->config( $configMy );
+        $this->dba->config( $configPg );
+        $pdoMy = $this->dba->connect();
+        $pdoPg = $this->dba->connectWrite();
+
+        $this->assertNotEquals( $pdoMy, $pdoPg );
+        $this->assertEquals( 'mysql', $pdoMy->getAttribute( \PDO::ATTR_DRIVER_NAME ) );
+        $this->assertEquals( 'pgsql', $pdoPg->getAttribute( \PDO::ATTR_DRIVER_NAME ) );
+    }
 }

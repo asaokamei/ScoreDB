@@ -46,18 +46,21 @@ class DbAccess
         if( !isset( $this->configs[$name] )) {
             $this->configs[$name] = $this->buildConnectionLocator();
         }
-        if( !is_callable( $config ) ) {
-            $config = $this->buildPdo( $config );
+        if( is_callable( $config ) ) {
+            $callPdo = $config;
+        } else {
+            $callPdo = $this->buildPdo( $config );
         }
-        if( $for = ucwords( $this->get( $config, 'for' ) ) ) {
-            
+        if( $for = $this->get( $config, 'for' ) ) {
+
+            $for = ucwords( $for );
             $for = 'set'.$for;
             $this->configs[$name]->$for(
-                'db'.$this->counter++, 
-                $config
+                'db'.$this->counter++,
+                $callPdo
             );
         } else {
-            $this->configs[$name]->setDefault( $config );
+            $this->configs[$name]->setDefault( $callPdo );
         }
     }
 
@@ -80,28 +83,28 @@ class DbAccess
 
     /**
      * @param $name
-     * @return DbAccess
+     * @return ExtendedPdo
      */
     public function connect( $name=null )
     {
         if( !$name ) $name = self::DEFAULT_KEY;
         if( !isset( $this->configs[ $name ] ) ) return null;
         $locator = $this->configs[ $name ];
-        $pdo = $locator->getRead( $name );
+        $pdo = $locator->getRead();
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );
         return $pdo;
     }
 
     /**
      * @param $name
-     * @return DbAccess
+     * @return ExtendedPdo
      */
     public function connectWrite( $name=null )
     {
         if( !$name ) $name = self::DEFAULT_KEY;
         if( !isset( $this->configs[ $name ] ) ) return null;
         $locator = $this->configs[ $name ];
-        $pdo = $locator->getWrite( $name );
+        $pdo = $locator->getWrite();
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );
         return $pdo;
     }
