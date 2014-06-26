@@ -124,7 +124,7 @@ trait DaoTrait
      */
     public function select($limit=null)
     {
-        $this->hooks( 'selecting', $limit );
+        $limit = $this->hooks( 'selecting', $limit );
         /** @noinspection PhpUndefinedMethodInspection */
         $data = parent::select( $limit );
         $data = $this->hooks( 'selected', $data );
@@ -150,7 +150,7 @@ trait DaoTrait
      */
     public function load( $id, $column=null )
     {
-        $id   = $this->hooks( 'loading', $id, $column );
+        list( $id, $column ) = $this->hooks( 'loading', [ $id, $column ] );
         /** @noinspection PhpUndefinedMethodInspection */
         $data = parent::load( $id, $column );
         $data = $this->hooks( 'loaded', $data );
@@ -164,7 +164,7 @@ trait DaoTrait
      */
     public function save( $data )
     {
-        $by   = $this->hooks( 'saveBy', $data );
+        $by   = $this->hooks( 'saveMethod', $data );
         if( !$by ) {
             throw new InvalidArgumentException( 'save method not defined. ' );
         }
@@ -209,7 +209,7 @@ trait DaoTrait
      */
     public function delete( $id=null, $column=null )
     {
-        $id = $this->hooks( 'deleting', $id, $column );
+        list( $id, $column ) = $this->hooks( 'deleting', [ $id, $column ] );
         /** @noinspection PhpUndefinedMethodInspection */
         $stmt = parent::delete( $id, $column );
         $stmt = $this->hooks( 'deleted', $stmt );
@@ -226,15 +226,14 @@ trait DaoTrait
      * - selecting, selected, inserting, inserted,
      * - updating, updated, deleting, deleted,
      *
-     * @param string       $event
-     * @param mixed|null   $data
+     * @param string $event
+     * @param mixed  $data
      * @return mixed|null
      */
     protected function hooks( $event, $data=null )
     {
         if( $this->hooks ) {
-            $args = func_get_args();
-            $data = call_user_func_array( [$this->hooks, 'hook'], $args );
+            $data = $this->hooks->hook( $event, $data );
         }
         return $data;
     }

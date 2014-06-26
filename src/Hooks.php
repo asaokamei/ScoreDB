@@ -21,20 +21,18 @@ class Hooks
      * - updating, updated, deleting, deleted,
      *
      * @param string       $event
-     * @param mixed|null   $data
+     * @param mixed  $data
      * @return mixed|null
      */
     public function hook( $event, $data=null )
     {
-        $args = func_get_args();
-        array_shift($args);
         foreach( $this->hooks as $hook ) {
             if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Hook' ) ) continue;
-            call_user_func_array( [$hook, $method], $args );
+            $hook->$method( $data );
         }
         foreach( $this->hooks as $hook ) {
             if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Filter' ) ) continue;
-            $data = call_user_func_array( [$hook, $method], $args );
+            $data = $hook->$method( $data );
         }
         return $data;
     }
