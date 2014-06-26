@@ -25,6 +25,14 @@ trait DaoTrait
     protected $hooks;
 
     /**
+     * set true to use the value set in $useFilteredData.
+     *
+     * @var bool
+     */
+    protected $useFilteredFlag = false;
+    protected $filteredData = null;
+
+    /**
      * time stamps config.
      * overwrite this property in your DAO class.
      *
@@ -216,6 +224,9 @@ trait DaoTrait
      */
     protected function callParent( $method )
     {
+        if( $this->useFilteredFlag ) {
+            return $this->filteredData;
+        }
         $args = func_get_args();
         array_shift( $args );
         $result = call_user_func_array( ['parent',$method], $args );
@@ -239,6 +250,10 @@ trait DaoTrait
     {
         if( $this->hooks ) {
             $data = $this->hooks->hook( $event, $data );
+            if( $this->hooks->usesFilterData() ) {
+                $this->filteredData = $data;
+                $this->useFilteredFlag = true;
+            }
         }
         return $data;
     }

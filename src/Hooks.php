@@ -6,6 +6,14 @@ class Hooks
     protected $hooks = [];
 
     /**
+     * @return bool
+     */
+    public function usesFilterData()
+    {
+        return false;
+    }
+
+    /**
      * @param object $hook
      */
     public function setHook( $hook )
