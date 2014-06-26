@@ -2,8 +2,6 @@
 namespace WScore\DbAccess;
 
 use Aura\Sql\ExtendedPdo;
-use WScore\SqlBuilder\Factory;
-use WScore\SqlBuilder\Sql\Where;
 
 /**
  * Class Dba
@@ -22,7 +20,7 @@ class Dba
     /**
      * @return DbAccess
      */
-    protected static function getDba()
+    public static function getDba()
     {
         if( !static::$dba ) {
             static::$dba = new DbAccess();

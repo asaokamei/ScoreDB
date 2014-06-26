@@ -24,6 +24,11 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         throw new \Exception( 'WHAT?' );
     }
 
+    function teardown()
+    {
+        Dba::reset();
+    }
+
     function prepareTest( $dbType )
     {
         Dba::reset();
@@ -365,6 +370,24 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
         $found = $user->load( $id )[0];
         $this->assertEquals( 'updated', $found['name'] );
+    }
+
+    /**
+     * @test
+     */
+    function profile()
+    {
+        Dba::getDba()->useProfile();
+
+        $user = $this->makeUserData();
+        $id = $this->user->insert( $user );
+        $this->assertEquals( 1, $id );
+
+        $profiler = Dba::getDba()->getProfiler();
+        $this->assertEquals( 'Aura\Sql\Profiler', get_class( $profiler ) );
+        $profile = $profiler->getProfiles();
+        $this->assertTrue( is_array( $profile ) );
+        $this->assertFalse( empty( $profile ) );
     }
 
 }

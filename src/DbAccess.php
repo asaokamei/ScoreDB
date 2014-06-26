@@ -67,6 +67,15 @@ class DbAccess
     public function useProfile()
     {
         $this->profiler = $this->buildProfiler();
+        $this->profiler->setActive(true);
+    }
+
+    /**
+     * @return Profiler
+     */
+    public function getProfiler()
+    {
+        return $this->profiler;
     }
 
     /**
