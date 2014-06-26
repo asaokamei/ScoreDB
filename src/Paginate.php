@@ -1,6 +1,17 @@
 <?php
 namespace WScore\DbAccess;
 
+/**
+ * Class Paginate
+ * @package WScore\DbAccess
+ *
+ * keys to set:
+ *  - pager   : $_GET variable name to set the page number.
+ *  - limiter : $_GET variable to set perPage number.
+ *  - perPage : default perPage number.
+ *
+ *
+ */
 class Paginate
 {
     /**
@@ -30,16 +41,6 @@ class Paginate
     // +----------------------------------------------------------------------+
     //  set up the pagination.
     // +----------------------------------------------------------------------+
-
-    protected function getKey( $data, $key )
-    {
-        return array_key_exists( $key, $data ) ? $data[$key] : null;
-    }
-
-    protected function setSaveId() {
-        $this->saveID = 'Paginated-'.md5( $this->currUri );
-    }
-
     /**
      * @param array|null $session
      * @param string|null $uri
@@ -71,10 +72,22 @@ class Paginate
         return $this;
     }
 
+    protected function getKey( $data, $key )
+    {
+        return array_key_exists( $key, $data ) ? $data[$key] : null;
+    }
+
+    protected function setSaveId() {
+        $this->saveID = 'Paginated-'.md5( $this->currUri );
+    }
+
     // +----------------------------------------------------------------------+
     //  query management.
     // +----------------------------------------------------------------------+
     /**
+     * if $page is specified (either as argument or in $_GET['_limit'],
+     * returns the query from the session with perPage value set as limit.
+     *
      * @param int $page
      * @return Query
      */
@@ -92,6 +105,8 @@ class Paginate
     }
 
     /**
+     * set the brand new query to the paginate.
+     *
      * @param Query $query
      * @return $this
      */
@@ -102,6 +117,8 @@ class Paginate
     }
 
     /**
+     * saves the query object and perPage value to the session.
+     *
      * @return $this
      */
     public function saveQuery()
@@ -114,7 +131,7 @@ class Paginate
     }
 
     /**
-     * @param int $page
+     * sets limit and offset to the query.
      */
     protected function setPageToQuery()
     {
@@ -123,6 +140,8 @@ class Paginate
     }
 
     /**
+     * query for the total using count(). sets the total as the found data.
+     *
      * @return $this
      */
     public function queryTotal() {
@@ -131,6 +150,8 @@ class Paginate
     }
 
     /**
+     * queries data for the page.
+     *
      * @return array
      */
     public function queryPage() {
@@ -138,6 +159,13 @@ class Paginate
     }
 
     /**
+     * queries data for the page, with extra 1 data to check
+     * if there is more data. if there are more data than the
+     * perPage, it sets the total as extra 1.
+     *
+     * returns data only the perPage number of data.
+     * Todo: NOT TESTED!!!
+     *
      * @return array
      */
     public function queryPageWithNext()
@@ -178,7 +206,7 @@ class Paginate
      * @param int $numLinks
      * @return array
      */
-    function getPages( $numLinks = 5 )
+    function getPagination( $numLinks = 5 )
     {
         $pages = [
             'found' => $this->getTotal(),
@@ -218,6 +246,6 @@ if( !$query = $pager->loadQuery() ) {
 }
 $pager->countQuery();
 $pager->saveQuery();
-$data = $query->select();
-$info = $pager->getPages();
+$data = $pager->queryPage();
+$info = $pager->getPagination();
  */
