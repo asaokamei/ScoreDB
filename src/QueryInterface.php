@@ -13,11 +13,6 @@ use Traversable;
 interface QueryInterface
 {
     /**
-     * @return int
-     */
-    public function getLimit();
-
-    /**
      * @param array $data
      * @return int|bool
      */

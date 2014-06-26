@@ -112,13 +112,6 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     }
 
     /**
-     * @return int
-     */
-    public function getLimit() {
-        return $this->limit;
-    }
-
-    /**
      * @param        $id
      * @param string $column
      */
