@@ -125,8 +125,7 @@ trait DaoTrait
     public function select($limit=null)
     {
         $limit = $this->hooks( 'selecting', $limit );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $data = parent::select( $limit );
+        $data = $this->callParent( 'select', $limit );
         $data = $this->hooks( 'selected', $data );
         return $data;
     }
@@ -137,8 +136,7 @@ trait DaoTrait
     public function count()
     {
         $this->hooks( 'counting' );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $count = parent::count();
+        $count = $this->callParent( 'count' );
         $count = $this->hooks( 'counted', $count );
         return $count;
     }
@@ -151,8 +149,7 @@ trait DaoTrait
     public function load( $id, $column=null )
     {
         list( $id, $column ) = $this->hooks( 'loading', [ $id, $column ] );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $data = parent::load( $id, $column );
+        $data = $this->callParent( 'load', $id, $column );
         $data = $this->hooks( 'loaded', $data );
         return $data;
     }
@@ -169,7 +166,7 @@ trait DaoTrait
             throw new InvalidArgumentException( 'save method not defined. ' );
         }
         $data = $this->hooks( 'saving', $data );
-        $stmt = $this->$by($data);
+        $stmt = $this->callParent( $by, $data);
         $stmt = $this->hooks( 'saved', $stmt );
         return $stmt;
     }
@@ -182,8 +179,7 @@ trait DaoTrait
     {
         $data = $this->hooks( 'createStamp', $data );
         $data = $this->hooks( 'inserting', $data );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $id = parent::insert( $data );
+        $id = $this->callParent( 'insert', $data );
         $id = $this->hooks( 'inserted', $id );
         return $id;
     }
@@ -196,8 +192,7 @@ trait DaoTrait
     {
         $data = $this->hooks( 'updateStamp', $data );
         $data = $this->hooks( 'updating', $data );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $stmt = parent::update( $data );
+        $stmt = $this->callParent( 'update', $data );
         $stmt = $this->hooks( 'updated', $stmt );
         return $stmt;
     }
@@ -210,12 +205,22 @@ trait DaoTrait
     public function delete( $id=null, $column=null )
     {
         list( $id, $column ) = $this->hooks( 'deleting', [ $id, $column ] );
-        /** @noinspection PhpUndefinedMethodInspection */
-        $stmt = parent::delete( $id, $column );
+        $stmt = $this->callParent( 'delete', $id, $column );
         $stmt = $this->hooks( 'deleted', $stmt );
         return $stmt;
     }
 
+    /**
+     * @param string $method
+     * @return mixed
+     */
+    protected function callParent( $method )
+    {
+        $args = func_get_args();
+        array_shift( $args );
+        $result = call_user_func_array( ['parent',$method], $args );
+        return $result;
+    }
     // +----------------------------------------------------------------------+
     //  hooks
     // +----------------------------------------------------------------------+
