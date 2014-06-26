@@ -95,7 +95,7 @@ class Paginate
         $this->query->page( 1, $this->perPage );
         $this->session[$this->saveID] = [
             'perPage' => $this->perPage,
-            'query'   => $query,
+            'query'   => clone( $query ),
         ];
         return $this;
     }

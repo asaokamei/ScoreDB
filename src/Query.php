@@ -31,11 +31,6 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     protected $returnLastId = true;
 
-    /**
-     * @var ExtendedPdo
-     */
-    protected $pdo;
-
     // +----------------------------------------------------------------------+
     //  managing database connection, etc.
     // +----------------------------------------------------------------------+
@@ -51,14 +46,16 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
 
     /**
      * @param string $type
+     * @return \Aura\Sql\ExtendedPdo
      */
     protected function setPdoAndDbType( $type='' )
     {
         $method = 'db'.ucwords($type);
         /** @var ExtendedPdo $pdo */
-        $this->pdo = $pdo = Dba::$method( $this->connectName );
+        $pdo = $pdo = Dba::$method( $this->connectName );
         $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
         $this->builder = Factory::buildBuilder( $this->dbType );
+        return $pdo;
     }
 
     /**
@@ -67,8 +64,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     protected function performWrite( $sqlType )
     {
-        $this->setPdoAndDbType('write');
-        return $this->perform( 'perform', $sqlType );
+        $pdo = $this->setPdoAndDbType('write');
+        return $this->perform( $pdo, 'perform', $sqlType );
     }
 
     /**
@@ -77,21 +74,22 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     protected function performRead( $method='fetchAll' )
     {
-        $this->setPdoAndDbType();
-        return $this->perform( $method, 'select' );
+        $pdo = $this->setPdoAndDbType();
+        return $this->perform( $pdo, $method, 'select' );
     }
 
     /**
+     * @param ExtendedPdo $pdo
      * @param string $method
      * @param string $sqlType
      * @return mixed
      */
-    protected function perform( $method, $sqlType )
+    protected function perform( $pdo, $method, $sqlType )
     {
         $sqlType = 'to' . ucwords( $sqlType );
         $sql = $this->builder->$sqlType( $this );
         $bind  = $this->builder->getBind()->getBinding();
-        return $this->pdo->$method( $sql, $bind );
+        return $pdo->$method( $sql, $bind );
     }
 
     /**
@@ -228,7 +226,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
         } else {
             $name = null;
         }
-        return $this->pdo->lastInsertId( $name );
+        $pdo = $this->setPdoAndDbType('write');
+        return $pdo->lastInsertId( $name );
     }
 
     /**

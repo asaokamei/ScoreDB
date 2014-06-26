@@ -263,27 +263,35 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
      */
     function page()
     {
+        // construct initial Query.
         $this->saveUser(10);
         $session = [];
         $pager = new Paginate( $session, '/test/' );
         $pager->set( 'perPage', 3 );
         $this->assertEquals( null, $pager->loadQuery() );
 
+        // query with pagination.
         $user = $this->user->order('user_id');
         $pager->saveQuery( $user );
         $pager->countTotal( $user );
 
+        // verify the queried result.
         $found1 = $user->select();
         $this->assertEquals( 3, count( $found1 ) );
         for( $i=0; $i< count($found1) ; $i++ ) {
             $this->assertEquals( $i+1, $found1[$i]['user_id'] );
         }
 
+        // save session and restore.
+        $session = serialize( $session );
+        $session = unserialize( $session );
+
+        // recall the query, then paginate to the next page.
         $pager = new Paginate( $session, '/test/' );
         $user2 = $pager->loadQuery(2);
         $this->assertEquals( 'tests\DbAccess\Dao\User', get_class($user2) );
 
-        $found2 = $user->select();
+        $found2 = $user2->select();
         $this->assertEquals( 3, count( $found2 ) );
         $this->assertNotEquals( $found1, $found2 );
         for( $i=0; $i< count($found2) ; $i++ ) {
