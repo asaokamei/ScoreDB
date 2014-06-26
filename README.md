@@ -78,6 +78,8 @@ Data Access Object
 
 ### sample dao class
 
+Extend ```Dao``` class.
+
 ```php
 /**
  * @method User status( $status=1 )
@@ -105,6 +107,7 @@ class User extends Dao
 }
 ```
 
+
 ##### table name and primary key
 
 specify table name as ```class::$table```, and primary key
@@ -121,6 +124,20 @@ Use ```class::$timeStamps``` to indicate stamps:
  and ```updated_at``` for updating and creation time.
 
 Specify the date format if different
+
+
+##### using DaoTrait
+
+alternatively, use DaoTrait to create dao object using
+other query class. as such,
+
+```php
+class Other extends OtherQuery
+{
+    user DaoTrait;
+}
+```
+
 
 
 ### accessing database
