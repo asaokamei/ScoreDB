@@ -9,7 +9,7 @@ use WScore\SqlBuilder\Builder\Builder;
 use WScore\SqlBuilder\Factory;
 use WScore\SqlBuilder\Sql\Sql;
 
-class Query extends Sql implements IteratorAggregate
+class Query extends Sql implements IteratorAggregate, QueryInterface
 {
     /**
      * @var Builder
@@ -21,11 +21,6 @@ class Query extends Sql implements IteratorAggregate
      */
     protected $dbType;
 
-    /**
-     * @var Hooks
-     */
-    protected $hooks;
-    
     /**
      * @var string
      */

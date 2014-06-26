@@ -2,7 +2,9 @@
 namespace tests\DbAccess\Dao;
 
 use WScore\DbAccess\Dao;
+use WScore\DbAccess\DaoTrait;
 use WScore\DbAccess\Hooks;
+use WScore\DbAccess\Query;
 
 /**
  * Class User
