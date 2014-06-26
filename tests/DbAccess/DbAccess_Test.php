@@ -76,4 +76,15 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'mysql', $pdoMy->getAttribute( \PDO::ATTR_DRIVER_NAME ) );
         $this->assertEquals( 'pgsql', $pdoPg->getAttribute( \PDO::ATTR_DRIVER_NAME ) );
     }
+
+    /**
+     * @test
+     */
+    function config_using_names()
+    {
+        $this->dba->config( 'test', function() { return 'tested'; } );
+        $this->dba->config( 'more', function() { return 'more-d'; } );
+        $this->assertEquals( 'tested', $this->dba->connect( 'test' ) );
+        $this->assertEquals( 'more-d', $this->dba->connect( 'more' ) );
+    }
 }

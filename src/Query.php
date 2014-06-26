@@ -52,7 +52,7 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     {
         $method = 'db'.ucwords($type);
         /** @var ExtendedPdo $pdo */
-        $pdo = $pdo = Dba::$method( $this->connectName );
+        $pdo = Dba::$method( $this->connectName );
         $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
         $this->builder = Factory::buildBuilder( $this->dbType );
         return $pdo;
