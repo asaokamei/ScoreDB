@@ -308,7 +308,6 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         // construct initial Query.
         $this->saveUser(10);
         $session = [];
-        $_SERVER = [ 'REQUEST_URI' => 'test-uri'];
         $_GET = [ '_limit'=>3 ];
 
         $found1 = $this->query_only_gender_is_1( $session );
@@ -330,6 +329,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $this->assertEquals( $i*2+8, $found2[$i]['user_id'] );
             $this->assertEquals( '1', $found2[$i]['gender'] );
         }
+        $_GET = [];
     }
 
     function query_only_gender_is_1( & $session )
@@ -345,4 +345,26 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $pager->queryTotal();
         return $pager->queryPage();
     }
+
+    /**
+     * @test
+     */
+    function dba_query_returns_active_query()
+    {
+        $userData = $this->makeUserData();
+        $user = Dba::query( 'dao_user', 'user_id' );
+        $id = $user->insert( $userData );
+        $this->assertEquals( 1, $id );
+
+        // check if the data is loaded.
+        $found = $user->load( $id )[0];
+        $this->assertEquals( $userData['name'], $found['name'] );
+        $this->assertEquals( $userData['no_null'], $found['no_null'] );
+
+        $user->where( $user->user_id->eq($id) )->update( ['name'=>'updated'] );
+
+        $found = $user->load( $id )[0];
+        $this->assertEquals( 'updated', $found['name'] );
+    }
+
 }
