@@ -28,7 +28,7 @@ abstract class HookObjectAbstract implements HookObjectInterface
      *
      * @param bool $break
      */
-    protected function _breakEventLoop($break=true)
+    protected function breakEventLoop($break=true)
     {
         $this->_breakEventLoop = $break;
     }
@@ -41,6 +41,7 @@ abstract class HookObjectAbstract implements HookObjectInterface
      */
     protected function useFilterData($use=true)
     {
+        $this->breakEventLoop();
         $this->_useFilteredData = $use;
     }
 
