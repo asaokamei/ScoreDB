@@ -272,8 +272,9 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
         // query with pagination.
         $user = $this->user->order('user_id');
-        $pager->saveQuery( $user );
-        $pager->countTotal( $user );
+        $pager->setQuery( $user );
+        $pager->saveQuery();
+        $pager->countQuery( $user );
 
         // verify the queried result.
         $found1 = $user->select();

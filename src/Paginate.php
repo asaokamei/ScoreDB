@@ -28,7 +28,7 @@ class Paginate
     protected $session = array();
 
     // +----------------------------------------------------------------------+
-    //  managing query
+    //  set up the pagination.
     // +----------------------------------------------------------------------+
     /**
      * @param array|null $session
@@ -66,6 +66,9 @@ class Paginate
         return $this;
     }
 
+    // +----------------------------------------------------------------------+
+    //  query management.
+    // +----------------------------------------------------------------------+
     /**
      * @param int $page
      * @return Query
@@ -89,13 +92,20 @@ class Paginate
      * @param Query $query
      * @return $this
      */
-    public function saveQuery( $query )
+    public function setQuery( $query )
     {
         $this->query = $query;
-        $this->query->page( 1, $this->perPage );
+        $this->queryPage( $this->currPage );
+    }
+
+    /**
+     * @return $this
+     */
+    public function saveQuery()
+    {
         $this->session[$this->saveID] = [
             'perPage' => $this->perPage,
-            'query'   => clone( $query ),
+            'query'   => clone( $this->query ),
         ];
         return $this;
     }
@@ -119,11 +129,14 @@ class Paginate
     /**
      * @return $this
      */
-    public function countTotal() {
+    public function countQuery() {
         $this->total = $this->query->count();
         return $this;
     }
-    
+
+    // +----------------------------------------------------------------------+
+    //  public methods for constructing pagination info.
+    // +----------------------------------------------------------------------+
     /**
      * @return int
      */
@@ -137,8 +150,9 @@ class Paginate
     public function getCurrPage() {
         return $this->currPage;
     }
+
     // +----------------------------------------------------------------------+
-    //  preparing for pagination list
+    //  preparing for pagination list. Yep, this should go any other class.
     // +----------------------------------------------------------------------+
     /**
      * @param int $numLinks
@@ -180,9 +194,10 @@ $pager = new Paginate()->set( 'perPage', 25 );
 if( !$query = $pager->loadQuery() ) {
     $query = new Query;
     // ... prepare query...
+    $pager->setQuery( $query );
 }
-$pager->saveQuery( $query );
-$pager->setTotal();
+$pager->countQuery();
+$pager->saveQuery();
 $data = $query->select();
 $info = $pager->getPages();
  */
