@@ -274,7 +274,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $user = $this->user->order('user_id');
         $pager->setQuery( $user );
         $pager->saveQuery();
-        $pager->countQuery( $user );
+        $pager->queryTotal( $user );
 
         // verify the queried result.
         $found1 = $user->select();
@@ -342,7 +342,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $pager->setQuery( $user );
         }
         $pager->saveQuery();
-        $pager->countQuery();
-        return $user->select();
+        $pager->queryTotal();
+        return $pager->queryPage();
     }
 }

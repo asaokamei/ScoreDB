@@ -87,7 +87,7 @@ class Paginate
         $this->currPage = $page;
         $this->query   = $this->session[$this->saveID]['query'];
         $this->perPage = $this->session[$this->saveID]['perPage'];
-        $this->queryPage( $page );
+        $this->setPageToQuery( $page );
         return $this->query;
     }
 
@@ -98,7 +98,7 @@ class Paginate
     public function setQuery( $query )
     {
         $this->query = $query;
-        $this->queryPage( $this->currPage );
+        $this->setPageToQuery( $this->currPage );
     }
 
     /**
@@ -116,17 +116,25 @@ class Paginate
     /**
      * @param int $page
      */
-    protected function queryPage( $page )
+    protected function setPageToQuery( $page )
     {
-        $this->query->page( $page, $this->perPage );
+        $this->query->limit( $this->perPage );
+        $this->query->offset( $this->perPage * ($page - 1) );
     }
 
     /**
      * @return $this
      */
-    public function countQuery() {
+    public function queryTotal() {
         $this->total = $this->query->count();
-        return $this;
+        return $this->total;
+    }
+
+    /**
+     * @return array
+     */
+    public function queryPage() {
+        return $this->query->select();
     }
 
     // +----------------------------------------------------------------------+

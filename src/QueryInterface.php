@@ -61,18 +61,6 @@ interface QueryInterface
     public function delete( $id = null, $column = null );
 
     /**
-     * for paginate.
-     *
-     * $perPage is a default number of rows per page, but
-     * does not override the $limit if already set.
-     *
-     * @param int $page
-     * @param int $perPage
-     * @return $this
-     */
-    public function page( $page, $perPage = 20 );
-
-    /**
      * @return int
      */
     public function count();
