@@ -30,6 +30,16 @@ class Paginate
     // +----------------------------------------------------------------------+
     //  set up the pagination.
     // +----------------------------------------------------------------------+
+
+    protected function getKey( $data, $key )
+    {
+        return array_key_exists( $key, $data ) ? $data[$key] : null;
+    }
+
+    protected function setSaveId() {
+        $this->saveID = 'Paginated-'.md5( $this->currUri );
+    }
+
     /**
      * @param array|null $session
      * @param string|null $uri
@@ -41,16 +51,11 @@ class Paginate
         } else {
             $this->session = &$session;
         }
-        $this->currUri = $uri ?: $_SERVER['REQUEST_URI'];
+        $this->currUri = $uri ?: $this->getKey( $_SERVER, 'REQUEST_URI' );
         $this->setSaveId();
-        if( $limit = filter_input( INPUT_GET, $this->limiter ) ) {
+        if( $limit = $this->getKey( $_GET, $this->limiter ) ) {
             $this->perPage = $limit;
         }
-
-    }
-    
-    protected function setSaveId() {
-        $this->saveID = 'Paginated-'.md5( $this->currUri );
     }
 
     /**
@@ -75,16 +80,14 @@ class Paginate
      */
     public function loadQuery( $page=null )
     {
-        if( !$page ) $page = filter_input( INPUT_GET, $this->pager );
+        if( !$page ) $page = $this->getKey( $_GET, $this->pager );
         if( !$page ) return null;
         if( !isset($this->session[$this->saveID]) ) return null;
         
         $this->currPage = $page;
-        /** @var Query $query */
         $this->query   = $this->session[$this->saveID]['query'];
         $this->perPage = $this->session[$this->saveID]['perPage'];
         $this->queryPage( $page );
-        $this->perPage = $this->queryGetLimit();
         return $this->query;
     }
 
@@ -118,14 +121,6 @@ class Paginate
         $this->query->page( $page, $this->perPage );
     }
 
-    /**
-     * @return int
-     */
-    protected function queryGetLimit() 
-    {
-        return $this->query->getLimit();
-    }
-    
     /**
      * @return $this
      */

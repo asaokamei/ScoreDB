@@ -299,4 +299,50 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $this->assertEquals( $i+4, $found2[$i]['user_id'] );
         }
     }
+
+    /**
+     * @test
+     */
+    function page_with_get()
+    {
+        // construct initial Query.
+        $this->saveUser(10);
+        $session = [];
+        $_SERVER = [ 'REQUEST_URI' => 'test-uri'];
+        $_GET = [ '_limit'=>3 ];
+
+        $found1 = $this->query_only_gender_is_1( $session );
+
+        $this->assertEquals( 3, count( $found1 ) );
+        for( $i=0; $i< count($found1) ; $i++ ) {
+            $this->assertEquals( $i*2+2, $found1[$i]['user_id'] );
+            $this->assertEquals( '1', $found1[$i]['gender'] );
+        }
+
+        $session = serialize( $session );
+        $session = unserialize( $session );
+
+        $_GET = [ '_page'=>2 ];
+        $found2 = $this->query_only_gender_is_1( $session );
+
+        $this->assertEquals( 2, count( $found2 ) );
+        for( $i=0; $i< count($found2) ; $i++ ) {
+            $this->assertEquals( $i*2+8, $found2[$i]['user_id'] );
+            $this->assertEquals( '1', $found2[$i]['gender'] );
+        }
+    }
+
+    function query_only_gender_is_1( & $session )
+    {
+        $pager = new Paginate( $session );
+        /** @var User $user */
+        if( !$user = $pager->loadQuery() ) {
+            $user = User::forge();
+            $user->order( 'user_id' )->where( $user->gender->is('1') );
+            $pager->setQuery( $user );
+        }
+        $pager->saveQuery();
+        $pager->countQuery();
+        return $user->select();
+    }
 }
