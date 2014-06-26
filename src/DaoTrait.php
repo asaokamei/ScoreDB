@@ -4,6 +4,7 @@ namespace WScore\DbAccess;
 use DateTime;
 use InvalidArgumentException;
 use PDOStatement;
+use WScore\DbAccess\Hook\Hooks;
 
 /**
  * Class DaoTrait

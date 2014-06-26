@@ -1,16 +1,21 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\DbAccess\Hook;
 
 class Hooks
 {
+    /**
+     * @var HookObjectInterface[]
+     */
     protected $hooks = [];
+
+    protected $useFilterData = false;
 
     /**
      * @return bool
      */
     public function usesFilterData()
     {
-        return false;
+        return $this->useFilterData;
     }
 
     /**
@@ -35,12 +40,22 @@ class Hooks
     public function hook( $event, $data=null )
     {
         foreach( $this->hooks as $hook ) {
+
             if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Hook' ) ) continue;
             $hook->$method( $data );
+            if( !$hook instanceof HookObjectInterface ) continue;
+            if( $hook->isLoopBreak() ) break;
         }
         foreach( $this->hooks as $hook ) {
+
             if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Filter' ) ) continue;
             $data = $hook->$method( $data );
+            if( !$hook instanceof HookObjectInterface ) continue;
+            if( $hook->toUseFilterData() ) {
+                $this->useFilterData = true;
+                break;
+            }
+            if( $hook->isLoopBreak() ) break;
         }
         return $data;
     }
