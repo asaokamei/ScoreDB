@@ -70,12 +70,13 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
 
     /**
      * @param string $method
+     * @param string $sqlType
      * @return mixed
      */
-    protected function performRead( $method='fetchAll' )
+    protected function performRead( $method='fetchAll', $sqlType='select' )
     {
         $pdo = $this->setPdoAndDbType();
-        return $this->perform( $pdo, $method, 'select' );
+        return $this->perform( $pdo, $method, $sqlType );
     }
 
     /**
@@ -151,14 +152,7 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     public function count()
     {
-        $origColumn    = $this->columns;
-        $origOrder     = $this->order;
-        $this->order   = [];    // reset columns
-        $this->column( false ); // reset columns
-        $this->column( $this::raw( 'COUNT(*)'), 'count' );
-        $count = $this->performRead( 'fetchValue' );
-        $this->columns = $origColumn;
-        $this->order   = $origOrder;
+        $count = $this->performRead( 'fetchValue', 'count' );
         return $count;
     }
 
