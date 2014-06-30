@@ -4,6 +4,8 @@ namespace tests\DbAccess;
 use tests\DbAccess\Dao\User;
 use WScore\DbAccess\Dba;
 use WScore\DbAccess\Paginate;
+use WScore\ScoreSql\Sql\Join;
+use WScore\ScoreSql\Sql\Where;
 
 class Dao_DbType extends \PHPUnit_Framework_TestCase
 {
@@ -390,4 +392,31 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $this->assertFalse( empty( $profile ) );
     }
 
+    /**
+     * @test
+     */
+    function join_on_status_with_same_table()
+    {
+        // construct initial Query.
+        $this->saveUser(10);
+        $user = $this->user;
+        $user->
+            table( 'dao_user', 'u1' )->
+            join( Join::left( 'dao_user', 'u2' )->
+                on( Where::column('status')->identical( 'u1.status' ) )
+            );
+        $user->where( $user->user_id->is(1) );
+        $found = $user->select();
+        $this->assertEquals( 4, count( $found ) );
+
+        $user = $this->user;
+        $user->
+            table( 'dao_user', 'u1' )->
+            join( Join::table( 'dao_user', 'u2' )->using( 'status' ) );
+        $user->where( $user->user_id->is(1) );
+        $found2 = $user->select();
+        $this->assertEquals( 4, count( $found2 ) );
+
+        $this->assertEquals( $found, $found2 );
+    }
 }
