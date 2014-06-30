@@ -400,21 +400,20 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         // construct initial Query.
         $this->saveUser(10);
         $user = $this->user;
-        $user->
+        $found = $this->user->
             table( 'dao_user', 'u1' )->
             join( Join::left( 'dao_user', 'u2' )->
                 on( Where::column('status')->identical( 'u1.status' ) )
-            );
-        $user->where( $user->user_id->is(1) );
-        $found = $user->select();
+            )
+            ->where( $user->user_id->is(1) )
+            ->select();
         $this->assertEquals( 4, count( $found ) );
 
-        $user = $this->user;
-        $user->
+        $found2 = $this->user->
             table( 'dao_user', 'u1' )->
-            join( Join::table( 'dao_user', 'u2' )->using( 'status' ) );
-        $user->where( $user->user_id->is(1) );
-        $found2 = $user->select();
+            join( Join::table( 'dao_user', 'u2' )->using( 'status' ) )->
+            where( $user->user_id->is(1) )->
+            select();
         $this->assertEquals( 4, count( $found2 ) );
 
         $this->assertEquals( $found, $found2 );
