@@ -1,10 +1,13 @@
-WScore.DbAccess
-===============
+ScoreDB
+=======
 
 A simple Database Access Manager and Data Access Object class.
 
-AuraPHP/Sql component is used for pdo access, and WScore/SqlBuilder
- for sql manipulation.
+This package provides a quick access for
+
+*   ExtendedPdo and ConnectionPools from AuraPHP/Sql package,
+*   slick query composition using ScoreSql, and
+*   a simple Dao (Database Access Object).
 
 
 ### license
