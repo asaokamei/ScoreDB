@@ -12,12 +12,12 @@
         "aura/sql":"2.*",
         "psr/log": "~1.0",
         "monolog/monolog":"1.5.x",
-        "wscore/sqlbuilder":"dev-master"
+        "wscore/scoresql":"dev-master"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/asaokamei/WScore.SqlBuilder"
+            "url": "https://github.com/asaokamei/ScoreSql"
         }
     ],
     "autoload": {

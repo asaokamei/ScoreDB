@@ -5,9 +5,9 @@ use Aura\Sql\ExtendedPdo;
 use IteratorAggregate;
 use PdoStatement;
 use Traversable;
-use WScore\SqlBuilder\Builder\Builder;
-use WScore\SqlBuilder\Factory;
-use WScore\SqlBuilder\Sql\Sql;
+use WScore\ScoreSql\Builder\Builder;
+use WScore\ScoreSql\Factory;
+use WScore\ScoreSql\Sql\Sql;
 
 class Query extends Sql implements IteratorAggregate, QueryInterface
 {
