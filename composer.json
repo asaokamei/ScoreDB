@@ -1,6 +1,6 @@
 {
-    "name": "wscore/dbaccess",
-    "description": "Database access and query builder.",
+    "name": "wscore/scoredb",
+    "description": "Database Access Management with Simple DAO.",
     "authors": [
         {
             "name": "Asao Kamei",
