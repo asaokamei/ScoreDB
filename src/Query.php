@@ -5,22 +5,10 @@ use Aura\Sql\ExtendedPdo;
 use IteratorAggregate;
 use PdoStatement;
 use Traversable;
-use WScore\ScoreSql\Builder\Builder;
 use WScore\ScoreSql\Factory;
-use WScore\ScoreSql\Sql\Sql;
 
-class Query extends Sql implements IteratorAggregate, QueryInterface
+class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryInterface
 {
-    /**
-     * @var Builder
-     */
-    protected $builder;
-
-    /**
-     * @var string
-     */
-    protected $dbType;
-
     /**
      * @var string
      */
@@ -59,36 +47,32 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     }
 
     /**
-     * @param string $sqlType
      * @return mixed
      */
-    protected function performWrite( $sqlType )
+    protected function performWrite()
     {
         $pdo = $this->setPdoAndDbType('write');
-        return $this->perform( $pdo, 'perform', $sqlType );
+        return $this->perform( $pdo, 'perform' );
     }
 
     /**
      * @param string $method
-     * @param string $sqlType
      * @return mixed
      */
-    protected function performRead( $method='fetchAll', $sqlType='select' )
+    protected function performRead( $method='fetchAll' )
     {
         $pdo = $this->setPdoAndDbType();
-        return $this->perform( $pdo, $method, $sqlType );
+        return $this->perform( $pdo, $method );
     }
 
     /**
      * @param ExtendedPdo $pdo
      * @param string $method
-     * @param string $sqlType
      * @return mixed
      */
-    protected function perform( $pdo, $method, $sqlType )
+    protected function perform( $pdo, $method )
     {
-        $sqlType = 'to' . ucwords( $sqlType );
-        $sql = $this->builder->$sqlType( $this );
+        $sql = (string) $this;
         $bind  = $this->builder->getBind()->getBinding();
         return $pdo->$method( $sql, $bind );
     }
@@ -114,6 +98,7 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     public function select($limit=null)
     {
         if( $limit ) $this->limit($limit);
+        $this->toSelect();
         $data = $this->performRead( 'fetchAll' );
         $this->reset();
         return $data;
@@ -125,6 +110,7 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     public function getIterator()
     {
+        $this->toSelect();
         return $this->performRead( 'perform' );
     }
 
@@ -133,7 +119,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
      */
     public function count()
     {
-        $count = $this->performRead( 'fetchValue', 'count' );
+        $this->toCount();
+        $count = $this->performRead( 'fetchValue' );
         return $count;
     }
 
@@ -157,7 +144,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     public function insert( $data=array() )
     {
         if( $data ) $this->value($data);
-        $this->performWrite( 'insert' );
+        $this->toInsert();
+        $this->performWrite();
         $id = ( $this->returnLastId ) ? $this->lastId() : true;
         $this->reset();
         return $id;
@@ -185,8 +173,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     public function update( $data=array() )
     {
         if( $data ) $this->value($data);
-        $stmt = $this->performWrite( 'update' );
-        $this->reset();
+        $this->toUpdate();
+        $stmt = $this->performWrite();
         return $stmt;
     }
 
@@ -198,7 +186,8 @@ class Query extends Sql implements IteratorAggregate, QueryInterface
     public function delete( $id=null, $column=null )
     {
         $this->setId($id, $column);
-        $stmt = $this->performWrite( 'delete' );
+        $this->toDelete();
+        $stmt = $this->performWrite();
         $this->reset();
         return $stmt;
     }
