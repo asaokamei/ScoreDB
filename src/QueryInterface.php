@@ -7,6 +7,7 @@
  */
 namespace WScore\DbAccess;
 
+use InvalidArgumentException;
 use PdoStatement;
 use Traversable;
 
@@ -24,6 +25,13 @@ interface QueryInterface
      * @return array
      */
     public function load( $id, $column = null );
+
+    /**
+     * @param $data
+     * @throws InvalidArgumentException
+     * @return int|PdoStatement
+     */
+    public function save( $data );
 
     /**
      * @param string $name

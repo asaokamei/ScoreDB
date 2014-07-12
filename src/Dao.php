@@ -23,24 +23,23 @@ class Dao extends Query
     );
 
     /**
-     * sets table and keyName from class name if they are not set.
-     *
-     * @param Hooks $hook
+     * @return Dao
      */
-    public function __construct( $hook=null )
+    public static function query()
     {
-        if( $hook ) $hook->setHook( $this );
-        $this->hooks( 'constructing' );
+        $self = new self();
+        $self->setHook( $self );
+        return $self;
+    }
 
-        if( !$this->table ) {
-            $this->table = get_class($this);
-            if( false!==strpos($this->table, '\\') ) {
-                $this->table = substr( $this->table, strrpos($this->table,'\\')+1 );
-            }
-        }
-        if( !$this->keyName ) {
-            $this->keyName = $this->table . '_id';
-        }
-        $this->hooks( 'constructed' );
+    /**
+     * @param $method
+     * @param $args
+     * @return mixed
+     */
+    public static function __callStatic( $method, $args )
+    {
+        $query = self::query();
+        return call_user_func_array( [$query,$method], $args );
     }
 }

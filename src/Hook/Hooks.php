@@ -1,6 +1,8 @@
 <?php
 namespace WScore\DbAccess\Hook;
 
+use WScore\DbAccess\Query;
+
 class Hooks
 {
     /**
@@ -24,6 +26,23 @@ class Hooks
     public function setHook( $hook )
     {
         $this->hooks[] = $hook;
+    }
+
+    /**
+     * @param string $name
+     * @param Query  $query
+     * @param array  $args
+     * @return $this
+     */
+    public function scope( $name, $query, $args )
+    {
+        foreach( $this->hooks as $hook ) {
+            if( method_exists( $hook, $scope = 'scope'.ucfirst($name) ) ) {
+                call_user_func_array( [$hook, $scope], $query, $args );
+                return $this;
+            }
+        }
+        return false;
     }
 
     /**
