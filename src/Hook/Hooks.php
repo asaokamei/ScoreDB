@@ -1,7 +1,7 @@
 <?php
-namespace WScore\DbAccess\Hook;
+namespace WScore\ScoreDB\Hook;
 
-use WScore\DbAccess\Query;
+use WScore\ScoreDB\Query;
 
 class Hooks
 {

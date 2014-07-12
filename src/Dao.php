@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 class Dao extends Query
 {

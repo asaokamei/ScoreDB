@@ -1,11 +1,11 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
 
 /**
  * Class Dba
- * @package WScore\DbAccess
+ * @package WScore\ScoreDB
  *
  * for DataBase Access.
  *

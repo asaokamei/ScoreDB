@@ -1,12 +1,12 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
 use InvalidArgumentException;
 use IteratorAggregate;
 use PdoStatement;
 use Traversable;
-use WScore\DbAccess\Hook\Hooks;
+use WScore\ScoreDB\Hook\Hooks;
 use WScore\ScoreSql\Factory;
 
 class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryInterface

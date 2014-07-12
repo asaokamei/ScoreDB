@@ -1,9 +1,9 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 /**
  * Class Paginate
- * @package WScore\DbAccess
+ * @package WScore\ScoreDB
  *
  * keys to set:
  *  - pager   : $_GET variable name to set the page number.

@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DbAccess\Hook;
+namespace WScore\ScoreDB\Hook;
 
 abstract class HookObjectAbstract implements HookObjectInterface
 {

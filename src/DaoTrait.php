@@ -1,14 +1,11 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 use DateTime;
-use InvalidArgumentException;
-use PDOStatement;
-use WScore\DbAccess\Hook\Hooks;
 
 /**
  * Class DaoTrait
- * @package WScore\DbAccess
+ * @package WScore\ScoreDB
  *
  * a trait to behave like a DAO.
  * the class must have or extend the QueryInterface.

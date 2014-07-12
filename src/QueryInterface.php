@@ -5,7 +5,7 @@
  * Date: 2014/06/26
  * Time: 9:36
  */
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 use InvalidArgumentException;
 use PdoStatement;

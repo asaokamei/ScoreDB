@@ -1,5 +1,5 @@
 <?php
-namespace WScore\DbAccess;
+namespace WScore\ScoreDB;
 
 use Aura\Sql\ConnectionLocator;
 use Aura\Sql\ExtendedPdo;
@@ -7,7 +7,7 @@ use Aura\Sql\Profiler;
 
 /**
  * Class DbAccess
- * @package WScore\DbAccess
+ * @package WScore\ScoreDB
  */
 class DbAccess
 {
