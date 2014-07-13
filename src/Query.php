@@ -70,8 +70,9 @@ class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryIn
     {
         $method = 'db'.ucwords($type);
         /** @var ExtendedPdo $pdo */
-        $pdo = Dba::$method( $this->connectName );
-        $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
+        if( $pdo = Dba::$method( $this->connectName ) ) {
+            $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
+        }
         $this->builder = Factory::buildBuilder( $this->dbType );
         return $pdo;
     }

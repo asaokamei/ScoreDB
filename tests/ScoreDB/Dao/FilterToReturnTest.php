@@ -1,5 +1,5 @@
 <?php
-namespace tests\DbAccess\Dao;
+namespace tests\ScoreDB\Dao;
 
 use WScore\ScoreDB\Hook\HookObjectAbstract;
 

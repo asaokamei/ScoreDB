@@ -1,9 +1,8 @@
 <?php
-namespace tests\DbAccess\Dao;
+namespace tests\ScoreDB\Dao;
 
 use WScore\ScoreDB\Dao;
 use WScore\ScoreDB\DaoTrait;
-use WScore\ScoreDB\Hooks;
 use WScore\ScoreDB\Query;
 
 /**

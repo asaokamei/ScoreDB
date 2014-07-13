@@ -1,8 +1,8 @@
 <?php
-namespace tests\DbAccess;
+namespace tests\ScoreDB;
 
-use tests\DbAccess\Dao\FilterToReturnTest;
-use tests\DbAccess\Dao\User;
+use tests\ScoreDB\Dao\FilterToReturnTest;
+use tests\ScoreDB\Dao\User;
 use WScore\ScoreDB\Hook\HookObjectInterface;
 use WScore\ScoreDB\Hook\Hooks;
 
@@ -13,7 +13,7 @@ class Hook_Test extends \PHPUnit_Framework_TestCase
     function test0()
     {
         $filter = new FilterToReturnTest();
-        $this->assertEquals( 'tests\DbAccess\Dao\FilterToReturnTest', get_class( $filter) );
+        $this->assertEquals( 'tests\ScoreDB\Dao\FilterToReturnTest', get_class( $filter) );
         $this->assertTrue( $filter instanceof HookObjectInterface );
     }
 

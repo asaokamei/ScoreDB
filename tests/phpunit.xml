@@ -11,8 +11,8 @@
          syntaxCheck="false"
         >
     <testsuites>
-        <testsuite name="WScore/DbAccess Test Suite">
-            <directory>DbAccess</directory>
+        <testsuite name="WScore/ScoreDB Test Suite">
+            <directory>ScoreDB</directory>
             <exclude>DbAccess/Dao_DbType.php</exclude>
         </testsuite>
     </testsuites>
