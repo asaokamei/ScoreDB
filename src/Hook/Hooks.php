@@ -12,6 +12,8 @@ class Hooks
 
     protected $useFilterData = false;
 
+    public function __construct() {}
+    
     /**
      * @return bool
      */
@@ -38,7 +40,7 @@ class Hooks
     {
         foreach( $this->hooks as $hook ) {
             if( method_exists( $hook, $scope = 'scope'.ucfirst($name) ) ) {
-                call_user_func_array( [$hook, $scope], $query, $args );
+                call_user_func_array( [$hook, $scope], [$query]+$args );
                 return $this;
             }
         }

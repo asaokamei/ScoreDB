@@ -1,6 +1,8 @@
 <?php
 namespace WScore\ScoreDB;
 
+use WScore\ScoreDB\Hook\Hooks;
+
 class Dao extends Query
 {
     use DaoTrait;
@@ -23,13 +25,37 @@ class Dao extends Query
     );
 
     /**
+     * sets table and keyName from class name if they are not set.
+     *
+     * @param Hooks $hook
+     */
+    public function __construct( $hook=null )
+    {
+        if( $hook ) {
+            $hook->setHook($this);
+            $this->setHook( $hook );
+        }
+        $this->hook( 'constructing' );
+
+        if( !$this->table ) {
+            $this->table = get_class($this);
+            if( false!==strpos($this->table, '\\') ) {
+                $this->table = substr( $this->table, strrpos($this->table,'\\')+1 );
+            }
+        }
+        if( !$this->keyName ) {
+            $this->keyName = $this->table . '_id';
+        }
+        $this->hook( 'constructed' );
+    }
+
+    /**
      * @return Dao
      */
     public static function query()
     {
-        $self = new self();
-        $self->setHook( $self );
-        return $self;
+        /** @var Dao $self */
+        return new static( new Hooks() );
     }
 
     /**

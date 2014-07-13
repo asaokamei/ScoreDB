@@ -143,7 +143,6 @@ class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryIn
     public function setHook( $hook )
     {
         $this->hooks = $hook;
-        $this->hooks->setHook( $this );
     }
     
     // +----------------------------------------------------------------------+
