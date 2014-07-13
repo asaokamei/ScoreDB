@@ -1,7 +1,7 @@
 <?php
 namespace tests\DbAccess\Dao;
 
-use WScore\DbAccess\Hook\HookObjectAbstract;
+use WScore\ScoreDB\Hook\HookObjectAbstract;
 
 class FilterToReturnTest extends HookObjectAbstract
 {

@@ -3,8 +3,8 @@ namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\FilterToReturnTest;
 use tests\DbAccess\Dao\User;
-use WScore\DbAccess\Hook\HookObjectInterface;
-use WScore\DbAccess\Hook\Hooks;
+use WScore\ScoreDB\Hook\HookObjectInterface;
+use WScore\ScoreDB\Hook\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
 

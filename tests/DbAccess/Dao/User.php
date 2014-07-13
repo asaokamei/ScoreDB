@@ -1,10 +1,10 @@
 <?php
 namespace tests\DbAccess\Dao;
 
-use WScore\DbAccess\Dao;
-use WScore\DbAccess\DaoTrait;
-use WScore\DbAccess\Hooks;
-use WScore\DbAccess\Query;
+use WScore\ScoreDB\Dao;
+use WScore\ScoreDB\DaoTrait;
+use WScore\ScoreDB\Hooks;
+use WScore\ScoreDB\Query;
 
 /**
  * Class User
@@ -30,10 +30,11 @@ class User extends Dao
     ];
 
     /**
+     * @param Query $query
      * @param int $status
      */
-    public function scopeStatus($status=1)
+    public function scopeStatus( $query, $status=1)
     {
-        $this->where( $this->status->eq( $status ) );
+        $this->where( $query->status->eq( $status ) );
     }
 }

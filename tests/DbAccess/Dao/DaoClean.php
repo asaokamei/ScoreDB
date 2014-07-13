@@ -1,7 +1,7 @@
 <?php
 namespace tests\DbAccess\Dao;
 
-use WScore\DbAccess\Dao;
+use WScore\ScoreDB\Dao;
 
 class DaoClean extends Dao
 {

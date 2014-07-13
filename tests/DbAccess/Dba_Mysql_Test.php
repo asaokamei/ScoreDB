@@ -1,8 +1,8 @@
 <?php
 namespace tests\DbAccess;
 
-use WScore\DbAccess\Dba;
-use WScore\DbAccess\DbAccess;
+use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
@@ -22,8 +22,8 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
 
     static function setupBeforeClass()
     {
-        class_exists( 'WScore\DbAccess\Dba' );
-        class_exists( 'WScore\DbAccess\DbAccess' );
+        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DbAccess' );
         Dba::reset();
     }
 

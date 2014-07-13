@@ -2,7 +2,7 @@
 namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\DaoClean;
-use WScore\DbAccess\Hook\Hooks;
+use WScore\ScoreDB\Hook\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
@@ -13,7 +13,7 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
      */
     function DaoClean_has_table_and_keyName_set()
     {
-        $dao = new DaoClean();
+        $dao = DaoClean::query();
         $this->assertEquals( 'tests\DbAccess\Dao\DaoClean', get_class( $dao ) );
         $this->assertEquals( 'DaoClean',$dao->magicGet('table') );
         $this->assertEquals( 'DaoClean_id',$dao->magicGet('keyName') );

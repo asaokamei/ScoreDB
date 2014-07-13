@@ -1,8 +1,8 @@
 <?php
 namespace tests\DbAccess;
 
-use WScore\DbAccess\Dba;
-use WScore\DbAccess\DbAccess;
+use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
@@ -15,14 +15,14 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
     
     function setup()
     {
-        class_exists( 'WScore\DbAccess\Dba' );
-        class_exists( 'WScore\DbAccess\DbAccess' );
+        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DbAccess' );
         $this->dba = new DbAccess();
     }
     
     function test0()
     {
-        $this->assertEquals( 'WScore\DbAccess\DbAccess', get_class( $this->dba ) );
+        $this->assertEquals( 'WScore\ScoreDB\DbAccess', get_class( $this->dba ) );
     }
 
     /**

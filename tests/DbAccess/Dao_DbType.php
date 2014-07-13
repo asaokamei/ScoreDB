@@ -2,8 +2,8 @@
 namespace tests\DbAccess;
 
 use tests\DbAccess\Dao\User;
-use WScore\DbAccess\Dba;
-use WScore\DbAccess\Paginate;
+use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\Paginate;
 use WScore\ScoreSql\Sql\Join;
 use WScore\ScoreSql\Sql\Where;
 
@@ -16,8 +16,10 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
     static function setupBeforeClass()
     {
-        class_exists( 'WScore\DbAccess\Dba' );
-        class_exists( 'WScore\DbAccess\DbAccess' );
+        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DbAccess' );
+        class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
+        class_exists( 'tests\DbAccess\Dao\User' );
         Dba::reset();
     }
 
@@ -41,7 +43,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $pdo->query( $sql );
         /** @noinspection PhpIncludeInspection */
         $pdo->query( include(__DIR__."/configs/{$dbType}-create.php" ) );
-        $this->user = User::forge();
+        $this->user = User::query();
     }
     
     function makeUserData( $idx=1 )
@@ -344,7 +346,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $pager = new Paginate( $session );
         /** @var User $user */
         if( !$user = $pager->loadQuery() ) {
-            $user = User::forge();
+            $user = User::query();
             $user->order( 'user_id' )->where( $user->gender->is('1') );
             $pager->setQuery( $user );
         }
