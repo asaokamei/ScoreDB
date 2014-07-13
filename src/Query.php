@@ -7,7 +7,6 @@ use IteratorAggregate;
 use PdoStatement;
 use Traversable;
 use WScore\ScoreDB\Hook\Hooks;
-use WScore\ScoreSql\Factory;
 
 class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryInterface
 {
@@ -73,7 +72,6 @@ class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryIn
         if( $pdo = Dba::$method( $this->connectName ) ) {
             $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );
         }
-        $this->builder = Factory::buildBuilder( $this->dbType );
         return $pdo;
     }
 
