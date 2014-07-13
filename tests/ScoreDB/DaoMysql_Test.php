@@ -1,11 +1,11 @@
 <?php
-namespace tests\DbAccess;
+namespace tests\ScoreDB;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class DaoPgsql_Test extends Dao_DbType
+class DaoMysql_Test extends Dao_DbType
 {
-    var $dbType = 'pgsql';
+    var $dbType = 'mysql';
 
     function setup()
     {

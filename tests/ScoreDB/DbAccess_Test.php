@@ -1,5 +1,5 @@
 <?php
-namespace tests\DbAccess;
+namespace tests\ScoreDB;
 
 use WScore\ScoreDB\Dba;
 use WScore\ScoreDB\DbAccess;

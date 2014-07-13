@@ -1,7 +1,7 @@
 <?php
-namespace tests\DbAccess;
+namespace tests\ScoreDB;
 
-use tests\DbAccess\Dao\User;
+use tests\ScoreDB\Dao\User;
 use WScore\ScoreDB\Dba;
 use WScore\ScoreDB\Paginate;
 use WScore\ScoreSql\Sql\Join;
@@ -19,7 +19,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         class_exists( 'WScore\ScoreDB\Dba' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
         class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
-        class_exists( 'tests\DbAccess\Dao\User' );
+        class_exists( 'tests\ScoreDB\Dao\User' );
         Dba::reset();
     }
 
@@ -299,7 +299,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         // recall the query, then paginate to the next page.
         $pager = new Paginate( $session, '/test/' );
         $user2 = $pager->loadQuery(2);
-        $this->assertEquals( 'tests\DbAccess\Dao\User', get_class($user2) );
+        $this->assertEquals( 'tests\ScoreDB\Dao\User', get_class($user2) );
 
         $found2 = $user2->select();
         $this->assertEquals( 3, count( $found2 ) );

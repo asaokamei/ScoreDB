@@ -1,5 +1,5 @@
 <?php
-namespace tests\DbAccess;
+namespace tests\ScoreDB;
 
 use tests\ScoreDB\Dao\DaoClean;
 use WScore\ScoreDB\Hook\Hooks;

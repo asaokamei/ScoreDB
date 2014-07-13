@@ -8,7 +8,7 @@ use WScore\ScoreDB\Query;
 /**
  * Class User
  *
- * @package tests\DbAccess\Dao
+ * @package tests\ScoreDB\Dao
  *          
  * @method User status( $status=1 )
  */
