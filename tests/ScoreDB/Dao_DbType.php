@@ -20,7 +20,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         class_exists( 'WScore\ScoreDB\DbAccess' );
         class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
         class_exists( 'tests\ScoreDB\Dao\User' );
-        Dba::reset();
+        Dba::restart();
     }
 
     function setup()
@@ -30,12 +30,12 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
     function teardown()
     {
-        Dba::reset();
+        Dba::restart();
     }
 
     function prepareTest( $dbType )
     {
-        Dba::reset();
+        Dba::restart();
         /** @noinspection PhpIncludeInspection */
         Dba::config( include( __DIR__ . "/configs/{$dbType}-config.php" ) );
         $pdo = Dba::db();
@@ -90,7 +90,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         User::$now = $upTime->add(new \DateInterval('P1D') );
         $this->user->where( $this->user->user_id->eq($id) )->update( ['name'=>'updated'] );
 
-        $found = $this->user->load( $id )[0];
+        $found = User::query()->load( $id )[0];
         $this->assertEquals( 'updated', $found['name'] );
         $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['created_at'] );
         $this->assertEquals( $now->format('Y-m-d'), $found['open_date'] );
@@ -117,7 +117,8 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $this->assertEquals( 1, $user['status'] );
         }
         // updating status is 2.
-        $d->where( $d->status->eq(1) )->update( ['status' => 9 ] );
+        ;
+        User::query()->where( $d->status->eq(1) )->update( ['status' => 9 ] );
         $found = $d->load( 1, 'status' );
         $this->assertEquals( 0, count( $found ) );
         $found = $d->load( 9, 'status' );
@@ -223,11 +224,12 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $this->assertEquals( 1, $user['gender'] );
         }
         // updating status is 2.
+        $d = User::query();
         $d->status = 9;
         $d->where( $d->status->eq(1) )->update();
-        $found = $d->load( 1, 'status' );
+        $found = User::query()->load( 1, 'status' );
         $this->assertEquals( 0, count( $found ) );
-        $found = $d->load( 9, 'status' );
+        $found = User::query()->load( 9, 'status' );
         $this->assertEquals( 3, count( $found ) );
     }
 
@@ -372,7 +374,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
         $user->where( $user->user_id->eq($id) )->update( ['name'=>'updated'] );
 
-        $found = $user->load( $id )[0];
+        $found = User::query()->load( $id )[0];
         $this->assertEquals( 'updated', $found['name'] );
     }
 

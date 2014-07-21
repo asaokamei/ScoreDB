@@ -2,6 +2,7 @@
 namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
+use WScore\ScoreSql\Query as SqlDB;
 
 /**
  * Class Dba
@@ -10,7 +11,7 @@ use Aura\Sql\ExtendedPdo;
  * for DataBase Access.
  *
  */
-class Dba
+class Dba extends SqlDB
 {
     /**
      * @var DbAccess
@@ -31,7 +32,7 @@ class Dba
     /**
      * 
      */
-    public static function reset()
+    public static function restart()
     {
         static::$dba = null;
     }

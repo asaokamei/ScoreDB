@@ -7,8 +7,9 @@ use IteratorAggregate;
 use PdoStatement;
 use Traversable;
 use WScore\ScoreDB\Hook\Hooks;
+use WScore\ScoreSql\Sql;
 
-class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryInterface
+class Query extends Sql implements IteratorAggregate, QueryInterface
 {
     /**
      * @var string
@@ -106,7 +107,7 @@ class Query extends \WScore\ScoreSql\Query implements IteratorAggregate, QueryIn
             return $this->filteredData;
         }
         $sql = (string) $this;
-        $bind  = $this->builder->getBind()->getBinding();
+        $bind  = $this->getBind();
         return $pdo->$method( $sql, $bind );
     }
 

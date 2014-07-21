@@ -54,7 +54,7 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'tested', Dba::db() );
         $this->assertEquals( 'tested', Dba::dbWrite() );
 
-        Dba::reset();
+        Dba::restart();
         $this->assertEquals( null, Dba::db('named') );
         $this->assertEquals( null, Dba::dbWrite('named') );
     }
