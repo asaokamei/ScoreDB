@@ -7,9 +7,9 @@ use IteratorAggregate;
 use PdoStatement;
 use Traversable;
 use WScore\ScoreDB\Hook\Hooks;
-use WScore\ScoreSql\Sql;
+use WScore\ScoreSql\Query as SqlQuery;
 
-class Query extends Sql implements IteratorAggregate, QueryInterface
+class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 {
     /**
      * @var string

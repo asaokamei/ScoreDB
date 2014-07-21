@@ -2,7 +2,7 @@
 namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
-use WScore\ScoreSql\Query as SqlDB;
+use WScore\ScoreSql\DB as SqlDB;
 
 /**
  * Class Dba
