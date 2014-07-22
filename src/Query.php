@@ -64,7 +64,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param string $type
-     * @return \Aura\Sql\ExtendedPdo
+     * @return ExtendedPdo
      */
     protected function setPdoAndDbType( $type='' )
     {
@@ -153,7 +153,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * @param string $column
      * @return $this|void
      */
-    public function setKey( $id, $column=null )
+    public function key( $id, $column=null )
     {
         if( !$id ) return $this;
         $column = $column ?: $this->keyName;
@@ -206,7 +206,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     public function load( $id, $column=null )
     {
         list( $id, $column ) = $this->hook( 'loading', [ $id, $column ] );
-        $this->setKey($id, $column);
+        $this->key($id, $column);
         $data = $this->performRead( 'fetchAll' );
         $data = $this->hook( 'loaded', $data );
         $this->reset();
@@ -285,7 +285,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     public function delete( $id=null, $column=null )
     {
         list( $id, $column ) = $this->hook( 'deleting', [ $id, $column ] );
-        $this->setKey($id, $column);
+        $this->key($id, $column);
         $this->toDelete();
         $stmt = $this->performWrite();
         $stmt = $this->hook( 'deleted', $stmt );
