@@ -30,7 +30,7 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
     function test_mysql_create()
     {
         Dba::config( include( __DIR__ . '/configs/mysql-config.php' ) );
-        $pdo = Dba::db();
+        $pdo = Dba::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         $pdo->query( include( __DIR__ . '/configs/mysql-create.php' ) );
@@ -39,7 +39,7 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
     function test_pgsql_create()
     {
         Dba::config( include( __DIR__ . '/configs/pgsql-config.php' ) );
-        $pdo = Dba::db();
+        $pdo = Dba::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         $pdo->query( include( __DIR__ . '/configs/pgsql-create.php' ) );

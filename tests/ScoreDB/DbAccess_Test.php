@@ -33,14 +33,14 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
         Dba::config( function() {
             return 'tested';
         } );
-        $this->assertEquals( 'tested', Dba::db() );
-        $this->assertEquals( 'tested', Dba::dbWrite() );
+        $this->assertEquals( 'tested', Dba::connect() );
+        $this->assertEquals( 'tested', Dba::connectWrite() );
 
         Dba::config( 'named', function() {
             return 'named-tested';
         } );
-        $this->assertEquals( 'named-tested', Dba::db('named') );
-        $this->assertEquals( 'named-tested', Dba::dbWrite('named') );
+        $this->assertEquals( 'named-tested', Dba::connect('named') );
+        $this->assertEquals( 'named-tested', Dba::connectWrite('named') );
     }
 
     /**
@@ -51,12 +51,12 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
         Dba::config( function() {
             return 'tested';
         } );
-        $this->assertEquals( 'tested', Dba::db() );
-        $this->assertEquals( 'tested', Dba::dbWrite() );
+        $this->assertEquals( 'tested', Dba::connect() );
+        $this->assertEquals( 'tested', Dba::connectWrite() );
 
         Dba::restart();
-        $this->assertEquals( null, Dba::db('named') );
-        $this->assertEquals( null, Dba::dbWrite('named') );
+        $this->assertEquals( null, Dba::connect('named') );
+        $this->assertEquals( null, Dba::connectWrite('named') );
     }
 
     /**

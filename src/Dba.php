@@ -41,7 +41,7 @@ class Dba extends SqlDB
      * @param string $name
      * @return ExtendedPdo
      */
-    public static function db($name=null)
+    public static function connect($name=null)
     {
         return static::getDba()->connect($name);
     }
@@ -50,7 +50,7 @@ class Dba extends SqlDB
      * @param string $name
      * @return ExtendedPdo
      */
-    public static function dbWrite($name=null)
+    public static function connectWrite($name=null)
     {
         return static::getDba()->connectWrite($name);
     }

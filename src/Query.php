@@ -68,7 +68,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     protected function setPdoAndDbType( $type='' )
     {
-        $method = 'db'.ucwords($type);
+        $method = 'connect'.ucwords($type);
         /** @var ExtendedPdo $pdo */
         if( $pdo = Dba::$method( $this->connectName ) ) {
             $this->dbType = $pdo->getAttribute( \Pdo::ATTR_DRIVER_NAME );

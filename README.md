@@ -57,8 +57,8 @@ getting the Pdo object for db connection. The ```ExtendedPdo```
  in Aura/Sql is returned.
 
 ```php
-$pdo = Dba::db();
-$pdo2 = Dba::dbWrite();
+$pdo = Dba::connect();
+$pdo2 = Dba::connectWrite();
 ```
 
 returns the connection for reading if write connection is not set.
@@ -73,7 +73,7 @@ Dba::config( 'log', [
     'dsn' => 'mysql',...
 ] );
 // then get PDO as:
-$pdo = Dba::db( 'log' );
+$pdo = Dba::connect( 'log' );
 ```
 
 Data Access Object
