@@ -20,13 +20,13 @@ Sample Usage
 
 ### configuration
 
-Uses static Dba class as a gateway (aka facade) to database
-manager (DbAccess class).
+Uses static ```DB``` class as a gateway (aka facade) to database
+manager (```DbAccess``` class).
 
-Use ```config()``` method to configure the db connection.
+Use ```DB::config()``` method to configure the db connection.
 
 ```php
-Dba::config( [
+DB::config( [
     'dsn'  => 'mysql:host=localhost;dbname=name;charset=utf',
     'user' => 'username',
     'pass' => 'password',
@@ -42,10 +42,10 @@ Specify ```for``` in the configuration to connect to different
 databases for reading and writing.
 
 ```php
-Dba::config( [
+DB::config( [
     'dsn'  => '...',
 ] );
-Dba::config( [
+DB::config( [
     'dsn'  => '...',
     'for'  => 'write',
 ] );
@@ -57,8 +57,8 @@ getting the Pdo object for db connection. The ```ExtendedPdo```
  in Aura/Sql is returned.
 
 ```php
-$pdo = Dba::connect();
-$pdo2 = Dba::connectWrite();
+$pdo = DB::connect();
+$pdo2 = DB::connectWrite();
 ```
 
 returns the connection for reading if write connection is not set.
@@ -69,11 +69,11 @@ returns the connection for reading if write connection is not set.
 Configure different database connection using names.
 
 ```php
-Dba::config( 'log', [
+DB::config( 'log', [
     'dsn' => 'mysql',...
 ] );
 // then get PDO as:
-$pdo = Dba::connect( 'log' );
+$pdo = DB::connect( 'log' );
 ```
 
 Data Access Object
@@ -282,7 +282,7 @@ WISHES WISHES WISHES
 for transaction, use the Pdo (ExtendedPdo)'s transaction method.
 
 ```php
-Dba::db()->transaction( function() {
+DB::db()->transaction( function() {
     // do database access.
 } );
 ```
