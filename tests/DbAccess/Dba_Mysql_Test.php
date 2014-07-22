@@ -1,7 +1,7 @@
 <?php
 namespace tests\DbAccess;
 
-use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\DB;
 use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
@@ -22,15 +22,15 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
 
     static function setupBeforeClass()
     {
-        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
-        Dba::reset();
+        DB::reset();
     }
 
     function test_mysql_create()
     {
-        Dba::config( include( __DIR__ . '/configs/mysql-config.php' ) );
-        $pdo = Dba::connect();
+        DB::config( include( __DIR__ . '/configs/mysql-config.php' ) );
+        $pdo = DB::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         $pdo->query( include( __DIR__ . '/configs/mysql-create.php' ) );
@@ -38,8 +38,8 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
 
     function test_pgsql_create()
     {
-        Dba::config( include( __DIR__ . '/configs/pgsql-config.php' ) );
-        $pdo = Dba::connect();
+        DB::config( include( __DIR__ . '/configs/pgsql-config.php' ) );
+        $pdo = DB::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         $pdo->query( include( __DIR__ . '/configs/pgsql-create.php' ) );

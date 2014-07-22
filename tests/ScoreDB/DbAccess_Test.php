@@ -1,7 +1,7 @@
 <?php
 namespace tests\ScoreDB;
 
-use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\DB;
 use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
@@ -15,7 +15,7 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
     
     function setup()
     {
-        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
         $this->dba = new DbAccess();
     }
@@ -30,17 +30,17 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
      */
     function Dba_config_and_db_returns_the_config()
     {
-        Dba::config( function() {
+        DB::config( function() {
             return 'tested';
         } );
-        $this->assertEquals( 'tested', Dba::connect() );
-        $this->assertEquals( 'tested', Dba::connectWrite() );
+        $this->assertEquals( 'tested', DB::connect() );
+        $this->assertEquals( 'tested', DB::connectWrite() );
 
-        Dba::config( 'named', function() {
+        DB::config( 'named', function() {
             return 'named-tested';
         } );
-        $this->assertEquals( 'named-tested', Dba::connect('named') );
-        $this->assertEquals( 'named-tested', Dba::connectWrite('named') );
+        $this->assertEquals( 'named-tested', DB::connect('named') );
+        $this->assertEquals( 'named-tested', DB::connectWrite('named') );
     }
 
     /**
@@ -48,15 +48,15 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
      */
     function Dba_reset_returns_null()
     {
-        Dba::config( function() {
+        DB::config( function() {
             return 'tested';
         } );
-        $this->assertEquals( 'tested', Dba::connect() );
-        $this->assertEquals( 'tested', Dba::connectWrite() );
+        $this->assertEquals( 'tested', DB::connect() );
+        $this->assertEquals( 'tested', DB::connectWrite() );
 
-        Dba::restart();
-        $this->assertEquals( null, Dba::connect('named') );
-        $this->assertEquals( null, Dba::connectWrite('named') );
+        DB::restart();
+        $this->assertEquals( null, DB::connect('named') );
+        $this->assertEquals( null, DB::connectWrite('named') );
     }
 
     /**

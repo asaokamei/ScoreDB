@@ -11,7 +11,7 @@ use WScore\ScoreSql\DB as SqlDB;
  * for DataBase Access.
  *
  */
-class Dba extends SqlDB
+class DB extends SqlDB
 {
     /**
      * @var DbAccess

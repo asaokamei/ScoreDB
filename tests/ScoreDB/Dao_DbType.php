@@ -2,7 +2,7 @@
 namespace tests\ScoreDB;
 
 use tests\ScoreDB\Dao\User;
-use WScore\ScoreDB\Dba;
+use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Paginate;
 use WScore\ScoreSql\Sql\Join;
 use WScore\ScoreSql\Sql\Where;
@@ -16,11 +16,11 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
     static function setupBeforeClass()
     {
-        class_exists( 'WScore\ScoreDB\Dba' );
+        class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
         class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
         class_exists( 'tests\ScoreDB\Dao\User' );
-        Dba::restart();
+        DB::restart();
     }
 
     function setup()
@@ -30,15 +30,15 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
     function teardown()
     {
-        Dba::restart();
+        DB::restart();
     }
 
     function prepareTest( $dbType )
     {
-        Dba::restart();
+        DB::restart();
         /** @noinspection PhpIncludeInspection */
-        Dba::config( include( __DIR__ . "/configs/{$dbType}-config.php" ) );
-        $pdo = Dba::connect();
+        DB::config( include( __DIR__ . "/configs/{$dbType}-config.php" ) );
+        $pdo = DB::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         /** @noinspection PhpIncludeInspection */
@@ -363,7 +363,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
     function dba_query_returns_active_query()
     {
         $userData = $this->makeUserData();
-        $user = Dba::query( 'dao_user', 'user_id' );
+        $user = DB::query( 'dao_user', 'user_id' );
         $id = $user->insert( $userData );
         $this->assertEquals( 1, $id );
 
@@ -383,13 +383,13 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
      */
     function profile()
     {
-        Dba::getDba()->useProfile();
+        DB::getDba()->useProfile();
 
         $user = $this->makeUserData();
         $id = $this->user->insert( $user );
         $this->assertEquals( 1, $id );
 
-        $profiler = Dba::getDba()->getProfiler();
+        $profiler = DB::getDba()->getProfiler();
         $this->assertEquals( 'Aura\Sql\Profiler', get_class( $profiler ) );
         $profile = $profiler->getProfiles();
         $this->assertTrue( is_array( $profile ) );
