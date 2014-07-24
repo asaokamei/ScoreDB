@@ -21,7 +21,8 @@ trait TimeStampTrait
      * time stamps config.
      *
      * $timeStamps = array(
-     *    type => [ column-name, [ column-name, datetime-format ] ],
+     *    'created_at' => [ column-name, [ column-name => datetime-format ] ],
+     *    'updated_at' => [ column-name, [ column-name => datetime-format ] ],
      * );
      * where
      * - types are created_at or updated_at.
@@ -35,20 +36,6 @@ trait TimeStampTrait
         'updated_at' => [ 'updated_at' ],
     );
     */
-    /**
-     * time stamps config.
-     * overwrite this property in your DAO class.
-     *
-     * $timeStamps = array(
-     *    type => [ column-name, [ column-name, datetime-format ] ],
-     * );
-     * where
-     * - types are created_at or updated_at.
-     * - list the column-name, or array of column-name with datetime-format.
-     *
-     *
-     * @var array
-     */
 
     /**
      * @param array $data
