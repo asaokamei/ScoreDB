@@ -5,7 +5,9 @@ use WScore\ScoreDB\Hook\Hooks;
 
 class Dao extends Query
 {
-    use DaoTrait;
+    use Dao\TimeStampTrait;
+
+    use Dao\TableAndKeyNameTrait;
 
     /**
      * time stamps config.
@@ -36,16 +38,6 @@ class Dao extends Query
             $this->setHook( $hook );
         }
         $this->hook( 'constructing' );
-
-        if( !$this->table ) {
-            $this->table = get_class($this);
-            if( false!==strpos($this->table, '\\') ) {
-                $this->table = substr( $this->table, strrpos($this->table,'\\')+1 );
-            }
-        }
-        if( !$this->keyName ) {
-            $this->keyName = $this->table . '_id';
-        }
         $this->hook( 'constructed' );
     }
 

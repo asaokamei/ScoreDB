@@ -1,5 +1,5 @@
 <?php
-namespace WScore\ScoreDB;
+namespace WScore\ScoreDB\Dao;
 
 use DateTime;
 
@@ -10,7 +10,7 @@ use DateTime;
  * a trait to behave like a DAO.
  * the class must have or extend the QueryInterface.
  */
-trait DaoTrait
+trait TimeStampTrait
 {
     /**
      * @var DateTime

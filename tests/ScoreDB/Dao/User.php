@@ -2,7 +2,7 @@
 namespace tests\ScoreDB\Dao;
 
 use WScore\ScoreDB\Dao;
-use WScore\ScoreDB\DaoTrait;
+use WScore\ScoreDB\TimeStampTrait;
 use WScore\ScoreDB\Query;
 
 /**
