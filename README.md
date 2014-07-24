@@ -76,6 +76,23 @@ DB::config( 'log', [
 $pdo = DB::connect( 'log' );
 ```
 
+Querying Database
+-----------------
+
+Use ```DB::query()``` to get a query object to access database.
+ Please refer to ScoreSql to find out how to manipulate the query.
+
+```php
+$result = DB::query( 'myTable' )
+    ->connect( 'conn' )
+    ->where( DB::given( 'status' )->is( 5 ) )
+    ->select();
+```
+
+The ```connect()``` maybe omitted if the default connection is used.
+
+
+
 Data Access Object
 ------------------
 
