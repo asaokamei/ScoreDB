@@ -406,7 +406,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $user = $this->user;
         $found = $this->user->
             table( 'dao_user', 'u1' )->
-            join( Join::left( 'dao_user', 'u2' )->
+            join( DB::join( 'dao_user', 'u2' )->left()->
                 on( Where::column('status')->identical( 'u1.status' ) )
             )
             ->where( $user->user_id->is(1) )
