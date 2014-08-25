@@ -35,6 +35,14 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     protected $filteredData = null;
 
+    /**
+     * default fetch method for performRead.
+     * set to 'perform' to get PDOStatement.
+     *
+     * @var string
+     */
+    protected $pdoMethod = 'fetchAll';
+
     // +----------------------------------------------------------------------+
     //  managing database connection, etc.
     // +----------------------------------------------------------------------+
@@ -89,10 +97,25 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * @param string $method
      * @return mixed
      */
-    protected function performRead( $method='fetchAll' )
+    protected function performRead( $method=null )
     {
+        if( !$method ) $method = $this->pdoMethod;
         $pdo = $this->setPdoAndDbType();
-        return $this->perform( $pdo, $method );
+        $stm = $this->perform( $pdo, $method );
+        if( is_object($stm) && $stm instanceof \PdoStatement ) {
+            $this->setFetchMode( $stm );
+        }
+        return $stm;
+    }
+
+    /**
+     * overwrite this method to set fetch mode.
+     *
+     * @param \PdoStatement $stm
+     */
+    protected function setFetchMode( $stm )
+    {
+        $stm->setFetchMode( \PDO::FETCH_ASSOC );
     }
 
     /**
@@ -170,7 +193,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         $limit = $this->hook( 'selecting', $limit );
         if( $limit ) $this->limit($limit);
         $this->toSelect();
-        $data = $this->performRead( 'fetchAll' );
+        $data = $this->performRead();
         $data = $this->hook( 'selected', $data );
         $this->reset();
         return $data;
@@ -207,7 +230,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     {
         list( $id, $column ) = $this->hook( 'loading', [ $id, $column ] );
         $this->key($id, $column);
-        $data = $this->performRead( 'fetchAll' );
+        $data = $this->performRead();
         $data = $this->hook( 'loaded', $data );
         $this->reset();
         return $data;
