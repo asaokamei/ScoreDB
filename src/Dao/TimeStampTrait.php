@@ -35,6 +35,8 @@ trait TimeStampTrait
         'created_at' => [ 'created_at', 'created_date' => 'Y-m-d' ],
         'updated_at' => [ 'updated_at' ],
     );
+
+    protected $dateTimeFormat = 'Y-m-d H:i:s';
     */
 
     /**
@@ -78,7 +80,7 @@ trait TimeStampTrait
         foreach( $filters as $column => $format ) {
             if( is_numeric( $column ) ) {
                 $column = $format;
-                $format = 'Y-m-d H:i:s';
+                $format = $this->dateTimeFormat;
             }
             $data[ $column ] = static::$now->format( $format );
         }
