@@ -56,7 +56,9 @@ class EntityObject implements \ArrayAccess
      */
     public function get( $offset )
     {
-        return $this->exists( $offset ) ? $this->data[$offset] : null;
+        $found = $this->exists( $offset ) ? $this->data[$offset] : null;
+        $found = $this->dao->mutate( $offset, $found );
+        return $found;
     }
 
     /**
@@ -76,7 +78,7 @@ class EntityObject implements \ArrayAccess
      */
     public function set( $offset, $value )
     {
-        $this->data[$offset] = $value;
+        $this->data[$offset] = $this->dao->muteBack( $offset, $value );
         return $this;
     }
 

@@ -49,4 +49,24 @@ class Dao extends Query
         /** @var Dao $self */
         return new static( new Hooks() );
     }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     * @return mixed
+     */
+    public function mutate( $key, $value )
+    {
+        return $this->hooks->mutate( $key, $value, 'set' );
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     * @return mixed
+     */
+    public function muteBack( $key, $value )
+    {
+        return $this->hooks->mutate( $key, $value, 'get' );
+    }
 }

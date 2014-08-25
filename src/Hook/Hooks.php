@@ -81,4 +81,20 @@ class Hooks
         return $data;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @param $prefix
+     * @return mixed
+     */
+    public function mutate( $name, $value, $prefix )
+    {
+        $method = $prefix.ucfirst($name).'Attribute';
+        foreach( $this->hooks as $hook ) {
+
+            if( !method_exists( $hook, $method ) ) continue;
+            return $hook->$method( $name, $value );
+        }
+        return $value;
+    }
 }
