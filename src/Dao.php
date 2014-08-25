@@ -10,6 +10,16 @@ class Dao extends Query
     use Dao\TableAndKeyNameTrait;
 
     /**
+     * @var string    name of table.
+     */
+    protected $table;
+
+    /**
+     * @var string    name of (primary) key.
+     */
+    protected $keyName;
+
+    /**
      * time stamps config.
      *
      * $timeStamps = array(
@@ -45,6 +55,9 @@ class Dao extends Query
      */
     protected $fillable = array();
 
+    // +----------------------------------------------------------------------+
+    //  construction and object management
+    // +----------------------------------------------------------------------+
     /**
      * sets table and keyName from class name if they are not set.
      *
@@ -67,6 +80,14 @@ class Dao extends Query
     {
         /** @var Dao $self */
         return new static( new Hooks() );
+    }
+
+    // +----------------------------------------------------------------------+
+    //  get/set values.
+    // +----------------------------------------------------------------------+
+    public function getKeyName()
+    {
+        return $this->keyName;
     }
 
     /**

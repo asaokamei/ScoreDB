@@ -16,12 +16,23 @@ class EntityObject implements \ArrayAccess
     protected $dao;
 
     /**
+     * check if this entity object is fetched from db.
+     * the $this->data is filled before constructor is called.
+     *
+     * @var bool
+     */
+    protected $isFetched = false;
+
+    /**
      * allow to set/alter values via magic __set method.
      *
      * @var bool
      */
     protected $modsBySet = true;
 
+    // +----------------------------------------------------------------------+
+    //  constructors and managing values
+    // +----------------------------------------------------------------------+
     /**
      * @param Dao $dao
      */
@@ -29,6 +40,9 @@ class EntityObject implements \ArrayAccess
     {
         $this->dao       = $dao;
         $this->modsBySet = false;
+        if( !empty($this->data) ) {
+            $this->isFetched = true;
+        }
     }
 
     /**
@@ -55,7 +69,7 @@ class EntityObject implements \ArrayAccess
 
     /**
      * @param $key
-     * @return null
+     * @return mixed
      */
     public function get( $key )
     {
@@ -82,6 +96,45 @@ class EntityObject implements \ArrayAccess
     public function set( $key, $value )
     {
         $this->data[$key] = $this->dao->muteBack( $key, $value );
+        return $this;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  simple Active Record
+    // +----------------------------------------------------------------------+
+    /**
+     * @return mixed
+     */
+    public function getKey()
+    {
+        $key = $this->dao->getKeyName();
+        return $this->get($key);
+    }
+
+    /**
+     * @return $this
+     */
+    public function save()
+    {
+        if( $this->isFetched ) {
+            $this->dao->key( $this->getKey() );
+            $this->dao->update( $this->data );
+        } else {
+            $this->dao->insert( $this->data );
+        }
+        return $this;
+    }
+
+    /**
+     * deletes
+     *
+     * @return $this
+     */
+    public function delete()
+    {
+        if( $this->isFetched ) {
+            $this->dao->update( $this->getKey() );
+        }
         return $this;
     }
 
