@@ -37,48 +37,51 @@ class EntityObject implements \ArrayAccess
      */
     public function fill( $data )
     {
-        $this->data = array_merge( $this->data, $data );
+        $data = $this->dao->filterFillable($data);
+        foreach( $data as $key => $value ) {
+            $this->set( $key, $value );
+        }
         return $this;
     }
 
     /**
-     * @param $offset
+     * @param $key
      * @return null
      */
-    public function __get( $offset )
+    public function __get( $key )
     {
-        return $this->get( $offset );
+        return $this->get( $key );
     }
 
     /**
-     * @param $offset
+     * @param $key
      * @return null
      */
-    public function get( $offset )
+    public function get( $key )
     {
-        $found = $this->exists( $offset ) ? $this->data[$offset] : null;
-        $found = $this->dao->mutate( $offset, $found );
+        $found = $this->exists( $key ) ? $this->data[$key] : null;
+        $found = $this->dao->mutate( $key, $found );
         return $found;
     }
 
     /**
      * Whether a offset exists
-     * @param mixed $offset
+     * @param mixed $key
      * @return boolean
      */
-    public function exists( $offset )
+    public function exists( $key )
     {
-        return isset( $this->data[$offset] );
+        return isset( $this->data[$key] );
     }
 
     /**
-     * @param string $offset
+     * @param string $key
      * @param mixed $value
      * @return $this
      */
-    public function set( $offset, $value )
+    public function set( $key, $value )
     {
-        $this->data[$offset] = $this->dao->muteBack( $offset, $value );
+        $this->data[$key] = $this->dao->muteBack( $key, $value );
         return $this;
     }
 
@@ -87,51 +90,51 @@ class EntityObject implements \ArrayAccess
     // +----------------------------------------------------------------------+
     /**
      * Whether a offset exists
-     * @param mixed $offset
+     * @param mixed $key
      * @return boolean
      */
-    public function offsetExists( $offset )
+    public function offsetExists( $key )
     {
-        return $this->exists( $offset );
+        return $this->exists( $key );
     }
 
     /**
      * Offset to retrieve
-     * @param mixed $offset
+     * @param mixed $key
      * @return mixed
      */
-    public function offsetGet( $offset )
+    public function offsetGet( $key )
     {
-        return $this->get( $offset );
+        return $this->get( $key );
     }
 
     /**
      * sets value to offset, only if the offset is not in the property list.
      *
-     * @param mixed $offset
+     * @param mixed $key
      * @param mixed $value
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function offsetSet( $offset, $value )
+    public function offsetSet( $key, $value )
     {
         if( !$this->modsBySet ) {
             throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
         }
-        $this->set( $offset, $value );
+        $this->set( $key, $value );
     }
 
     /**
-     * @param mixed $offset
+     * @param mixed $key
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function offsetUnset( $offset )
+    public function offsetUnset( $key )
     {
         if( !$this->modsBySet ) {
             throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
         }
-        if( isset( $this->data[$offset]) ) unset( $this->data[$offset] );
+        if( isset( $this->data[$key]) ) unset( $this->data[$key] );
     }
 
     // +----------------------------------------------------------------------+

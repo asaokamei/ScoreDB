@@ -39,6 +39,13 @@ class Dao extends Query
     protected $dates = array();
 
     /**
+     * specify the keys that are fillable.
+     *
+     * @var array
+     */
+    protected $fillable = array();
+
+    /**
      * sets table and keyName from class name if they are not set.
      *
      * @param Hooks $hook
@@ -83,5 +90,19 @@ class Dao extends Query
     public function muteBack( $key, $value )
     {
         return $this->hooks->mutate( $key, $value, 'get' );
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function filterFillable( $data )
+    {
+        foreach( $data as $key => $value ) {
+            if( !in_array( $key, $this->fillable ) ) {
+                unset( $data[$key] );
+            }
+        }
+        return $data;
     }
 }
