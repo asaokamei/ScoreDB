@@ -49,15 +49,4 @@ class Dao extends Query
         /** @var Dao $self */
         return new static( new Hooks() );
     }
-
-    /**
-     * @param $method
-     * @param $args
-     * @return mixed
-     */
-    public static function __callStatic( $method, $args )
-    {
-        $query = self::query();
-        return call_user_func_array( [$query,$method], $args );
-    }
 }
