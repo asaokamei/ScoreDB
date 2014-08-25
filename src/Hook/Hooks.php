@@ -60,16 +60,19 @@ class Hooks
      */
     public function hook( $event, $data=null )
     {
+        $method = 'on'.ucfirst($event).'Hook';
         foreach( $this->hooks as $hook ) {
 
-            if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Hook' ) ) continue;
+            if( !method_exists( $hook, $method ) ) continue;
             $hook->$method( $data );
             if( !$hook instanceof HookObjectInterface ) continue;
             if( $hook->isLoopBreak() ) break;
         }
+
+        $method = 'on'.ucfirst($event).'Filter';
         foreach( $this->hooks as $hook ) {
 
-            if( !method_exists( $hook, $method = 'on'.ucfirst($event).'Filter' ) ) continue;
+            if( !method_exists( $hook, $method ) ) continue;
             $data = $hook->$method( $data );
             if( !$hook instanceof HookObjectInterface ) continue;
             if( $hook->toUseFilterData() ) {
