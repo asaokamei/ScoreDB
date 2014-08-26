@@ -3,6 +3,16 @@ namespace WScore\ScoreDB\Entity;
 
 use WScore\ScoreDB\Dao;
 
+/**
+ * Class EntityObject
+ * @package WScore\ScoreDB\Entity
+ *
+ * A generic entity object class, with Active Record type feature.
+ *
+ * set fetch mode to PDO::FETCH_CLASS in PDOStatement when
+ * retrieving data as EntityObject.
+ *
+ */
 class EntityObject implements \ArrayAccess
 {
     /**
@@ -22,6 +32,11 @@ class EntityObject implements \ArrayAccess
      * @var bool
      */
     protected $isFetched = false;
+
+    /**
+     * @var bool   set to true to disable db access (save and delete).
+     */
+    protected $immuneDbAccess = false;
 
     /**
      * allow to set/alter values via magic __set method.
@@ -45,6 +60,74 @@ class EntityObject implements \ArrayAccess
         }
     }
 
+    // +----------------------------------------------------------------------+
+    //  database access
+    // +----------------------------------------------------------------------+
+    /**
+     * @return mixed
+     */
+    public function getKey()
+    {
+        $key = $this->dao->getKeyName();
+        return $this->get($key);
+    }
+
+    /**
+     * @throws \BadMethodCallException
+     * @return $this
+     */
+    public function save()
+    {
+        if( $this->isImmune() ) {
+            throw new \BadMethodCallException();
+        }
+        if( $this->isFetched ) {
+            $this->dao->key( $this->getKey() );
+            $this->dao->update( $this->data );
+        } else {
+            $this->dao->insert( $this->data );
+        }
+        return $this;
+    }
+
+    /**
+     * deletes
+     *
+     * @throws \BadMethodCallException
+     * @return $this
+     */
+    public function delete()
+    {
+        if( $this->isImmune() ) {
+            throw new \BadMethodCallException();
+        }
+        if( $this->isFetched ) {
+            $this->dao->update( $this->getKey() );
+        }
+        return $this;
+    }
+
+    /**
+     * @param bool $immune
+     * @return $this
+     */
+    public function immune($immune=true)
+    {
+        $this->immuneDbAccess = $immune;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isImmune()
+    {
+        return $this->immuneDbAccess;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  property accessor
+    // +----------------------------------------------------------------------+
     /**
      * @param $data
      * @return $this
@@ -96,45 +179,6 @@ class EntityObject implements \ArrayAccess
     public function set( $key, $value )
     {
         $this->data[$key] = $this->dao->muteBack( $key, $value );
-        return $this;
-    }
-
-    // +----------------------------------------------------------------------+
-    //  simple Active Record
-    // +----------------------------------------------------------------------+
-    /**
-     * @return mixed
-     */
-    public function getKey()
-    {
-        $key = $this->dao->getKeyName();
-        return $this->get($key);
-    }
-
-    /**
-     * @return $this
-     */
-    public function save()
-    {
-        if( $this->isFetched ) {
-            $this->dao->key( $this->getKey() );
-            $this->dao->update( $this->data );
-        } else {
-            $this->dao->insert( $this->data );
-        }
-        return $this;
-    }
-
-    /**
-     * deletes
-     *
-     * @return $this
-     */
-    public function delete()
-    {
-        if( $this->isFetched ) {
-            $this->dao->update( $this->getKey() );
-        }
         return $this;
     }
 
