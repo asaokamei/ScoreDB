@@ -160,7 +160,7 @@ class ActiveRecord
     {
         $data = $this->dao->filterFillable($data);
         foreach( $data as $key => $value ) {
-            $this->set( $key, $value );
+            $this->__set( $key, $value );
         }
         return $this;
     }
@@ -171,7 +171,11 @@ class ActiveRecord
      */
     public function __get( $key )
     {
-        return $this->get( $key );
+        $value = $this->_getRaw($key);
+        if( $this->dao ) {
+            $value = $this->dao->mutate( $key, $value );
+        }
+        return $value;
     }
 
     /**
@@ -184,7 +188,10 @@ class ActiveRecord
         if( !$this->modsBySet ) {
             throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
         }
-        $this->set( $key, $value );
+        if( $this->dao ) {
+            $value = $this->dao->muteBack( $key, $value );
+        }
+        $this->data[$key] = $value;
     }
 
     /**
@@ -193,47 +200,7 @@ class ActiveRecord
      */
     public function __isset( $key )
     {
-        return $this->exists( $key );
-    }
-
-    /**
-     * @param $key
-     * @return mixed
-     */
-    public function get( $key )
-    {
-        $found = $this->dao->mutate( $key, $this->getRaw($key) );
-        return $found;
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function getRaw( $key )
-    {
-        return $this->exists( $key ) ? $this->data[$key] : null;
-    }
-
-    /**
-     * Whether a offset exists
-     * @param mixed $key
-     * @return boolean
-     */
-    public function exists( $key )
-    {
         return isset( $this->data[$key] );
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     * @return $this
-     */
-    public function set( $key, $value )
-    {
-        $this->data[$key] = $this->dao->muteBack( $key, $value );
-        return $this;
     }
 
     /**
@@ -241,15 +208,24 @@ class ActiveRecord
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function unsetData( $key )
+    public function __unset( $key )
     {
         if( isset( $this->data[$key]) ) unset( $this->data[$key] );
     }
 
     /**
+     * @param string $key
+     * @return mixed
+     */
+    public function _getRaw( $key )
+    {
+        return $this->__isset( $key ) ? $this->data[$key] : null;
+    }
+
+    /**
      * @return array
      */
-    public function getModified()
+    public function _getModified()
     {
         $modified = array();
         foreach ( $this->data as $key => $value ) {
