@@ -21,6 +21,11 @@ class EntityObject implements \ArrayAccess
     protected $data = array();
 
     /**
+     * @var array
+     */
+    protected $original_data = array();
+
+    /**
      * @var Dao
      */
     protected $dao;
@@ -57,6 +62,7 @@ class EntityObject implements \ArrayAccess
         $this->modsBySet = false;
         if( !empty($this->data) ) {
             $this->isFetched = true;
+            $this->original_data = $this->data;
         }
     }
 
@@ -82,8 +88,9 @@ class EntityObject implements \ArrayAccess
             throw new \BadMethodCallException();
         }
         if( $this->isFetched ) {
+            $modified = $this->getModified();
             $this->dao->key( $this->getKey() );
-            $this->dao->update( $this->data );
+            $this->dao->update( $modified );
         } else {
             $this->dao->insert( $this->data );
         }
@@ -125,11 +132,19 @@ class EntityObject implements \ArrayAccess
         return $this->immuneDbAccess;
     }
 
+    /**
+     * @return bool
+     */
+    public function isFetched()
+    {
+        return $this->isFetched;
+    }
+
     // +----------------------------------------------------------------------+
     //  property accessor
     // +----------------------------------------------------------------------+
     /**
-     * @param $data
+     * @param array $data
      * @return $this
      */
     public function fill( $data )
@@ -142,12 +157,34 @@ class EntityObject implements \ArrayAccess
     }
 
     /**
-     * @param $key
-     * @return null
+     * @param string $key
+     * @return mixed
      */
     public function __get( $key )
     {
         return $this->get( $key );
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     * @throws \InvalidArgumentException
+     */
+    public function __set( $key, $value )
+    {
+        if( !$this->modsBySet ) {
+            throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
+        }
+        $this->set( $key, $value );
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function __isset( $key )
+    {
+        return $this->exists( $key );
     }
 
     /**
@@ -156,9 +193,17 @@ class EntityObject implements \ArrayAccess
      */
     public function get( $key )
     {
-        $found = $this->exists( $key ) ? $this->data[$key] : null;
-        $found = $this->dao->mutate( $key, $found );
+        $found = $this->dao->mutate( $key, $this->getRaw($key) );
         return $found;
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function getRaw( $key )
+    {
+        return $this->exists( $key ) ? $this->data[$key] : null;
     }
 
     /**
@@ -182,6 +227,29 @@ class EntityObject implements \ArrayAccess
         return $this;
     }
 
+    /**
+     * @param mixed $key
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function unsetData( $key )
+    {
+        if( isset( $this->data[$key]) ) unset( $this->data[$key] );
+    }
+
+    /**
+     * @return array
+     */
+    public function getModified()
+    {
+        $modified = array();
+        foreach ( $this->data as $key => $value ) {
+            if ( !array_key_exists( $key, $this->original_data ) || $value !== $this->original_data[ $key ] ) {
+                $modified[ $key ] = $value;
+            }
+        }
+        return $modified;
+    }
     // +----------------------------------------------------------------------+
     //  for ArrayAccess. restricted access via array access.
     // +----------------------------------------------------------------------+
@@ -231,7 +299,7 @@ class EntityObject implements \ArrayAccess
         if( !$this->modsBySet ) {
             throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
         }
-        if( isset( $this->data[$key]) ) unset( $this->data[$key] );
+        $this->unsetData($key);
     }
 
     // +----------------------------------------------------------------------+
