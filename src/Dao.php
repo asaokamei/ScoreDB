@@ -55,6 +55,11 @@ class Dao extends Query
      */
     protected $fillable = array();
 
+    /**
+     * @var null|string
+     */
+    protected $fetch_class = null;
+
     // +----------------------------------------------------------------------+
     //  construction and object management
     // +----------------------------------------------------------------------+
@@ -82,12 +87,46 @@ class Dao extends Query
         return new static( new Hooks() );
     }
 
+    /**
+     * overwrite this method to set fetch mode.
+     *
+     * @param \PdoStatement $stm
+     * @return bool
+     */
+    protected function setFetchMode( $stm )
+    {
+        if( !$this->fetch_class ) {
+            return $stm->setFetchMode( \PDO::FETCH_ASSOC );
+        }
+        return $this->setFetchClass($stm);
+    }
+
+    /**
+     * @param \PdoStatement $stm
+     * @return bool
+     */
+    protected function setFetchClass( $stm )
+    {
+        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, $this );
+    }
+
     // +----------------------------------------------------------------------+
     //  get/set values.
     // +----------------------------------------------------------------------+
+    /**
+     * @return string
+     */
     public function getKeyName()
     {
         return $this->keyName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
     }
 
     /**
@@ -105,11 +144,20 @@ class Dao extends Query
 
     /**
      * @param string $key
-     * @param mixed  $value
-     * @return mixed
+     * @param mixed $value
+     * @throws \InvalidArgumentException
+     * @return string
      */
     public function muteBack( $key, $value )
     {
+        if( in_array($key, $this->dates) ) {
+            if( is_string($value) ) {
+                $value = new \DateTime($value);
+            } elseif( !$value instanceof \DateTime ) {
+                throw new \InvalidArgumentException();
+            }
+            return $value->format($this->dateTimeFormat);
+        }
         return $this->hooks->mutate( $key, $value, 'get' );
     }
 
@@ -126,4 +174,6 @@ class Dao extends Query
         }
         return $data;
     }
+
+    // +----------------------------------------------------------------------+
 }
