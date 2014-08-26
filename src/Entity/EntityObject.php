@@ -81,6 +81,9 @@ class EntityObject
     }
 
     /**
+     * saves to database.
+     * updates if fetched, inserted if it's a new entity.
+     *
      * @throws \BadMethodCallException
      * @return $this
      */
@@ -117,6 +120,8 @@ class EntityObject
     }
 
     /**
+     * disable save/delete to database.
+     *
      * @param bool $immune
      * @return $this
      */
@@ -127,6 +132,8 @@ class EntityObject
     }
 
     /**
+     * check if the entity object is immunized.
+     *
      * @return bool
      */
     public function isImmune()
@@ -135,6 +142,8 @@ class EntityObject
     }
 
     /**
+     * check if the entity object is fetched from database.
+     *
      * @return bool
      */
     public function isFetched()

@@ -3,6 +3,13 @@ namespace WScore\ScoreDB;
 
 use WScore\ScoreDB\Hook\Hooks;
 
+/**
+ * Class Dao
+ * @package WScore\ScoreDB
+ *
+ * A Data Access Object.
+ *
+ */
 class Dao extends Query
 {
     use Dao\TimeStampTrait;
@@ -88,20 +95,20 @@ class Dao extends Query
     }
 
     /**
-     * overwrite this method to set fetch mode.
-     *
      * @param \PdoStatement $stm
      * @return bool
      */
     protected function setFetchMode( $stm )
     {
-        if( !$this->fetch_class ) {
-            return $stm->setFetchMode( \PDO::FETCH_ASSOC );
+        if( $this->fetch_class ) {
+            return $this->setFetchClass($stm);
         }
-        return $this->setFetchClass($stm);
+        return $stm->setFetchMode( \PDO::FETCH_ASSOC );
     }
 
     /**
+     * overwrite this method to set fetch mode.
+     *
      * @param \PdoStatement $stm
      * @return bool
      */
@@ -114,6 +121,8 @@ class Dao extends Query
     //  get/set values.
     // +----------------------------------------------------------------------+
     /**
+     * get key name.
+     *
      * @return string
      */
     public function getKeyName()
@@ -122,6 +131,8 @@ class Dao extends Query
     }
 
     /**
+     * get table name.
+     *
      * @return string
      */
     public function getTable()
@@ -130,6 +141,8 @@ class Dao extends Query
     }
 
     /**
+     * mutate from a string to an object.
+     *
      * @param string $key
      * @param mixed  $value
      * @return mixed
@@ -143,6 +156,8 @@ class Dao extends Query
     }
 
     /**
+     * mutate back to a string from an object.
+     *
      * @param string $key
      * @param mixed $value
      * @throws \InvalidArgumentException
@@ -158,10 +173,15 @@ class Dao extends Query
             }
             return $value->format($this->dateTimeFormat);
         }
+        if( is_object($value) && method_exists( $value, '__toString') ) {
+            return (string) $value;
+        }
         return $this->hooks->mutate( $key, $value, 'get' );
     }
 
     /**
+     * filter data which has only fillable keys.
+     *
      * @param array $data
      * @return array
      */
