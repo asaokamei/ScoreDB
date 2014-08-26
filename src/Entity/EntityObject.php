@@ -7,12 +7,7 @@ use WScore\ScoreDB\Dao;
  * Class EntityObject
  * @package WScore\ScoreDB\Entity
  *
- * A generic entity object class, with Active Record type feature.
- *
- * set fetch mode to PDO::FETCH_CLASS in PDOStatement when
- * retrieving data as EntityObject.
- *
- * to enable ArrayAccess, use ArrayAccessTrait in your own EntityObject.
+ * A generic entity object class.
  *
  */
 class EntityObject
@@ -28,29 +23,12 @@ class EntityObject
     protected $original_data = array();
 
     /**
-     * @var Dao
-     */
-    protected $dao;
-
-    /**
      * check if this entity object is fetched from db.
      * the $this->data is filled before constructor is called.
      *
      * @var bool
      */
     protected $isFetched = false;
-
-    /**
-     * @var bool   set to true to disable db access (save and delete).
-     */
-    protected $immuneDbAccess = false;
-
-    /**
-     * allow to set/alter values via magic __set method.
-     *
-     * @var bool
-     */
-    protected $modsBySet = true;
 
     // +----------------------------------------------------------------------+
     //  constructors and managing values
@@ -60,8 +38,6 @@ class EntityObject
      */
     public function __construct( $dao )
     {
-        $this->dao       = $dao;
-        $this->modsBySet = false;
         if( !empty($this->data) ) {
             $this->isFetched = true;
             $this->original_data = $this->data;
@@ -71,76 +47,6 @@ class EntityObject
     // +----------------------------------------------------------------------+
     //  database access
     // +----------------------------------------------------------------------+
-    /**
-     * @return mixed
-     */
-    public function getKey()
-    {
-        $key = $this->dao->getKeyName();
-        return $this->get($key);
-    }
-
-    /**
-     * saves to database.
-     * updates if fetched, inserted if it's a new entity.
-     *
-     * @throws \BadMethodCallException
-     * @return $this
-     */
-    public function save()
-    {
-        if( $this->isImmune() ) {
-            throw new \BadMethodCallException();
-        }
-        if( $this->isFetched ) {
-            $modified = $this->getModified();
-            $this->dao->key( $this->getKey() );
-            $this->dao->update( $modified );
-        } else {
-            $this->dao->insert( $this->data );
-        }
-        return $this;
-    }
-
-    /**
-     * deletes
-     *
-     * @throws \BadMethodCallException
-     * @return $this
-     */
-    public function delete()
-    {
-        if( $this->isImmune() ) {
-            throw new \BadMethodCallException();
-        }
-        if( $this->isFetched ) {
-            $this->dao->update( $this->getKey() );
-        }
-        return $this;
-    }
-
-    /**
-     * disable save/delete to database.
-     *
-     * @param bool $immune
-     * @return $this
-     */
-    public function immune($immune=true)
-    {
-        $this->immuneDbAccess = $immune;
-        return $this;
-    }
-
-    /**
-     * check if the entity object is immunized.
-     *
-     * @return bool
-     */
-    public function isImmune()
-    {
-        return $this->immuneDbAccess;
-    }
-
     /**
      * check if the entity object is fetched from database.
      *
@@ -155,25 +61,12 @@ class EntityObject
     //  property accessor
     // +----------------------------------------------------------------------+
     /**
-     * @param array $data
-     * @return $this
-     */
-    public function fill( $data )
-    {
-        $data = $this->dao->filterFillable($data);
-        foreach( $data as $key => $value ) {
-            $this->set( $key, $value );
-        }
-        return $this;
-    }
-
-    /**
      * @param string $key
      * @return mixed
      */
     public function __get( $key )
     {
-        return $this->get( $key );
+        return $this->__isset( $key ) ? $this->data[$key] : null;
     }
 
     /**
@@ -183,10 +76,7 @@ class EntityObject
      */
     public function __set( $key, $value )
     {
-        if( !$this->modsBySet ) {
-            throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
-        }
-        $this->set( $key, $value );
+        $this->data[$key] = $value;
     }
 
     /**
@@ -195,47 +85,7 @@ class EntityObject
      */
     public function __isset( $key )
     {
-        return $this->exists( $key );
-    }
-
-    /**
-     * @param $key
-     * @return mixed
-     */
-    public function get( $key )
-    {
-        $found = $this->dao->mutate( $key, $this->getRaw($key) );
-        return $found;
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function getRaw( $key )
-    {
-        return $this->exists( $key ) ? $this->data[$key] : null;
-    }
-
-    /**
-     * Whether a offset exists
-     * @param mixed $key
-     * @return boolean
-     */
-    public function exists( $key )
-    {
         return isset( $this->data[$key] );
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     * @return $this
-     */
-    public function set( $key, $value )
-    {
-        $this->data[$key] = $this->dao->muteBack( $key, $value );
-        return $this;
     }
 
     /**
@@ -243,7 +93,7 @@ class EntityObject
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function unsetData( $key )
+    public function __unset( $key )
     {
         if( isset( $this->data[$key]) ) unset( $this->data[$key] );
     }
