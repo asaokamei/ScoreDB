@@ -19,7 +19,7 @@ trait ArrayAccessTrait
      */
     public function offsetExists( $key )
     {
-        return $this->exists( $key );
+        return $this->__isset( $key );
     }
 
     /**
@@ -29,7 +29,7 @@ trait ArrayAccessTrait
      */
     public function offsetGet( $key )
     {
-        return $this->get( $key );
+        return $this->__get( $key );
     }
 
     /**
@@ -42,10 +42,7 @@ trait ArrayAccessTrait
      */
     public function offsetSet( $key, $value )
     {
-        if( !$this->modsBySet ) {
-            throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
-        }
-        $this->set( $key, $value );
+        $this->__set( $key, $value );
     }
 
     /**
@@ -55,10 +52,7 @@ trait ArrayAccessTrait
      */
     public function offsetUnset( $key )
     {
-        if( !$this->modsBySet ) {
-            throw new \InvalidArgumentException( "Cannot modify property in Entity object" );
-        }
-        $this->unsetData($key);
+        $this->__unset($key);
     }
 
 }
