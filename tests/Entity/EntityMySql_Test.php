@@ -8,6 +8,16 @@ use WScore\ScoreDB\DB;
 
 class EntityMySql_Test extends \PHPUnit_Framework_TestCase
 {
+    static function setupBeforeClass()
+    {
+        class_exists( 'WScore\ScoreDB\DB' );
+        class_exists( 'WScore\ScoreDB\DbAccess' );
+        class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
+        class_exists( 'tests\Entity\Dao\User' );
+        class_exists( 'tests\Entity\Dao\UserDao' );
+        DB::restart();
+    }
+
     function setup()
     {
         $this->prepareTest('mysql');
@@ -30,7 +40,7 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         $pdo->query( include( dirname(__DIR__) . "/configs/{$dbType}-create.php" ) );
     }
 
-    function test0()
+    function xtest0()
     {
         $q = UserDao::query();
         $this->assertEquals( 'tests\Entity\Dao\UserDao', get_class($q) );
@@ -45,7 +55,11 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         $idx  = UserDao::query()->insert($data);
         $this->assertEquals( '1', $idx );
 
-        $user = UserDao::query()->load($idx);
-        //$this->assertEquals( 'tests\Entity\Dao\UserDao', get_class($user) );
+        $users = UserDao::query()->load($idx);
+        $this->assertEquals( 'PDOStatement', get_class($users) );
+
+        foreach( $users as $user ) {
+            //$this->assertEquals( 'PDOStatement', get_class($user) );
+        }
     }
 }

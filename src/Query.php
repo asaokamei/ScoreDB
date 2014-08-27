@@ -36,12 +36,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected $filteredData = null;
 
     /**
-     * default fetch method for performRead.
-     * set to 'perform' to get PDOStatement.
-     *
-     * @var string
+     * @var null|string
      */
-    protected $pdoMethod = 'fetchAll';
+    protected $fetch_class = null;
 
     // +----------------------------------------------------------------------+
     //  managing database connection, etc.
@@ -99,7 +96,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     protected function performRead( $method=null )
     {
-        if( !$method ) $method = $this->pdoMethod;
         $pdo = $this->setPdoAndDbType();
         $stm = $this->perform( $pdo, $method );
         if( is_object($stm) && $stm instanceof \PdoStatement ) {
@@ -112,11 +108,25 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * overwrite this method to set fetch mode.
      *
      * @param \PdoStatement $stm
-     * @return \PdoStatement|array
+     * @return bool
      */
     protected function setFetchMode( $stm )
     {
-        $stm->setFetchMode( \PDO::FETCH_ASSOC );
+        if( $this->fetch_class ) {
+            return $this->setFetchClass($stm);
+        }
+        return $stm->setFetchMode( \PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * overwrite this method to set fetch mode.
+     *
+     * @param \PdoStatement $stm
+     * @return bool
+     */
+    protected function setFetchClass( $stm )
+    {
+        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, [] );
     }
 
     /**
@@ -132,6 +142,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         }
         $sql = (string) $this;
         $bind  = $this->getBind();
+        if( !$method ) {
+            $method = $this->fetch_class ? 'perform' : 'fetchAll';
+        }
         return $pdo->$method( $sql, $bind );
     }
 
@@ -187,7 +200,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param null|int $limit
-     * @return array
+     * @return array|\PdoStatement
      */
     public function select($limit=null)
     {
@@ -225,7 +238,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * @param int    $id
      * @param string $column
-     * @return array
+     * @return array|\PdoStatement
      */
     public function load( $id, $column=null )
     {
@@ -304,7 +317,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * @param int $id
      * @param string $column
-     * @return string
+     * @return string|\PdoStatement
      */
     public function delete( $id=null, $column=null )
     {

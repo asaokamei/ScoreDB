@@ -95,18 +95,6 @@ class Dao extends Query
     }
 
     /**
-     * @param \PdoStatement $stm
-     * @return bool
-     */
-    protected function setFetchMode( $stm )
-    {
-        if( $this->fetch_class ) {
-            return $this->setFetchClass($stm);
-        }
-        return $stm->setFetchMode( \PDO::FETCH_ASSOC );
-    }
-
-    /**
      * overwrite this method to set fetch mode.
      *
      * @param \PdoStatement $stm
@@ -114,7 +102,7 @@ class Dao extends Query
      */
     protected function setFetchClass( $stm )
     {
-        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, $this );
+        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, [$this] );
     }
 
     // +----------------------------------------------------------------------+
