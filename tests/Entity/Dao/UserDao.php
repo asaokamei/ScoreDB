@@ -2,7 +2,6 @@
 namespace tests\Entity\Dao;
 
 use WScore\ScoreDB\Dao;
-use WScore\ScoreDB\TimeStampTrait;
 use WScore\ScoreDB\Query;
 
 /**
@@ -28,7 +27,7 @@ class UserDao extends Dao
         ],
     ];
 
-    protected $fetch_class = 'ScoreDB\Entity\EntityObject';
+    protected $fetch_class = 'WScore\ScoreDB\Entity\EntityObject';
 
     /**
      * @param Query $query

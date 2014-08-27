@@ -58,8 +58,9 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         $users = UserDao::query()->load($idx);
         $this->assertEquals( 'PDOStatement', get_class($users) );
 
-        foreach( $users as $user ) {
-            //$this->assertEquals( 'PDOStatement', get_class($user) );
-        }
+        $user = $users->fetch();
+        $this->assertEquals( 'WScore\ScoreDB\Entity\EntityObject', get_class($user) );
+        $this->assertEquals( $data['no_null'], $user->no_null );
     }
+
 }

@@ -101,7 +101,7 @@ class EntityObject
     /**
      * @return array
      */
-    public function getModified()
+    public function _getModified()
     {
         $modified = array();
         foreach ( $this->data as $key => $value ) {

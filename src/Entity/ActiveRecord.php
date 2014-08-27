@@ -75,7 +75,7 @@ class ActiveRecord
     public function getKey()
     {
         $key = $this->dao->getKeyName();
-        return $this->get($key);
+        return $this->__get($key);
     }
 
     /**
@@ -91,7 +91,7 @@ class ActiveRecord
             throw new \BadMethodCallException();
         }
         if( $this->isFetched ) {
-            $modified = $this->getModified();
+            $modified = $this->_getModified();
             $this->dao->key( $this->getKey() );
             $this->dao->update( $modified );
         } else {
