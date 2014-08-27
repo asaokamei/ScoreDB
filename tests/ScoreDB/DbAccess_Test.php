@@ -64,8 +64,8 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
      */
     function config_for_read_and_write()
     {
-        $configMy = include( __DIR__ . '/configs/mysql-config.php' );
-        $configPg = include( __DIR__ . '/configs/pgsql-config.php' );
+        $configMy = include( dirname(__DIR__) . '/configs/mysql-config.php' );
+        $configPg = include( dirname(__DIR__) . '/configs/pgsql-config.php' );
         $configPg['for'] = 'write';
         $this->dba->config( $configMy );
         $this->dba->config( $configPg );

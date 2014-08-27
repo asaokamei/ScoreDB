@@ -37,12 +37,12 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
     {
         DB::restart();
         /** @noinspection PhpIncludeInspection */
-        DB::config( include( __DIR__ . "/configs/{$dbType}-config.php" ) );
+        DB::config( include( dirname(__DIR__) . "/configs/{$dbType}-config.php" ) );
         $pdo = DB::connect();
         $sql = 'DROP TABLE IF EXISTS dao_user;';
         $pdo->query( $sql );
         /** @noinspection PhpIncludeInspection */
-        $pdo->query( include( __DIR__ . "/configs/{$dbType}-create.php" ) );
+        $pdo->query( include( dirname(__DIR__) . "/configs/{$dbType}-create.php" ) );
         $this->user = User::query();
     }
     
