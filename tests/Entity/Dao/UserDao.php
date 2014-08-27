@@ -27,6 +27,7 @@ class UserDao extends Dao
         ],
     ];
 
+    protected $dates = [ 'bday' ];
     protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
 
     /**
@@ -36,5 +37,18 @@ class UserDao extends Dao
     public function scopeStatus( $query, $status=1)
     {
         $this->where( $query->status->eq( $status ) );
+    }
+
+    public function setStatusAttribute($value)
+    {
+        return "Status-{$value}";
+    }
+
+    public function getStatusAttribute($value)
+    {
+        if( 'Status-' == substr($value, 0, 7) ) {
+            return substr($value, 8);
+        }
+        return $value;
     }
 }

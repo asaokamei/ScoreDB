@@ -158,7 +158,7 @@ class Dao extends Query
     public function mutate( $key, $value )
     {
         if( in_array($key, $this->dates) ) {
-            return new \DateTimeImmutable($value);
+            return new \DateTime($value);
         }
         return $this->hooks->mutate( $key, $value, 'set' );
     }

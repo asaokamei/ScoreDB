@@ -67,6 +67,24 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $idx, $user->getKey() );
         $this->assertEquals( true, $user->isFetched() );
 
+        // check dates
+        /** @var \DateTime $bday1 */
+        $bday1 = $user->bday;
+        $this->assertEquals( 'DateTime', get_class($bday1) );
+        $bday2 = clone($bday1);
+        $bday2->add( new \DateInterval('P3D') );
+        $user->bday = $bday2;
+        $bdayS = $user->_getRaw('bday');
+        $this->assertTrue( is_string($bdayS) );
+        $this->assertEquals( $bdayS, $bday2->format('Y-m-d H:i:s') );
+
+        // check mutation.
+        $status  = $user->_getRaw('status');
+        $status1 = $user->status;
+        $this->assertEquals( 'Status-'.$status, $status1 );
+        $user->status = 5;
+        $this->assertEquals( 'Status-5', $user->status );
+
         // modify some value.
         $user->no_null = $no_null = 'test-active-record';
         $this->assertEquals( $no_null, $user->no_null );

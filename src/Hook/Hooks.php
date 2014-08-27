@@ -97,7 +97,7 @@ class Hooks
         foreach( $this->hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) continue;
-            return $hook->$method( $name, $value );
+            return $hook->$method( $value );
         }
         return $value;
     }
