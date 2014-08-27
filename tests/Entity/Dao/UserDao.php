@@ -27,7 +27,7 @@ class UserDao extends Dao
         ],
     ];
 
-    protected $fetch_class = 'WScore\ScoreDB\Entity\EntityObject';
+    protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
 
     /**
      * @param Query $query

@@ -44,6 +44,8 @@ class Dao extends Query
     );
 
     /**
+     * date format used in the database system.
+     *
      * @var string
      */
     protected $dateTimeFormat = 'Y-m-d H:i:s';
@@ -63,6 +65,8 @@ class Dao extends Query
     protected $fillable = array();
 
     /**
+     * class name used as fetched object.
+     *
      * @var null|string
      */
     protected $fetch_class = null;
@@ -106,6 +110,8 @@ class Dao extends Query
     }
 
     /**
+     * magic for scope methods.
+     *
      * @param $method
      * @param $args
      * @return $this

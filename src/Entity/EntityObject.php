@@ -23,6 +23,11 @@ class EntityObject
     protected $original_data = array();
 
     /**
+     * @var Dao
+     */
+    protected $dao;
+
+    /**
      * check if this entity object is fetched from db.
      * the $this->data is filled before constructor is called.
      *
@@ -38,6 +43,7 @@ class EntityObject
      */
     public function __construct( $dao )
     {
+        $this->dao = $dao;
         if( !empty($this->data) ) {
             $this->isFetched = true;
             $this->original_data = $this->data;
@@ -47,6 +53,15 @@ class EntityObject
     // +----------------------------------------------------------------------+
     //  database access
     // +----------------------------------------------------------------------+
+    /**
+     * @return mixed
+     */
+    public function getKey()
+    {
+        $key = $this->dao->getKeyName();
+        return $this->__get($key);
+    }
+
     /**
      * check if the entity object is fetched from database.
      *
@@ -61,21 +76,40 @@ class EntityObject
     //  property accessor
     // +----------------------------------------------------------------------+
     /**
+     * @param array $data
+     * @return $this
+     */
+    public function fill( $data )
+    {
+        $data = $this->dao->filterFillable($data);
+        foreach( $data as $key => $value ) {
+            $this->__set( $key, $value );
+        }
+        return $this;
+    }
+
+    /**
      * @param string $key
      * @return mixed
      */
     public function __get( $key )
     {
-        return $this->__isset( $key ) ? $this->data[$key] : null;
+        $value = $this->_getRaw($key);
+        if( $this->dao ) {
+            $value = $this->dao->mutate( $key, $value );
+        }
+        return $value;
     }
 
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws \InvalidArgumentException
      */
     public function __set( $key, $value )
     {
+        if( $this->dao ) {
+            $value = $this->dao->muteBack( $key, $value );
+        }
         $this->data[$key] = $value;
     }
 
@@ -96,6 +130,15 @@ class EntityObject
     public function __unset( $key )
     {
         if( isset( $this->data[$key]) ) unset( $this->data[$key] );
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function _getRaw( $key )
+    {
+        return $this->__isset( $key ) ? $this->data[$key] : null;
     }
 
     /**
