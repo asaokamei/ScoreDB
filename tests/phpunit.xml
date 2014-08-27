@@ -12,7 +12,7 @@
         >
     <testsuites>
         <testsuite name="WScore/ScoreDB Test Suite">
-            <directory>Score DB</directory>
+            <directory>ScoreDB</directory>
             <directory>Entity</directory>
             <exclude>DbAccess/Dao_DbType.php</exclude>
         </testsuite>

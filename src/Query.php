@@ -95,7 +95,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param string $method
-     * @return mixed
+     * @return \PdoStatement|array
      */
     protected function performRead( $method=null )
     {
@@ -112,6 +112,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * overwrite this method to set fetch mode.
      *
      * @param \PdoStatement $stm
+     * @return \PdoStatement|array
      */
     protected function setFetchMode( $stm )
     {

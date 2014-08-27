@@ -35,4 +35,17 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         $q = UserDao::query();
         $this->assertEquals( 'tests\Entity\Dao\UserDao', get_class($q) );
     }
+
+    /**
+     * @test
+     */
+    function insert_user_data_and_retrieve_as_entityObject()
+    {
+        $data = makeUserData_for_test();
+        $idx  = UserDao::query()->insert($data);
+        $this->assertEquals( '1', $idx );
+
+        $user = UserDao::query()->load($idx);
+        //$this->assertEquals( 'tests\Entity\Dao\UserDao', get_class($user) );
+    }
 }

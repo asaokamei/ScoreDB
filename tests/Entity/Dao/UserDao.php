@@ -28,7 +28,7 @@ class UserDao extends Dao
         ],
     ];
 
-    protected $fetch_class = 'tests\Entity\Dao\User';
+    protected $fetch_class = 'ScoreDB\Entity\EntityObject';
 
     /**
      * @param Query $query

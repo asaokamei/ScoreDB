@@ -15,3 +15,4 @@ $loader = new \Composer\Autoload\ClassLoader();
 $loader->addPsr4( 'tests\\',  __DIR__ );
 $loader->register();
 
+require_once( __DIR__.'/configs/utilities.php' );
