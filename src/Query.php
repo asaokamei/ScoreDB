@@ -151,7 +151,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected function hook( $event, $data=null )
     {
         if( $this->hooks ) {
-            $data = $this->hooks->hook( $event, $data );
+            $data = $this->hooks->hook( $event, $data, $this );
             if( $this->hooks->usesFilterData() ) {
                 $this->filteredData = $data;
                 $this->useFilteredFlag = true;

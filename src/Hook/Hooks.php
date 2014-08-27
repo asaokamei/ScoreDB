@@ -54,17 +54,18 @@ class Hooks
      * - selecting, selected, inserting, inserted,
      * - updating, updated, deleting, deleted,
      *
-     * @param string       $event
+     * @param string $event
      * @param mixed  $data
+     * @param Query  $query
      * @return mixed|null
      */
-    public function hook( $event, $data=null )
+    public function hook( $event, $data=null, $query=null )
     {
         $method = 'on'.ucfirst($event).'Hook';
         foreach( $this->hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) continue;
-            $hook->$method( $data );
+            $hook->$method( $data, $query );
             if( !$hook instanceof HookObjectInterface ) continue;
             if( $hook->isLoopBreak() ) break;
         }
@@ -73,7 +74,7 @@ class Hooks
         foreach( $this->hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) continue;
-            $data = $hook->$method( $data );
+            $data = $hook->$method( $data, $query );
             if( !$hook instanceof HookObjectInterface ) continue;
             if( $hook->toUseFilterData() ) {
                 $this->useFilterData = true;
