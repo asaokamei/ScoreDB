@@ -105,6 +105,20 @@ class Dao extends Query
         return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, [$this] );
     }
 
+    /**
+     * @param $method
+     * @param $args
+     * @return $this
+     * @throws \BadMethodCallException
+     */
+    public function __call( $method, $args )
+    {
+        if( $this->hooks->scope( $method, $this, $args ) ) {
+            return $this;
+        }
+        throw new \BadMethodCallException( 'no such method: '.$method );
+    }
+
     // +----------------------------------------------------------------------+
     //  get/set values.
     // +----------------------------------------------------------------------+
