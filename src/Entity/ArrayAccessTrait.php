@@ -9,6 +9,11 @@ namespace WScore\ScoreDB\Entity;
  */
 trait ArrayAccessTrait
 {
+    abstract public function __isset($key);
+    abstract public function __get($key);
+    abstract public function __set( $key, $value);
+    abstract public function __unset($key);
+
     // +----------------------------------------------------------------------+
     //  to enable ArrayAccess for EntityObject.
     // +----------------------------------------------------------------------+
