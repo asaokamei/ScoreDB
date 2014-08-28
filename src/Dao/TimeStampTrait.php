@@ -67,6 +67,9 @@ trait TimeStampTrait
      */
     protected function onTimeStampFilter( $data, $type )
     {
+        if( !isset( $this->dateTimeFormat ) ) {
+            $this->dateTimeFormat = 'Y-m-d H:i:s';
+        }
         if( !isset( $this->timeStamps ) ||
             !is_array( $this->timeStamps ) ) {
             return $data;
