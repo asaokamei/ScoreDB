@@ -139,6 +139,14 @@ class Dao extends Query
     }
 
     /**
+     * @param string $name
+     */
+    protected function setKeyName( $name )
+    {
+        $this->keyName = $name;
+    }
+
+    /**
      * get table name.
      *
      * @return string
@@ -146,6 +154,30 @@ class Dao extends Query
     public function getTable()
     {
         return $this->table;
+    }
+
+    /**
+     * @param string $table
+     */
+    protected function setTable( $table )
+    {
+        $this->table = $table;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDateTimeFormat()
+    {
+        return $this->dateTimeFormat;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getTimeStamps()
+    {
+        return $this->timeStamps;
     }
 
     /**

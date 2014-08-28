@@ -12,6 +12,10 @@ use DateTime;
  */
 trait TimeStampTrait
 {
+    abstract protected function getDateTimeFormat();
+
+    abstract protected function getTimeStamps();
+
     /**
      * @var DateTime
      */
@@ -67,23 +71,20 @@ trait TimeStampTrait
      */
     protected function onTimeStampFilter( $data, $type )
     {
-        if( !isset( $this->dateTimeFormat ) ) {
-            $this->dateTimeFormat = 'Y-m-d H:i:s';
-        }
-        if( !isset( $this->timeStamps ) ||
-            !is_array( $this->timeStamps ) ) {
+        $dateTimeFormat = $this->getDateTimeFormat() ?: 'Y-m-d H:i:s';
+        $timeStamps     = $this->getTimeStamps();
+        if( !$timeStamps || !is_array( $timeStamps ) ) {
             return $data;
         }
-        if( !isset( $this->timeStamps[$type] ) ||
-            !is_array( $this->timeStamps[$type] ) ) {
+        if( !isset( $timeStamps[$type] ) || !is_array( $timeStamps[$type] ) ) {
             return $data;
         }
-        $filters = $this->timeStamps[$type];
+        $filters = $timeStamps[$type];
         if( !static::$now ) static::$now = new DateTime();
         foreach( $filters as $column => $format ) {
             if( is_numeric( $column ) ) {
                 $column = $format;
-                $format = $this->dateTimeFormat;
+                $format = $dateTimeFormat;
             }
             $data[ $column ] = static::$now->format( $format );
         }
