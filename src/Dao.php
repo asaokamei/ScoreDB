@@ -1,6 +1,8 @@
 <?php
 namespace WScore\ScoreDB;
 
+use WScore\ScoreDB\Entity\ActiveRecord;
+use WScore\ScoreDB\Entity\EntityObject;
 use WScore\ScoreDB\Hook\Hooks;
 
 /**
@@ -96,6 +98,60 @@ class Dao extends Query
     {
         /** @var Dao $self */
         return new static( new Hooks() );
+    }
+
+    /**
+     * @param string|int $key
+     * @return array|\PdoStatement
+     */
+    public static function find($key)
+    {
+        return static::query()->key($key)->select();
+    }
+
+    /**
+     * @param string|int $key
+     * @return array|\PdoStatement
+     * @throws \InvalidArgumentException
+     */
+    public static function findOrFail($key)
+    {
+        if( $found = static::find($key) ) return $found;
+        throw new \InvalidArgumentException('Key Not Found');
+    }
+
+    /**
+     * @param string|int $key
+     * @param array $data
+     * @return \PdoStatement
+     */
+    public static function modify($key, $data)
+    {
+        return static::query()->key($key)->update($data);
+    }
+
+    /**
+     * @param array $data
+     * @return bool|int
+     */
+    public static function create($data=array())
+    {
+        $query = static::query();
+        $entity = $query->entity($data);
+        return $entity;
+    }
+
+    /**
+     * @param array $data
+     * @return EntityObject|ActiveRecord
+     */
+    public function entity($data=array())
+    {
+        $class  = $this->fetch_class;
+        /** @var EntityObject $entity */
+        $entity = new $class($this);
+        $entity->fill($data);
+        return $data;
     }
 
     /**
