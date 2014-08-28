@@ -84,15 +84,5 @@ class ActiveRecord extends EntityObject
         return $this->immuneDbAccess;
     }
 
-    /**
-     * check if the entity object is fetched from database.
-     *
-     * @return bool
-     */
-    public function isFetched()
-    {
-        return $this->isFetched;
-    }
-
     // +----------------------------------------------------------------------+
 }
