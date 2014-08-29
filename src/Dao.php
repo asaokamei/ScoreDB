@@ -84,7 +84,11 @@ class Dao extends Query
     public function __construct( $hook=null )
     {
         if( $hook ) {
-            $hook->setHook($this);
+            $hook->hookEvent('onConstructingHook',  $this);
+            $hook->hookEvent('onCreateStampFilter', $this);
+            $hook->hookEvent('onUpdateStampFilter', $this);
+            $hook->setScope($this);
+            $hook->setMutant($this);
             $this->setHook( $hook );
         }
         $this->hook( 'constructing' );
@@ -175,7 +179,7 @@ class Dao extends Query
      */
     public function __call( $method, $args )
     {
-        if( $this->hooks->scope( $method, $this, $args ) ) {
+        if( $this->hooks && $this->hooks->scope( $method, $this, $args ) ) {
             return $this;
         }
         throw new \BadMethodCallException( 'no such method: '.$method );

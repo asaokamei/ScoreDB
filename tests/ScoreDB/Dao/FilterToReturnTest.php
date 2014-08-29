@@ -1,9 +1,9 @@
 <?php
 namespace tests\ScoreDB\Dao;
 
-use WScore\ScoreDB\Hook\HookObjectAbstract;
+use WScore\ScoreDB\Hook\EventObjectAbstract;
 
-class FilterToReturnTest extends HookObjectAbstract
+class FilterToReturnTest extends EventObjectAbstract
 {
     function onTestFilter( $value )
     {

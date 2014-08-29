@@ -1,7 +1,7 @@
 <?php
 namespace WScore\ScoreDB\Hook;
 
-interface HookObjectInterface
+interface EventObjectInterface
 {
     /**
      * @return bool

@@ -26,7 +26,8 @@ class Dao_Test extends \PHPUnit_Framework_TestCase
     {
         $dao = new DaoClean();
         $hook = new Hooks();
-        $hook->setHook( $dao );
+        $hook->hookEvent( 'onTestHook', $dao );
+        $hook->hookEvent( 'onMoreFilter', $dao );
 
         $this->assertEquals( false, $dao->tested );
         $this->assertEquals( false, $dao->filtered );

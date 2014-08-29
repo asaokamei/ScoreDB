@@ -1,33 +1,56 @@
 <?php
 namespace WScore\ScoreDB\Hook;
 
+use WScore\ScoreDB\Dao;
 use WScore\ScoreDB\Query;
 
 class Hooks
 {
     /**
-     * @var HookObjectInterface[]
+     * @var Events
      */
-    protected $hooks = [];
+    protected $events;
 
-    protected $useFilterData = false;
-
-    public function __construct() {}
-    
     /**
-     * @return bool
+     * @var Scopes
      */
-    public function usesFilterData()
+    protected $scopes;
+
+    /**
+     * @var Mutants
+     */
+    protected $mutants;
+
+    public function __construct()
     {
-        return $this->useFilterData;
+        $this->events = new Events();
+        $this->scopes = new Scopes();
+        $this->mutants = new Mutants();
     }
 
     /**
-     * @param object $hook
+     * @param string $event
+     * @param string|object|\Closure $hook
      */
-    public function setHook( $hook )
+    public function hookEvent( $event, $hook )
     {
-        $this->hooks[] = $hook;
+        $this->events->hookEvent( $event, $hook );
+    }
+
+    /**
+     * @param object $scope
+     */
+    public function setScope( $scope )
+    {
+        $this->scopes->setScope( $scope );
+    }
+
+    /**
+     * @param object $mutant
+     */
+    public function setMutant( $mutant )
+    {
+        $this->mutants->setMutant( $mutant );
     }
 
     /**
@@ -38,13 +61,7 @@ class Hooks
      */
     public function scope( $name, $query, $args )
     {
-        foreach( $this->hooks as $hook ) {
-            if( method_exists( $hook, $scope = 'scope'.ucfirst($name) ) ) {
-                call_user_func_array( [$hook, $scope], [$query]+$args );
-                return $this;
-            }
-        }
-        return false;
+        return $this->scopes->scope( $name, $query, $args );
     }
 
     /**
@@ -61,28 +78,15 @@ class Hooks
      */
     public function hook( $event, $data=null, $query=null )
     {
-        $method = 'on'.ucfirst($event).'Hook';
-        foreach( $this->hooks as $hook ) {
+        return $this->events->hook( $event, $data, $query );
+    }
 
-            if( !method_exists( $hook, $method ) ) continue;
-            $hook->$method( $data, $query );
-            if( !$hook instanceof HookObjectInterface ) continue;
-            if( $hook->isLoopBreak() ) break;
-        }
-
-        $method = 'on'.ucfirst($event).'Filter';
-        foreach( $this->hooks as $hook ) {
-
-            if( !method_exists( $hook, $method ) ) continue;
-            $data = $hook->$method( $data, $query );
-            if( !$hook instanceof HookObjectInterface ) continue;
-            if( $hook->toUseFilterData() ) {
-                $this->useFilterData = true;
-                break;
-            }
-            if( $hook->isLoopBreak() ) break;
-        }
-        return $data;
+    /**
+     * @return bool
+     */
+    public function usesFilterData()
+    {
+        return $this->events->usesFilterData();
     }
 
     /**
@@ -93,12 +97,6 @@ class Hooks
      */
     public function mutate( $name, $value, $prefix )
     {
-        $method = $prefix.ucfirst($name).'Attribute';
-        foreach( $this->hooks as $hook ) {
-
-            if( !method_exists( $hook, $method ) ) continue;
-            return $hook->$method( $value );
-        }
-        return $value;
+        return $this->mutants->mutate( $name, $value, $prefix );
     }
 }
