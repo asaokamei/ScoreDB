@@ -46,36 +46,57 @@ class Events
      */
     public function hook( $event, $data=null, $query=null )
     {
-        $this->dispatchEvent( 'on'.ucfirst($event).'Hook', $data, $query );
-        return $this->dispatchEvent( 'on'.ucfirst($event).'Filter', $data, $query, true );
+        $method = 'on'.ucfirst($event).'Hook';
+        if( array_key_exists( $method, $this->hooks) ) {
+            $this->dispatchHook( $method, $data, $query );
+        }
+        $method = 'on'.ucfirst($event).'Filter';
+        if( array_key_exists( $method, $this->hooks) ) {
+            $data = $this->dispatchFilter( $method, $data, $query );
+        }
+        return $data;
     }
 
     /**
      * @param string    $method
      * @param mixed     $data
      * @param Query|Dao $query
-     * @param bool      $useReturned
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    protected function dispatchEvent( $method, $data, $query, $useReturned=false )
+    protected function dispatchHook( $method, $data, $query )
     {
-        if( !array_key_exists($method, $this->hooks) ) return $data;
         if( !is_array($this->hooks[$method]) ) return $data;
         foreach( $this->hooks[$method] as $hook ) {
 
             if( !method_exists( $hook, $method ) ) {
                 throw new \InvalidArgumentException;
             }
-            if( $useReturned ) {
-                $data = $hook->$method( $data, $query );
-            } else {
-                $hook->$method( $data, $query );
+            $hook->$method( $data, $query );
+            if( $hook instanceof EventObjectInterface && $hook->isLoopBreak() ) break;
+        }
+        return $data;
+    }
+
+    /**
+     * @param string    $method
+     * @param mixed     $data
+     * @param Query|Dao $query
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    protected function dispatchFilter( $method, $data, $query )
+    {
+        if( !is_array($this->hooks[$method]) ) return $data;
+        foreach( $this->hooks[$method] as $hook ) {
+
+            if( !method_exists( $hook, $method ) ) {
+                throw new \InvalidArgumentException;
             }
+            $data = $hook->$method( $data, $query );
             if( !$hook instanceof EventObjectInterface ) continue;
             if( $hook->toUseFilterData() ) {
                 $this->useFilterData = true;
-                break;
             }
             if( $hook->isLoopBreak() ) break;
         }
