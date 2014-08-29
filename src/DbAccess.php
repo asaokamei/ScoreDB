@@ -47,6 +47,16 @@ class DbAccess
         if( !isset( $this->configs[$name] )) {
             $this->configs[$name] = $this->buildConnectionLocator();
         }
+        $this->setConfig( $name, $config );
+    }
+
+    /**
+     * @param string         $name
+     * @param array|callable $config
+     * @throws \InvalidArgumentException
+     */
+    protected function setConfig( $name, $config )
+    {
         if( is_callable( $config ) ) {
             $callPdo = $config;
         } elseif( is_array($config) ) {
