@@ -32,10 +32,11 @@ class DbAccess
      * @var Profiler
      */
     protected $profiler;
-    
+
     /**
      * @param string|array $name
-     * @param array|callable|null   $config
+     * @param array|callable|null $config
+     * @throws \InvalidArgumentException
      */
     public function config( $name, $config=null )
     {
@@ -48,8 +49,10 @@ class DbAccess
         }
         if( is_callable( $config ) ) {
             $callPdo = $config;
-        } else {
+        } elseif( is_array($config) ) {
             $callPdo = $this->buildPdo( $config );
+        } else {
+            throw new \InvalidArgumentException;
         }
         if( $for = $this->get( $config, 'for' ) ) {
 
@@ -117,13 +120,14 @@ class DbAccess
     }
 
     /**
-     * @param array  $array
+     * @param array|mixed  $array
      * @param string $name
      * @param mixed  $default
      * @return mixed
      */
     protected function get( $array, $name, $default=null )
     {
+        if( !is_array($array) ) return null;
         return array_key_exists( $name, $array ) ? $array[$name] : $default;
     }
 
