@@ -35,12 +35,12 @@ class ActiveRecord extends EntityObject
         if( $this->isImmune() ) {
             throw new \BadMethodCallException();
         }
+        $dao = $this->dao;
         if( $this->isFetched() ) {
             $modified = $this->_getModified();
-            $this->dao->key( $this->getKey() );
-            $this->dao->update( $modified );
+            $dao::modify( $this->getKey(), $modified );
         } else {
-            $this->dao->insert( $this->data );
+            $dao::inject( $this->data );
         }
         return $this;
     }

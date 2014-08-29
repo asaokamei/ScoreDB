@@ -135,6 +135,15 @@ class Dao extends Query
     }
 
     /**
+     * @param $data
+     * @return bool|int
+     */
+    public static function inject($data)
+    {
+        return static::query()->insert($data);
+    }
+
+    /**
      * @param array $data
      * @return bool|int
      */
