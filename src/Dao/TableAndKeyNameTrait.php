@@ -5,11 +5,11 @@ trait TableAndKeyNameTrait
 {
     abstract public function getTable();
 
-    abstract protected function setTable( $table );
+    abstract public function table( $table, $alias = null );
 
     abstract public function getKeyName();
 
-    abstract protected function setKeyName( $name );
+    abstract public function keyName( $name );
 
     /**
      * set up table and keyName based on the class name
@@ -22,10 +22,10 @@ trait TableAndKeyNameTrait
             if( false!==strpos($table, '\\') ) {
                 $table = substr( $table, strrpos($table,'\\')+1 );
             }
-            $this->setTable( $table );
+            $this->table( $table );
         }
         if( !$this->getKeyName() ) {
-            $this->setKeyName( $table . '_id' );
+            $this->keyName( $table . '_id' );
         }
     }
 }

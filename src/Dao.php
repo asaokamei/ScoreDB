@@ -185,42 +185,6 @@ class Dao extends Query
     //  get/set values.
     // +----------------------------------------------------------------------+
     /**
-     * get key name.
-     *
-     * @return string
-     */
-    public function getKeyName()
-    {
-        return $this->keyName;
-    }
-
-    /**
-     * @param string $name
-     */
-    protected function setKeyName( $name )
-    {
-        $this->keyName = $name;
-    }
-
-    /**
-     * get table name.
-     *
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
-    }
-
-    /**
-     * @param string $table
-     */
-    protected function setTable( $table )
-    {
-        $this->table = $table;
-    }
-
-    /**
      * @return string
      */
     protected function getDateTimeFormat()
