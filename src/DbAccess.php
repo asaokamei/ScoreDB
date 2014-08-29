@@ -87,9 +87,7 @@ class DbAccess
      */
     public function connect( $name=null )
     {
-        if( !$name ) $name = self::DEFAULT_KEY;
-        if( !isset( $this->configs[ $name ] ) ) return null;
-        $locator = $this->configs[ $name ];
+        if( !$locator = $this->findLocator($name) ) return null;
         $pdo = $locator->getRead();
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );
         return $pdo;
@@ -101,12 +99,21 @@ class DbAccess
      */
     public function connectWrite( $name=null )
     {
-        if( !$name ) $name = self::DEFAULT_KEY;
-        if( !isset( $this->configs[ $name ] ) ) return null;
-        $locator = $this->configs[ $name ];
+        if( !$locator = $this->findLocator($name) ) return null;
         $pdo = $locator->getWrite();
         if( $this->profiler ) $pdo->setProfiler( $this->profiler );
         return $pdo;
+    }
+
+    /**
+     * @param null $name
+     * @return ConnectionLocator|null
+     */
+    public function findLocator( $name=null )
+    {
+        if( !$name ) $name = self::DEFAULT_KEY;
+        if( !isset( $this->configs[ $name ] ) ) return null;
+        return $this->configs[$name];
     }
 
     /**
