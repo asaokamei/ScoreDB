@@ -239,17 +239,33 @@ class Dao extends Query
     public function muteBack( $key, $value )
     {
         if( in_array($key, $this->dates) ) {
-            if( is_string($value) ) {
-                $value = new \DateTime($value);
-            } elseif( !$value instanceof \DateTime ) {
-                throw new \InvalidArgumentException();
-            }
-            return $value->format($this->dateTimeFormat);
+            return $this->muteBackDateTime($key, $value);
         }
         if( is_object($value) && method_exists( $value, '__toString') ) {
             return (string) $value;
         }
         return $this->hooks->mutate( $key, $value, 'get' );
+    }
+
+    /**
+     * @param string $key
+     * @param \DateTime|mixed $value
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    protected function muteBackDateTime( $key, $value )
+    {
+        if( in_array($key, $this->dates) ) {
+            if( is_string($value) ) {
+                $date = new \DateTime($value);
+            } elseif( $value instanceof \DateTime ) {
+                $date = $value;
+            } else {
+                throw new \InvalidArgumentException();
+            }
+            return $date->format($this->dateTimeFormat);
+        }
+        return $value;
     }
 
     /**
