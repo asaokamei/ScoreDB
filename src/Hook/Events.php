@@ -81,21 +81,4 @@ class Events
         }
         return $data;
     }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     * @param $prefix
-     * @return mixed
-     */
-    public function mutate( $name, $value, $prefix )
-    {
-        $method = $prefix.ucfirst($name).'Attribute';
-        foreach( $this->hookObjects as $hook ) {
-
-            if( !method_exists( $hook, $method ) ) continue;
-            return $hook->$method( $value );
-        }
-        return $value;
-    }
 }
