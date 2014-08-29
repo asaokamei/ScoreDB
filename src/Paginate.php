@@ -213,25 +213,68 @@ class Paginate
             'curr_page' => $this->getCurrPage(),
         ];
         $pages[ 'top_page'  ] = 1;
-        $pages[ 'last_page' ] = $lastPage = $this->total ? 
-            (integer) ( ceil( $this->total / $this->perPage ) ) : 
-            $this->currPage + $numLinks
-        ;
+        $pages[ 'last_page' ] = $lastPage = $this->findLastPage($numLinks);
+
         // prepare pages
-        $pages['page'] = [];
-        $start = 
-            $this->currPage - $numLinks >= 1 ?
-            $this->currPage - $numLinks : 1;
-        $last = 
-            $this->currPage + $numLinks <= $lastPage ?
-            $this->currPage + $numLinks : $lastPage;
-        for( $page = $start; $page <= $last; $page++ ) {
-            $pages['page'][$page] = $page == $this->currPage ? '' : $page;
-        }
+        $pages['page'] = $this->findLastPage($numLinks);
+
         // previous and next pages.
         $pages['prev_page'] = $this->currPage>1 ? $this->currPage-1: 1;
         $pages['next_page'] = $this->currPage<$lastPage ? $this->currPage+1: $lastPage;
         return $pages;
+    }
+
+    /**
+     * @param $numLinks
+     * @return array
+     */
+    protected function fillPages($numLinks)
+    {
+        $start    = $this->findStart($numLinks);
+        $last     = $this->findLast( $numLinks );
+
+        $pages    = [];
+        for( $page = $start; $page <= $last; $page++ ) {
+            $pages[$page] = ($page == $this->currPage) ? '' : $page;
+        }
+        return $pages;
+    }
+
+    /**
+     * @param int $numLinks
+     * @return int
+     */
+    protected function findStart($numLinks)
+    {
+        $start = $this->currPage - $numLinks;
+        return $start >= 1 ? $start: 1;
+    }
+
+    /**
+     * @param int $numLinks
+     * @return int
+     */
+    protected function findLastPage($numLinks)
+    {
+        // total and perPage is set.
+        if( $this->total && $this->perPage ) {
+            return (integer) ( ceil( $this->total / $this->perPage ) );
+        }
+        return $this->currPage + $numLinks;
+    }
+
+    /**
+     * @param int $numLinks
+     * @return int
+     */
+    protected function findLast($numLinks)
+    {
+        $lastPage = $this->findLastPage($numLinks);
+        $last = $this->currPage + $numLinks;
+        if( $last <= $lastPage ) {
+            return $last;
+        }
+        return $lastPage;
     }
     // +----------------------------------------------------------------------+
 }
