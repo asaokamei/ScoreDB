@@ -167,7 +167,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     {
         $this->hooks = $hook;
     }
-    
+
     // +----------------------------------------------------------------------+
     //  execute sql.
     // +----------------------------------------------------------------------+
@@ -297,6 +297,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         $this->toUpdate();
         $stmt = $this->performWrite();
         $stmt = $this->hook( 'updated', $stmt );
+        $this->reset();
         return $stmt;
     }
 
