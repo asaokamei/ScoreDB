@@ -77,7 +77,7 @@ class Events
             if( !is_array($this->hooks[$method]) ) {
                 throw new \InvalidArgumentException;
             }
-            $hooks += $this->hooks[$method];
+            $hooks = array_merge( $hooks, $this->hooks[$method] );
         }
         return $hooks;
     }
@@ -94,9 +94,7 @@ class Events
         if( !$hooks = $this->findHooks($method) ) return $data;
         foreach( $hooks as $hook ) {
 
-            if( !method_exists( $hook, $method ) ) {
-                throw new \InvalidArgumentException;
-            }
+            if( !method_exists( $hook, $method ) ) continue;
             $hook->$method( $data, $query );
             if( $hook instanceof EventObjectInterface && $hook->isLoopBreak() ) break;
         }

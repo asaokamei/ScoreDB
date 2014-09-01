@@ -3,6 +3,7 @@ namespace WScore\ScoreDB;
 
 use WScore\ScoreDB\Entity\ActiveRecord;
 use WScore\ScoreDB\Entity\EntityObject;
+use WScore\ScoreDB\Hook\Events;
 use WScore\ScoreDB\Hook\Hooks;
 
 /**
@@ -80,6 +81,7 @@ class Dao extends Query
     public function __construct( $hook=null )
     {
         if( $hook ) {
+            $hook->hookEvent( Events::ANY_EVENT, $this );
             $hook->hookEvent('onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
             $hook->hookEvent('onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
             $hook->hookEvent('onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
