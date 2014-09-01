@@ -7,9 +7,17 @@ use WScore\ScoreDB\Query;
 class Events
 {
     /**
+     * apply to any events, i.e.
+     * Events::hookEvent( Events::ANY_EVENT, $eventHandler );
+     */
+    const ANY_EVENT = '*';
+
+    /**
      * @var array
      */
-    protected $hooks = [];
+    protected $hooks = [
+        self::ANY_EVENT => []
+    ];
 
     protected $useFilterData = false;
 
@@ -58,6 +66,23 @@ class Events
     }
 
     /**
+     * @param string $method
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    protected function findHooks($method)
+    {
+        $hooks = $this->hooks[ self::ANY_EVENT ];
+        if( array_key_exists($method, $this->hooks) ) {
+            if( !is_array($this->hooks[$method]) ) {
+                throw new \InvalidArgumentException;
+            }
+            $hooks += $this->hooks[$method];
+        }
+        return $hooks;
+    }
+
+    /**
      * @param string    $method
      * @param mixed     $data
      * @param Query|Dao|null $query
@@ -66,8 +91,8 @@ class Events
      */
     protected function dispatchHook( $method, $data, $query )
     {
-        if( !is_array($this->hooks[$method]) ) return $data;
-        foreach( $this->hooks[$method] as $hook ) {
+        if( !$hooks = $this->findHooks($method) ) return $data;
+        foreach( $hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) {
                 throw new \InvalidArgumentException;
@@ -83,22 +108,20 @@ class Events
      * @param mixed     $data
      * @param Query|Dao|null $query
      * @return mixed
-     * @throws \InvalidArgumentException
      */
     protected function dispatchFilter( $method, $data, $query )
     {
-        if( !is_array($this->hooks[$method]) ) return $data;
+        if( !$hooks = $this->findHooks($method) ) return $data;
         foreach( $this->hooks[$method] as $hook ) {
 
-            if( !method_exists( $hook, $method ) ) {
-                throw new \InvalidArgumentException;
-            }
+            if( !method_exists( $hook, $method ) ) continue;
             $data = $hook->$method( $data, $query );
-            if( !$hook instanceof EventObjectInterface ) continue;
-            if( $hook->toUseFilterData() ) {
-                $this->useFilterData = true;
+            if( $hook instanceof EventObjectInterface ) {
+                if( $hook->toUseFilterData() ) {
+                    $this->useFilterData = true;
+                }
+                if( $hook->isLoopBreak() ) break;
             }
-            if( $hook->isLoopBreak() ) break;
         }
         return $data;
     }
