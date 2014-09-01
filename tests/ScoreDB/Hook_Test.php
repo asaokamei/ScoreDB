@@ -36,11 +36,10 @@ class Hook_Test extends \PHPUnit_Framework_TestCase
      */
     function query_filter_()
     {
-        $user = new User();
         $filter = new FilterToReturnTest();
         $hook = new Hooks();
         $hook->hookEvent( 'onSelectingFilter', $filter );
-        $user->setHook( $hook );
+        $user = new User( $hook );
         $value  = 'value:'.mt_rand(1000,9999);
         $found = $user->select( $value );
         $this->assertEquals( 'tested-'.$value, $found );

@@ -97,12 +97,13 @@ class Dao extends Query
     {
         if( $hook ) {
             $hook->hookEvent( Events::ANY_EVENT, $this );
-            $hook->hookEvent('onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
-            $hook->hookEvent('onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
-            $hook->hookEvent('onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
-            $hook->setScope($this);
-            $hook->setMutant($this);
-            $this->setHook( $hook );
+            $hook->hookEvent( 'onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
+            $hook->hookEvent( 'onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
+            $hook->hookEvent( 'onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
+            $hook->setScope(  $this);
+            $hook->setMutant( $this);
+            $hook->setDates(  $this->dates, $this->dateTimeFormat );
+            $this->hooks = $hook;
         }
         $this->hook( 'constructing' );
         $this->hook( 'constructed' );
@@ -132,14 +133,6 @@ class Dao extends Query
             }
         }
         return $data;
-    }
-
-    /**
-     * @param Hooks $hook
-     */
-    public function setHook( $hook )
-    {
-        $this->hooks = $hook;
     }
 
     // +----------------------------------------------------------------------+
@@ -275,56 +268,26 @@ class Dao extends Query
     /**
      * mutate from a string to an object.
      *
-     * @param string $key
+     * @param string $name
      * @param mixed  $value
      * @return mixed
      */
-    public function mutate( $key, $value )
+    public function mutate( $name, $value )
     {
-        if( in_array($key, $this->dates) ) {
-            return new \DateTime($value);
-        }
-        return $this->hooks->muteInto( $key, $value );
+        return $this->hooks->muteInto( $name, $value );
     }
 
     /**
      * mutate back to a string from an object.
      *
-     * @param string $key
+     * @param string $name
      * @param mixed $value
      * @throws \InvalidArgumentException
      * @return string
      */
-    public function muteBack( $key, $value )
+    public function muteBack( $name, $value )
     {
-        if( in_array($key, $this->dates) ) {
-            return $this->muteBackDateTime($key, $value);
-        }
-        if( is_object($value) && method_exists( $value, '__toString') ) {
-            return (string) $value;
-        }
-        return $this->hooks->muteBack( $key, $value );
-    }
-
-    /**
-     * @param string $key
-     * @param \DateTime|mixed $value
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    protected function muteBackDateTime( $key, $value )
-    {
-        if( in_array($key, $this->dates) ) {
-            if( is_string($value) ) {
-                $date = new \DateTime($value);
-            } elseif( $value instanceof \DateTime ) {
-                $date = $value;
-            } else {
-                throw new \InvalidArgumentException();
-            }
-            return $date->format($this->dateTimeFormat);
-        }
-        return $value;
+        return $this->hooks->muteBack( $name, $value );
     }
 
     /**

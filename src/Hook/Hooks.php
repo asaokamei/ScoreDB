@@ -91,6 +91,15 @@ class Hooks
     //  mutations
     // +----------------------------------------------------------------------+
     /**
+     * @param array  $dates
+     * @param string $format
+     */
+    public function setDates( $dates, $format )
+    {
+        $this->mutants->setDates( $dates, $format );
+    }
+
+    /**
      * @param object $mutant
      */
     public function setMutant( $mutant )
