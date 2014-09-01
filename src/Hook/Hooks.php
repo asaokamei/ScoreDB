@@ -73,7 +73,7 @@ class Hooks
      *
      * @param string $event
      * @param mixed  $data
-     * @param Query  $query
+     * @param Query|Dao|null  $query
      * @return mixed|null
      */
     public function hook( $event, $data=null, $query=null )

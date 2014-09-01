@@ -41,7 +41,7 @@ class Events
      *
      * @param string     $event
      * @param mixed      $data
-     * @param Dao|Query  $query
+     * @param Query|Dao|null  $query
      * @return mixed|null
      */
     public function hook( $event, $data=null, $query=null )
@@ -60,7 +60,7 @@ class Events
     /**
      * @param string    $method
      * @param mixed     $data
-     * @param Query|Dao $query
+     * @param Query|Dao|null $query
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -81,7 +81,7 @@ class Events
     /**
      * @param string    $method
      * @param mixed     $data
-     * @param Query|Dao $query
+     * @param Query|Dao|null $query
      * @return mixed
      * @throws \InvalidArgumentException
      */
