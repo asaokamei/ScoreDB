@@ -31,8 +31,6 @@ class Events
     }
 
     /**
-     * TODO: Closure not supported yet.
-     *
      * @param string $event
      * @param string|object|\Closure $hook
      */
@@ -94,8 +92,7 @@ class Events
     {
         foreach( $hooks as $hook ) {
 
-            if( !method_exists( $hook, $method ) ) continue;
-            $hook->$method( $data, $query );
+            $this->execHook( $hook, $method, $data, $query );
             if( $hook instanceof EventObjectInterface && $hook->isLoopBreak() ) break;
         }
         return $data;
@@ -112,14 +109,31 @@ class Events
     {
         foreach( $hooks as $hook ) {
 
-            if( !method_exists( $hook, $method ) ) continue;
-            $data = $hook->$method( $data, $query );
+            $data = $this->execHook( $hook, $method, $data, $query );
             if( $hook instanceof EventObjectInterface ) {
                 if( $hook->toUseFilterData() ) {
                     $this->useFilterData = true;
                 }
                 if( $hook->isLoopBreak() ) break;
             }
+        }
+        return $data;
+    }
+
+    /**
+     * @param object|\Closure $hook
+     * @param string          $method
+     * @param mixed           $data
+     * @param Dao|null        $query
+     * @return mixed
+     */
+    protected function execHook( $hook, $method, $data, $query )
+    {
+        if( is_callable( $hook ) ) {
+            return $hook( $data, $query );
+        }
+        if( method_exists( $hook, $method ) ) {
+            return $hook->$method( $data, $query );
         }
         return $data;
     }
