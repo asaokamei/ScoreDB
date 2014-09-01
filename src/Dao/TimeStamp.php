@@ -71,16 +71,9 @@ class TimeStamp
      */
     protected function onTimeStampFilter( $data, $query, $type )
     {
-        $dateTimeFormat = $query->getDateTimeFormat() ?: 'Y-m-d H:i:s';
-        $timeStamps     = $query->getTimeStamps();
-        if( !$timeStamps || !is_array( $timeStamps ) ) {
-            return $data;
-        }
-        if( !isset( $timeStamps[$type] ) || !is_array( $timeStamps[$type] ) ) {
-            return $data;
-        }
-        $filters = $timeStamps[$type];
+        if( !$filters = $this->findTimeStamps( $query, $type ) ) return $data;
         if( !static::$now ) static::$now = new DateTime();
+        $dateTimeFormat = $query->getDateTimeFormat() ?: 'Y-m-d H:i:s';
         foreach( $filters as $column => $format ) {
             if( is_numeric( $column ) ) {
                 $column = $format;
@@ -89,5 +82,21 @@ class TimeStamp
             $data[ $column ] = static::$now->format( $format );
         }
         return $data;
+    }
+
+    /**
+     * @param Dao    $query
+     * @param string $type
+     * @return array
+     */
+    protected function findTimeStamps( $query, $type )
+    {
+        $timeStamps = $query->getTimeStamps();
+        if( is_array( $timeStamps ) &&
+            isset( $timeStamps[$type] ) &&
+            is_array( $timeStamps[$type] ) ) {
+                return $timeStamps[$type];
+            }
+        return [];
     }
 }
