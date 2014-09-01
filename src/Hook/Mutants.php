@@ -37,12 +37,7 @@ class Mutants
             return new \DateTime($value);
         }
         $method = 'set'.ucfirst($name).'Attribute';
-        foreach( $this->mutants as $mutant ) {
-
-            if( !method_exists( $mutant, $method ) ) continue;
-            return $mutant->$method( $value );
-        }
-        return $value;
+        return $this->mutate( $value, $method );
     }
 
     /**
@@ -59,13 +54,9 @@ class Mutants
             return (string) $value;
         }
         $method = 'get'.ucfirst($name).'Attribute';
-        foreach( $this->mutants as $mutant ) {
-
-            if( !method_exists( $mutant, $method ) ) continue;
-            return $mutant->$method( $value );
-        }
-        return $value;
+        return $this->mutate( $value, $method );
     }
+
 
     /**
      * @param array  $dates
@@ -94,6 +85,21 @@ class Mutants
                 throw new \InvalidArgumentException();
             }
             return $date->format($this->dateFormat);
+        }
+        return $value;
+    }
+
+    /**
+     * @param $value
+     * @param $method
+     * @return mixed
+     */
+    protected function mutate( $value, $method )
+    {
+        foreach ( $this->mutants as $mutant ) {
+
+            if ( !method_exists( $mutant, $method ) ) continue;
+            return $mutant->$method( $value );
         }
         return $value;
     }
