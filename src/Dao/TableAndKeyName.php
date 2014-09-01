@@ -2,7 +2,6 @@
 namespace WScore\ScoreDB\Dao;
 
 use WScore\ScoreDB\Dao;
-use WScore\ScoreDB\Query;
 
 class TableAndKeyName
 {
@@ -11,7 +10,7 @@ class TableAndKeyName
      * if they are not set.
      *
      * @param mixed     $data
-     * @param Query|Dao $query
+     * @param Dao       $query
      */
     public function onConstructingHook(
         /** @noinspection PhpUnusedParameterInspection */

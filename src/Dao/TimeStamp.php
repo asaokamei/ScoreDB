@@ -3,7 +3,6 @@ namespace WScore\ScoreDB\Dao;
 
 use DateTime;
 use WScore\ScoreDB\Dao;
-use WScore\ScoreDB\Query;
 
 /**
  * Class DaoTrait
@@ -43,7 +42,7 @@ class TimeStamp
 
     /**
      * @param array $data
-     * @param Query|Dao $query
+     * @param Dao   $query
      * @return array
      */
     public function onCreateStampFilter( $data, $query )
@@ -55,7 +54,7 @@ class TimeStamp
 
     /**
      * @param array $data
-     * @param Query|Dao $query
+     * @param Dao   $query
      * @return array
      */
     public function onUpdateStampFilter( $data, $query )
@@ -65,8 +64,8 @@ class TimeStamp
     }
 
     /**
-     * @param array $data
-     * @param Query|Dao $query
+     * @param array  $data
+     * @param Dao    $query
      * @param string $type
      * @return array
      */

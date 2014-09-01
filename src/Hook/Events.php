@@ -2,7 +2,6 @@
 namespace WScore\ScoreDB\Hook;
 
 use WScore\ScoreDB\Dao;
-use WScore\ScoreDB\Query;
 
 class Events
 {
@@ -49,7 +48,7 @@ class Events
      *
      * @param string     $event
      * @param mixed      $data
-     * @param Query|Dao|null  $query
+     * @param Dao|null   $query
      * @return mixed|null
      */
     public function hook( $event, $data=null, $query=null )
@@ -85,7 +84,7 @@ class Events
     /**
      * @param string    $method
      * @param mixed     $data
-     * @param Query|Dao|null $query
+     * @param Dao|null  $query
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -104,7 +103,7 @@ class Events
     /**
      * @param string    $method
      * @param mixed     $data
-     * @param Query|Dao|null $query
+     * @param Dao|null  $query
      * @return mixed
      */
     protected function dispatchFilter( $method, $data, $query )
