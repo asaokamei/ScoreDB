@@ -31,6 +31,8 @@ class Events
     }
 
     /**
+     * TODO: Closure not supported yet.
+     *
      * @param string $event
      * @param string|object|\Closure $hook
      */
@@ -54,12 +56,12 @@ class Events
     public function hook( $event, $data=null, $query=null )
     {
         $method = 'on'.ucfirst($event).'Hook';
-        if( array_key_exists( $method, $this->hooks) ) {
-            $this->dispatchHook( $method, $data, $query );
+        if( $hooks = $this->findHooks($method) ) {
+            $this->dispatchHook( $hooks, $method, $data, $query );
         }
         $method = 'on'.ucfirst($event).'Filter';
-        if( array_key_exists( $method, $this->hooks) ) {
-            $data = $this->dispatchFilter( $method, $data, $query );
+        if( $hooks = $this->findHooks($method) ) {
+            $data = $this->dispatchFilter( $hooks, $method, $data, $query );
         }
         return $data;
     }
@@ -82,15 +84,14 @@ class Events
     }
 
     /**
-     * @param string    $method
-     * @param mixed     $data
-     * @param Dao|null  $query
+     * @param array    $hooks
+     * @param string   $method
+     * @param mixed    $data
+     * @param Dao|null $query
      * @return mixed
-     * @throws \InvalidArgumentException
      */
-    protected function dispatchHook( $method, $data, $query )
+    protected function dispatchHook( $hooks, $method, $data, $query )
     {
-        if( !$hooks = $this->findHooks($method) ) return $data;
         foreach( $hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) continue;
@@ -101,15 +102,15 @@ class Events
     }
 
     /**
-     * @param string    $method
-     * @param mixed     $data
-     * @param Dao|null  $query
+     * @param array    $hooks
+     * @param string   $method
+     * @param mixed    $data
+     * @param Dao|null $query
      * @return mixed
      */
-    protected function dispatchFilter( $method, $data, $query )
+    protected function dispatchFilter( $hooks, $method, $data, $query )
     {
-        if( !$hooks = $this->findHooks($method) ) return $data;
-        foreach( $this->hooks[$method] as $hook ) {
+        foreach( $hooks as $hook ) {
 
             if( !method_exists( $hook, $method ) ) continue;
             $data = $hook->$method( $data, $query );
