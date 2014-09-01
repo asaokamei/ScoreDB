@@ -18,13 +18,28 @@ class Mutants
 
     /**
      * @param string $name
-     * @param mixed $value
-     * @param $prefix
+     * @param mixed  $value
      * @return mixed
      */
-    public function mutate( $name, $value, $prefix )
+    public function muteInto( $name, $value )
     {
-        $method = $prefix.ucfirst($name).'Attribute';
+        $method = 'set'.ucfirst($name).'Attribute';
+        foreach( $this->mutants as $mutant ) {
+
+            if( !method_exists( $mutant, $method ) ) continue;
+            return $mutant->$method( $value );
+        }
+        return $value;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return string
+     */
+    public function muteBack( $name, $value )
+    {
+        $method = 'get'.ucfirst($name).'Attribute';
         foreach( $this->mutants as $mutant ) {
 
             if( !method_exists( $mutant, $method ) ) continue;

@@ -53,6 +53,9 @@ class Hooks
         $this->mutants->setMutant( $mutant );
     }
 
+    // +----------------------------------------------------------------------+
+    //  scopes
+    // +----------------------------------------------------------------------+
     /**
      * @param string $name
      * @param Query  $query
@@ -64,6 +67,9 @@ class Hooks
         return $this->scopes->scope( $name, $query, $args );
     }
 
+    // +----------------------------------------------------------------------+
+    //  events (hooks and filters)
+    // +----------------------------------------------------------------------+
     /**
      * dumb hooks for various events. $data are all string.
      * available events are:
@@ -89,14 +95,28 @@ class Hooks
         return $this->events->usesFilterData();
     }
 
+    // +----------------------------------------------------------------------+
+    //  mutations
+    // +----------------------------------------------------------------------+
     /**
      * @param string $name
-     * @param mixed $value
-     * @param $prefix
+     * @param mixed  $value
      * @return mixed
      */
-    public function mutate( $name, $value, $prefix )
+    public function muteInto( $name, $value )
     {
-        return $this->mutants->mutate( $name, $value, $prefix );
+        return $this->mutants->muteInto( $name, $value );
     }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return string
+     */
+    public function muteBack( $name, $value )
+    {
+        return $this->mutants->muteBack( $name, $value );
+    }
+
+    // +----------------------------------------------------------------------+
 }

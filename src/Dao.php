@@ -264,6 +264,15 @@ class Dao extends Query
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function isInDates($name)
+    {
+        return array_key_exists( $name, $this->dates );
+    }
+
+    /**
      * mutate from a string to an object.
      *
      * @param string $key
@@ -275,7 +284,7 @@ class Dao extends Query
         if( in_array($key, $this->dates) ) {
             return new \DateTime($value);
         }
-        return $this->hooks->mutate( $key, $value, 'set' );
+        return $this->hooks->muteInto( $key, $value );
     }
 
     /**
@@ -294,7 +303,7 @@ class Dao extends Query
         if( is_object($value) && method_exists( $value, '__toString') ) {
             return (string) $value;
         }
-        return $this->hooks->mutate( $key, $value, 'get' );
+        return $this->hooks->muteBack( $key, $value );
     }
 
     /**
