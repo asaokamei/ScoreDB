@@ -108,6 +108,43 @@ class Dao extends Query
         $this->hook( 'constructed' );
     }
 
+    // +----------------------------------------------------------------------+
+    //  hooks
+    // +----------------------------------------------------------------------+
+    /**
+     * dumb hooks for various events. $data are all string.
+     * available events are:
+     * - constructing, constructed, newQuery,
+     * - selecting, selected, inserting, inserted,
+     * - updating, updated, deleting, deleted,
+     *
+     * @param string $event
+     * @param mixed  $data
+     * @return mixed|null
+     */
+    protected function hook( $event, $data=null )
+    {
+        if( $this->hooks ) {
+            $data = $this->hooks->hook( $event, $data, $this );
+            if( $this->hooks->usesFilterData() ) {
+                $this->filteredData = $data;
+                $this->useFilteredFlag = true;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * @param Hooks $hook
+     */
+    public function setHook( $hook )
+    {
+        $this->hooks = $hook;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  static methods
+    // +----------------------------------------------------------------------+
     /**
      * @return Dao
      */

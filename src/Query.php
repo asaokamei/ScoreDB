@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use PdoStatement;
 use Traversable;
-use WScore\ScoreDB\Hook\Hooks;
 use WScore\ScoreSql\Query as SqlQuery;
 
 class Query extends SqlQuery implements IteratorAggregate, QueryInterface
@@ -114,40 +113,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
             $method = $this->fetch_class ? 'perform' : 'fetchAll';
         }
         return $pdo->$method( $sql, $bind );
-    }
-
-    // +----------------------------------------------------------------------+
-    //  hooks
-    // +----------------------------------------------------------------------+
-    /**
-     * dumb hooks for various events. $data are all string.
-     * available events are:
-     * - constructing, constructed, newQuery,
-     * - selecting, selected, inserting, inserted,
-     * - updating, updated, deleting, deleted,
-     *
-     * @param string $event
-     * @param mixed  $data
-     * @return mixed|null
-     */
-    protected function hook( $event, $data=null )
-    {
-        if( $this->hooks ) {
-            $data = $this->hooks->hook( $event, $data, $this );
-            if( $this->hooks->usesFilterData() ) {
-                $this->filteredData = $data;
-                $this->useFilteredFlag = true;
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * @param Hooks $hook
-     */
-    public function setHook( $hook )
-    {
-        $this->hooks = $hook;
     }
 
     // +----------------------------------------------------------------------+
