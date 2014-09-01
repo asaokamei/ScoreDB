@@ -2,6 +2,8 @@
 namespace WScore\ScoreDB\Dao;
 
 use DateTime;
+use WScore\ScoreDB\Dao;
+use WScore\ScoreDB\Query;
 
 /**
  * Class DaoTrait
@@ -10,12 +12,8 @@ use DateTime;
  * a trait to behave like a DAO.
  * the class must have or extend the QueryInterface.
  */
-trait TimeStampTrait
+class TimeStamp
 {
-    abstract protected function getDateTimeFormat();
-
-    abstract protected function getTimeStamps();
-
     /**
      * @var DateTime
      */
@@ -45,34 +43,37 @@ trait TimeStampTrait
 
     /**
      * @param array $data
+     * @param Query|Dao $query
      * @return array
      */
-    public function onCreateStampFilter( $data )
+    public function onCreateStampFilter( $data, $query )
     {
-        $data = $this->onTimeStampFilter( $data, 'created_at' );
-        $data = $this->onTimeStampFilter( $data, 'updated_at' );
+        $data = $this->onTimeStampFilter( $data, $query, 'created_at' );
+        $data = $this->onTimeStampFilter( $data, $query, 'updated_at' );
         return $data;
     }
 
     /**
      * @param array $data
+     * @param Query|Dao $query
      * @return array
      */
-    public function onUpdateStampFilter( $data )
+    public function onUpdateStampFilter( $data, $query )
     {
-        $data = $this->onTimeStampFilter( $data, 'updated_at' );
+        $data = $this->onTimeStampFilter( $data, $query, 'updated_at' );
         return $data;
     }
 
     /**
      * @param array $data
+     * @param Query|Dao $query
      * @param string $type
      * @return array
      */
-    protected function onTimeStampFilter( $data, $type )
+    protected function onTimeStampFilter( $data, $query, $type )
     {
-        $dateTimeFormat = $this->getDateTimeFormat() ?: 'Y-m-d H:i:s';
-        $timeStamps     = $this->getTimeStamps();
+        $dateTimeFormat = $query->getDateTimeFormat() ?: 'Y-m-d H:i:s';
+        $timeStamps     = $query->getTimeStamps();
         if( !$timeStamps || !is_array( $timeStamps ) ) {
             return $data;
         }

@@ -2,6 +2,7 @@
 namespace tests\ScoreDB;
 
 use tests\ScoreDB\Dao\User;
+use WScore\ScoreDB\Dao\TimeStamp;
 use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Paginate;
 use WScore\ScoreSql\Sql\Join;
@@ -73,13 +74,13 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $user['no_null'], $found['no_null'] );
         
         // is created and updated at filled?
-        $now = User::$now;
+        $now = TimeStamp::$now;
         $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['created_at'] );
         $this->assertEquals( $now->format('Y-m-d'), $found['open_date'] );
         $this->assertEquals( $now->format('Y-m-d H:i:s'), $found['updated_at'] );
 
         $upTime = clone( $now );
-        User::$now = $upTime->add(new \DateInterval('P1D') );
+        TimeStamp::$now = $upTime->add(new \DateInterval('P1D') );
         $this->user->where( $this->user->user_id->eq($id) )->update( ['name'=>'updated'] );
 
         $found = User::query()->load( $id )[0];

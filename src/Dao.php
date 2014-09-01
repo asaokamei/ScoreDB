@@ -14,10 +14,6 @@ use WScore\ScoreDB\Hook\Hooks;
  */
 class Dao extends Query
 {
-    use Dao\TimeStampTrait;
-
-    use Dao\TableAndKeyNameTrait;
-
     /**
      * @var string    name of table.
      */
@@ -84,9 +80,9 @@ class Dao extends Query
     public function __construct( $hook=null )
     {
         if( $hook ) {
-            $hook->hookEvent('onConstructingHook',  $this);
-            $hook->hookEvent('onCreateStampFilter', $this);
-            $hook->hookEvent('onUpdateStampFilter', $this);
+            $hook->hookEvent('onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
+            $hook->hookEvent('onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
+            $hook->hookEvent('onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
             $hook->setScope($this);
             $hook->setMutant($this);
             $this->setHook( $hook );
@@ -200,7 +196,7 @@ class Dao extends Query
     /**
      * @return string
      */
-    protected function getDateTimeFormat()
+    public function getDateTimeFormat()
     {
         return $this->dateTimeFormat;
     }
@@ -208,7 +204,7 @@ class Dao extends Query
     /**
      * @return array
      */
-    protected function getTimeStamps()
+    public function getTimeStamps()
     {
         return $this->timeStamps;
     }
