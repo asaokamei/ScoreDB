@@ -2,7 +2,6 @@
 namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
-use InvalidArgumentException;
 use IteratorAggregate;
 use PdoStatement;
 use Traversable;
@@ -21,6 +20,8 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected $returnLastId = true;
 
     /**
+     * class name used as fetched object.
+     *
      * @var null|string
      */
     protected $fetch_class = null;
@@ -162,23 +163,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         $this->toCount();
         $count = $this->performRead( 'fetchValue' );
         return $count;
-    }
-
-    /**
-     * @param $data
-     * @throws InvalidArgumentException
-     * @return int|PdoStatement
-     */
-    public function save( $data )
-    {
-        $by   = $this->hook( 'saveMethod', $data );
-        if( !$by ) {
-            throw new InvalidArgumentException( 'save method not defined. ' );
-        }
-        $data = $this->hook( 'saving', $data );
-        $stmt = $this->$by( $data);
-        $stmt = $this->hook( 'saved', $stmt );
-        return $stmt;
     }
 
     /**

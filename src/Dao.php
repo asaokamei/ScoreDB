@@ -17,16 +17,6 @@ use WScore\ScoreDB\Hook\Hooks;
 class Dao extends Query
 {
     /**
-     * @var string    name of table.
-     */
-    protected $table;
-
-    /**
-     * @var string    name of (primary) key.
-     */
-    protected $keyName;
-
-    /**
      * time stamps config.
      *
      * $timeStamps = array(
@@ -63,13 +53,6 @@ class Dao extends Query
      * @var array
      */
     protected $fillable = array();
-
-    /**
-     * class name used as fetched object.
-     *
-     * @var null|string
-     */
-    protected $fetch_class = null;
 
     /**
      * @var Hooks
@@ -254,15 +237,6 @@ class Dao extends Query
     public function getTimeStamps()
     {
         return $this->timeStamps;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function isInDates($name)
-    {
-        return array_key_exists( $name, $this->dates );
     }
 
     /**

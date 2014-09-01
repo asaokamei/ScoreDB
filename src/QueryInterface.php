@@ -7,7 +7,6 @@
  */
 namespace WScore\ScoreDB;
 
-use InvalidArgumentException;
 use PdoStatement;
 use Traversable;
 
@@ -18,13 +17,6 @@ interface QueryInterface
      * @return int|bool
      */
     public function insert( $data = array() );
-
-    /**
-     * @param $data
-     * @throws InvalidArgumentException
-     * @return int|PdoStatement
-     */
-    public function save( $data );
 
     /**
      * @param string $name
