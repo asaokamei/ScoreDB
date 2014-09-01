@@ -22,20 +22,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected $returnLastId = true;
 
     /**
-     * @var Hooks
-     */
-    protected $hooks;
-
-    /**
-     * set true to use the value set in $useFilteredData.
-     *
-     * @var bool
-     */
-    protected $useFilteredFlag = false;
-
-    protected $filteredData = null;
-
-    /**
      * @var null|string
      */
     protected $fetch_class = null;
@@ -122,10 +108,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     protected function perform( $pdo, $method )
     {
-        if( $this->useFilteredFlag ) {
-            $this->useFilteredFlag = false;
-            return $this->filteredData;
-        }
         $sql = (string) $this;
         $bind  = $this->getBind();
         if( !$method ) {
@@ -190,11 +172,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function select($limit=null)
     {
-        $limit = $this->hook( 'selecting', $limit );
         if( $limit ) $this->limit($limit);
         $this->toSelect();
         $data = $this->performRead();
-        $data = $this->hook( 'selected', $data );
         $this->reset();
         return $data;
     }
@@ -214,27 +194,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function count()
     {
-        $this->hook( 'counting' );
         $this->toCount();
         $count = $this->performRead( 'fetchValue' );
-        $count = $this->hook( 'counted', $count );
         return $count;
-    }
-
-    /**
-     * @param int    $id
-     * @param string $column
-     * @return array|\PdoStatement
-     */
-    public function load( $id, $column=null )
-    {
-        list( $id, $column ) = $this->hook( 'loading', [ $id, $column ] );
-        $this->key($id, $column);
-        $this->toSelect();
-        $data = $this->performRead();
-        $data = $this->hook( 'loaded', $data );
-        $this->reset();
-        return $data;
     }
 
     /**
@@ -260,13 +222,10 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function insert( $data=array() )
     {
-        $data = $this->hook( 'createStamp', $data );
-        $data = $this->hook( 'inserting', $data );
         if( $data ) $this->value($data);
         $this->toInsert();
         $this->performWrite();
         $id = ( $this->returnLastId ) ? $this->lastId() : true;
-        $id = $this->hook( 'inserted', $id );
         $this->reset();
         return $id;
     }
@@ -292,12 +251,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function update( $data=array() )
     {
-        $data = $this->hook( 'updateStamp', $data );
-        $data = $this->hook( 'updating', $data );
         if( $data ) $this->value($data);
         $this->toUpdate();
         $stmt = $this->performWrite();
-        $stmt = $this->hook( 'updated', $stmt );
         $this->reset();
         return $stmt;
     }
@@ -309,11 +265,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function delete( $id=null, $column=null )
     {
-        list( $id, $column ) = $this->hook( 'deleting', [ $id, $column ] );
         $this->key($id, $column);
         $this->toDelete();
         $stmt = $this->performWrite();
-        $stmt = $this->hook( 'deleted', $stmt );
         $this->reset();
         return $stmt;
     }

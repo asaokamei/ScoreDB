@@ -1,6 +1,7 @@
 <?php
 namespace WScore\ScoreDB;
 
+use Aura\Sql\ExtendedPdo;
 use WScore\ScoreDB\Entity\ActiveRecord;
 use WScore\ScoreDB\Entity\EntityObject;
 use WScore\ScoreDB\Hook\Events;
@@ -69,6 +70,20 @@ class Dao extends Query
      * @var null|string
      */
     protected $fetch_class = null;
+
+    /**
+     * @var Hooks
+     */
+    protected $hooks;
+
+    /**
+     * set true to use the value set in $useFilteredData.
+     *
+     * @var bool
+     */
+    protected $useFilteredFlag = false;
+
+    protected $filteredData = null;
 
     // +----------------------------------------------------------------------+
     //  construction and object management
@@ -280,6 +295,117 @@ class Dao extends Query
             }
         }
         return $data;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  DB access methods (overwriting Query's methods).
+    // +----------------------------------------------------------------------+
+    /**
+     * @param ExtendedPdo $pdo
+     * @param string $method
+     * @return mixed
+     */
+    protected function perform( $pdo, $method )
+    {
+        if( $this->useFilteredFlag ) {
+            $this->useFilteredFlag = false;
+            return $this->filteredData;
+        }
+        return parent::perform( $pdo, $method );
+    }
+
+    /**
+     * @param null|int $limit
+     * @return array|\PdoStatement
+     */
+    public function select($limit=null)
+    {
+        $limit = $this->hook( 'selecting', $limit );
+        $data = parent::select($limit);
+        $data = $this->hook( 'selected', $data );
+        return $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        $this->hook( 'counting' );
+        $count = parent::count();
+        $count = $this->hook( 'counted', $count );
+        return $count;
+    }
+
+    /**
+     * @param int    $id
+     * @param string $column
+     * @return array|\PdoStatement
+     */
+    public function load( $id, $column=null )
+    {
+        list( $id, $column ) = $this->hook( 'loading', [ $id, $column ] );
+        $this->key($id, $column);
+        $data = parent::select();
+        $data = $this->hook( 'loaded', $data );
+        $this->reset();
+        return $data;
+    }
+
+    /**
+     * @param $data
+     * @throws \InvalidArgumentException
+     * @return int|\PdoStatement
+     */
+    public function save( $data )
+    {
+        $by   = $this->hook( 'saveMethod', $data );
+        if( !$by ) {
+            throw new \InvalidArgumentException( 'save method not defined. ' );
+        }
+        $data = $this->hook( 'saving', $data );
+        $stmt = $this->$by( $data);
+        $stmt = $this->hook( 'saved', $stmt );
+        return $stmt;
+    }
+
+    /**
+     * @param array $data
+     * @return int|bool
+     */
+    public function insert( $data=array() )
+    {
+        $data = $this->hook( 'createStamp', $data );
+        $data = $this->hook( 'inserting', $data );
+        $id = parent::insert($data);
+        $id = $this->hook( 'inserted', $id );
+        return $id;
+    }
+
+    /**
+     * @param array $data
+     * @return \PDOStatement
+     */
+    public function update( $data=array() )
+    {
+        $data = $this->hook( 'updateStamp', $data );
+        $data = $this->hook( 'updating', $data );
+        $stmt = parent::update($data);
+        $stmt = $this->hook( 'updated', $stmt );
+        return $stmt;
+    }
+
+    /**
+     * @param int $id
+     * @param string $column
+     * @return string|\PdoStatement
+     */
+    public function delete( $id=null, $column=null )
+    {
+        list( $id, $column ) = $this->hook( 'deleting', [ $id, $column ] );
+        $stmt = parent::delete($id, $column);
+        $stmt = $this->hook( 'deleted', $stmt );
+        return $stmt;
     }
 
     // +----------------------------------------------------------------------+

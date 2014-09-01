@@ -20,13 +20,6 @@ interface QueryInterface
     public function insert( $data = array() );
 
     /**
-     * @param int $id
-     * @param string $column
-     * @return array
-     */
-    public function load( $id, $column = null );
-
-    /**
      * @param $data
      * @throws InvalidArgumentException
      * @return int|PdoStatement

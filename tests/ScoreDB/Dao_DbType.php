@@ -361,7 +361,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 1, $id );
 
         // check if the data is loaded.
-        $found = $user->load( $id )[0];
+        $found = $user->key( $id )->select()[0];
         $this->assertEquals( $userData['name'], $found['name'] );
         $this->assertEquals( $userData['no_null'], $found['no_null'] );
 
