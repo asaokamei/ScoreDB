@@ -171,7 +171,7 @@ class Paginate
     public function queryPageWithNext()
     {
         $this->perPage++;
-        $this->setPageToQuery( $this->perPage );
+        $this->setPageToQuery();
         $data    = $this->queryPage();
         if( count( $data ) >= $this->perPage ) {
             $this->total = $this->currPage * $this->perPage + 1;
