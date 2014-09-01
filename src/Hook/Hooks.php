@@ -28,15 +28,9 @@ class Hooks
         $this->mutants = new Mutants();
     }
 
-    /**
-     * @param string $event
-     * @param string|object|\Closure $hook
-     */
-    public function hookEvent( $event, $hook )
-    {
-        $this->events->hookEvent( $event, $hook );
-    }
-
+    // +----------------------------------------------------------------------+
+    //  scopes
+    // +----------------------------------------------------------------------+
     /**
      * @param object $scope
      */
@@ -45,17 +39,6 @@ class Hooks
         $this->scopes->setScope( $scope );
     }
 
-    /**
-     * @param object $mutant
-     */
-    public function setMutant( $mutant )
-    {
-        $this->mutants->setMutant( $mutant );
-    }
-
-    // +----------------------------------------------------------------------+
-    //  scopes
-    // +----------------------------------------------------------------------+
     /**
      * @param string $name
      * @param Query  $query
@@ -70,6 +53,15 @@ class Hooks
     // +----------------------------------------------------------------------+
     //  events (hooks and filters)
     // +----------------------------------------------------------------------+
+    /**
+     * @param string $event
+     * @param string|object|\Closure $hook
+     */
+    public function hookEvent( $event, $hook )
+    {
+        $this->events->hookEvent( $event, $hook );
+    }
+
     /**
      * dumb hooks for various events. $data are all string.
      * available events are:
@@ -98,6 +90,14 @@ class Hooks
     // +----------------------------------------------------------------------+
     //  mutations
     // +----------------------------------------------------------------------+
+    /**
+     * @param object $mutant
+     */
+    public function setMutant( $mutant )
+    {
+        $this->mutants->setMutant( $mutant );
+    }
+
     /**
      * @param string $name
      * @param mixed  $value
