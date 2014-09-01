@@ -230,6 +230,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     {
         list( $id, $column ) = $this->hook( 'loading', [ $id, $column ] );
         $this->key($id, $column);
+        $this->toSelect();
         $data = $this->performRead();
         $data = $this->hook( 'loaded', $data );
         $this->reset();
