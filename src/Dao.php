@@ -136,7 +136,9 @@ class Dao extends Query
      */
     public static function find($key)
     {
-        return static::query()->key($key)->select();
+        $found = static::query()->key($key)->select();
+        if( $found && is_array($found) ) return $found[0];
+        return $found;
     }
 
     /**
