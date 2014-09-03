@@ -119,6 +119,30 @@ class Dao extends Query
         return $data;
     }
 
+    /**
+     * @param ExtendedPdo $pdo
+     * @return mixed
+     */
+    protected function perform( $pdo )
+    {
+        if( $this->useFilteredFlag ) {
+            $this->useFilteredFlag = false;
+            return $this->filteredData;
+        }
+        return parent::perform( $pdo );
+    }
+
+    /**
+     * overwrite this method to set fetch mode.
+     *
+     * @param PdoStatement $stm
+     * @return bool
+     */
+    protected function setFetchClass( $stm )
+    {
+        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, [$this] );
+    }
+
     // +----------------------------------------------------------------------+
     //  static methods
     // +----------------------------------------------------------------------+
@@ -194,17 +218,6 @@ class Dao extends Query
         $entity = new $class($this);
         $entity->fill($data);
         return $data;
-    }
-
-    /**
-     * overwrite this method to set fetch mode.
-     *
-     * @param PdoStatement $stm
-     * @return bool
-     */
-    protected function setFetchClass( $stm )
-    {
-        return $stm->setFetchMode( \PDO::FETCH_CLASS, $this->fetch_class, [$this] );
     }
 
     /**
@@ -286,19 +299,6 @@ class Dao extends Query
     // +----------------------------------------------------------------------+
     //  DB access methods (overwriting Query's methods).
     // +----------------------------------------------------------------------+
-    /**
-     * @param ExtendedPdo $pdo
-     * @return mixed
-     */
-    protected function perform( $pdo )
-    {
-        if( $this->useFilteredFlag ) {
-            $this->useFilteredFlag = false;
-            return $this->filteredData;
-        }
-        return parent::perform( $pdo );
-    }
-
     /**
      * @param null|int $limit
      * @return array|mixed

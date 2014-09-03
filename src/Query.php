@@ -64,13 +64,13 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param string $method
-     * @return \PdoStatement|array
+     * @return PdoStatement|array
      */
     protected function performRead( $method )
     {
         $pdo = $this->setPdoAndDbType();
         $stm = $this->perform( $pdo );
-        if( $stm instanceof \PDOStatement ) {
+        if( $stm instanceof PDOStatement ) {
             if( $method == 'fetchValue' ) {
                 return $stm->fetchColumn(0);
             }
@@ -85,7 +85,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * overwrite this method to set fetch mode.
      *
-     * @param \PdoStatement $stm
+     * @param PdoStatement $stm
      * @return bool
      */
     protected function setFetchMode( $stm )
@@ -99,7 +99,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * overwrite this method to set fetch mode.
      *
-     * @param \PdoStatement $stm
+     * @param PdoStatement $stm
      * @return bool
      */
     protected function setFetchClass( $stm )
@@ -109,7 +109,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param ExtendedPdo $pdo
-     * @return mixed
+     * @return PDOStatement|array
      */
     protected function perform( $pdo )
     {
