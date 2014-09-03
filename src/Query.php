@@ -66,12 +66,18 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * @param string $method
      * @return \PdoStatement|array
      */
-    protected function performRead( $method=null )
+    protected function performRead( $method )
     {
         $pdo = $this->setPdoAndDbType();
-        $stm = $this->perform( $pdo, $method );
-        if( is_object($stm) && $stm instanceof \PdoStatement ) {
-            $this->setFetchMode( $stm );
+        $stm = $this->perform( $pdo, 'perform' );
+        if( $stm instanceof \PDOStatement ) {
+            if( $method == 'fetchValue' ) {
+                return $stm->fetchColumn(0);
+            }
+            if( $method == 'fetchAll' ) {
+                $this->setFetchMode( $stm );
+                return $stm->fetchAll();
+            }
         }
         return $stm;
     }
@@ -110,10 +116,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     {
         $sql = (string) $this;
         $bind  = $this->getBind();
-        if( !$method ) {
-            $method = $this->fetch_class ? 'perform' : 'fetchAll';
-        }
-        return $pdo->$method( $sql, $bind );
+        return $pdo->perform( $sql, $bind );
     }
 
     // +----------------------------------------------------------------------+
@@ -134,13 +137,13 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param null|int $limit
-     * @return array|\PdoStatement
+     * @return array|mixed
      */
     public function select($limit=null)
     {
         if( $limit ) $this->limit($limit);
         $this->toSelect();
-        $data = $this->performRead();
+        $data = $this->performRead( 'fetchAll' );
         $this->reset();
         return $data;
     }
@@ -210,7 +213,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * @param int $id
      * @param string $column
-     * @return string|\PdoStatement
+     * @return PdoStatement
      */
     public function delete( $id=null, $column=null )
     {

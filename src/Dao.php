@@ -2,6 +2,7 @@
 namespace WScore\ScoreDB;
 
 use Aura\Sql\ExtendedPdo;
+use PdoStatement;
 use WScore\ScoreDB\Entity\ActiveRecord;
 use WScore\ScoreDB\Entity\EntityObject;
 use WScore\ScoreDB\Hook\Events;
@@ -132,7 +133,7 @@ class Dao extends Query
 
     /**
      * @param string|int $key
-     * @return array|\PdoStatement
+     * @return array|PdoStatement
      */
     public static function find($key)
     {
@@ -143,7 +144,7 @@ class Dao extends Query
 
     /**
      * @param string|int $key
-     * @return array|\PdoStatement
+     * @return array|PdoStatement
      * @throws \InvalidArgumentException
      */
     public static function findOrFail($key)
@@ -155,7 +156,7 @@ class Dao extends Query
     /**
      * @param string|int $key
      * @param array $data
-     * @return \PdoStatement
+     * @return PdoStatement
      */
     public static function modify($key, $data)
     {
@@ -198,7 +199,7 @@ class Dao extends Query
     /**
      * overwrite this method to set fetch mode.
      *
-     * @param \PdoStatement $stm
+     * @param PdoStatement $stm
      * @return bool
      */
     protected function setFetchClass( $stm )
@@ -301,7 +302,7 @@ class Dao extends Query
 
     /**
      * @param null|int $limit
-     * @return array|\PdoStatement
+     * @return array|mixed
      */
     public function select($limit=null)
     {
@@ -325,7 +326,7 @@ class Dao extends Query
     /**
      * @param int    $id
      * @param string $column
-     * @return array|\PdoStatement
+     * @return array|mixed
      */
     public function load( $id, $column=null )
     {
@@ -340,7 +341,7 @@ class Dao extends Query
     /**
      * @param $data
      * @throws \InvalidArgumentException
-     * @return int|\PdoStatement
+     * @return int|PdoStatement
      */
     public function save( $data )
     {
@@ -369,7 +370,7 @@ class Dao extends Query
 
     /**
      * @param array $data
-     * @return \PDOStatement
+     * @return PDOStatement
      */
     public function update( $data=array() )
     {
@@ -383,7 +384,7 @@ class Dao extends Query
     /**
      * @param int $id
      * @param string $column
-     * @return string|\PdoStatement
+     * @return PdoStatement
      */
     public function delete( $id=null, $column=null )
     {

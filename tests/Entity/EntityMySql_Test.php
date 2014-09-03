@@ -5,6 +5,7 @@ require_once( __DIR__ . '/../autoloader.php' );
 
 use tests\Entity\Dao\UserDao;
 use WScore\ScoreDB\DB;
+use WScore\ScoreDB\Entity\ActiveRecord;
 
 class EntityMySql_Test extends \PHPUnit_Framework_TestCase
 {
@@ -58,10 +59,11 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
 
         // fetch the data from db.
         $users = UserDao::query()->load($idx);
-        $this->assertEquals( 'PDOStatement', get_class($users) );
+        $this->assertTrue( is_array($users) );
 
         // test the basic access of the Entity object.
-        $user = $users->fetch();
+        /** @var ActiveRecord $user */
+        $user = $users[0];
         $this->assertEquals( 'WScore\ScoreDB\Entity\ActiveRecord', get_class($user) );
         $this->assertEquals( $data['no_null'], $user->no_null );
         $this->assertEquals( $idx, $user->getKey() );
