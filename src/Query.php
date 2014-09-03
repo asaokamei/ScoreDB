@@ -59,7 +59,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected function performWrite()
     {
         $pdo = $this->setPdoAndDbType('write');
-        return $this->perform( $pdo, 'perform' );
+        return $this->perform( $pdo );
     }
 
     /**
@@ -69,7 +69,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     protected function performRead( $method )
     {
         $pdo = $this->setPdoAndDbType();
-        $stm = $this->perform( $pdo, 'perform' );
+        $stm = $this->perform( $pdo );
         if( $stm instanceof \PDOStatement ) {
             if( $method == 'fetchValue' ) {
                 return $stm->fetchColumn(0);
@@ -109,10 +109,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
 
     /**
      * @param ExtendedPdo $pdo
-     * @param string $method
      * @return mixed
      */
-    protected function perform( $pdo, $method )
+    protected function perform( $pdo )
     {
         $sql = (string) $this;
         $bind  = $this->getBind();

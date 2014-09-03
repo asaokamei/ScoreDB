@@ -288,16 +288,15 @@ class Dao extends Query
     // +----------------------------------------------------------------------+
     /**
      * @param ExtendedPdo $pdo
-     * @param string $method
      * @return mixed
      */
-    protected function perform( $pdo, $method )
+    protected function perform( $pdo )
     {
         if( $this->useFilteredFlag ) {
             $this->useFilteredFlag = false;
             return $this->filteredData;
         }
-        return parent::perform( $pdo, $method );
+        return parent::perform( $pdo );
     }
 
     /**
