@@ -159,10 +159,14 @@ class Dao extends Query
 
     /**
      * @param string|int $key
+     * @throws \InvalidArgumentException
      * @return array|EntityObject|ActiveRecord
      */
     public static function find($key)
     {
+        if( !$key ) {
+            throw new \InvalidArgumentException('no such key to find');
+        }
         $found = static::query()->key($key)->select();
         if( $found && is_array($found) ) return $found[0];
         return $found;
