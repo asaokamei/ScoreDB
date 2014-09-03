@@ -159,7 +159,7 @@ class Dao extends Query
 
     /**
      * @param string|int $key
-     * @return array|PdoStatement
+     * @return array|EntityObject|ActiveRecord
      */
     public static function find($key)
     {
@@ -219,7 +219,7 @@ class Dao extends Query
         /** @var EntityObject $entity */
         $entity = new $class($this);
         $entity->fill($data);
-        return $data;
+        return $entity;
     }
 
     /**
