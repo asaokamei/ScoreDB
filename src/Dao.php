@@ -69,6 +69,8 @@ class Dao extends Query
 
     protected $filteredData = null;
 
+    protected $fetch_class = 'WScore\ScoreDB\Entity\EntityObject';
+
     // +----------------------------------------------------------------------+
     //  construction and object management
     // +----------------------------------------------------------------------+
