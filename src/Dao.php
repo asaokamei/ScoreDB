@@ -22,7 +22,7 @@ class Dao extends Query
      *
      * @var bool
      */
-    protected $returnLastId = false;
+    protected $returnLastId = true;
 
     /**
      * time stamps config.
