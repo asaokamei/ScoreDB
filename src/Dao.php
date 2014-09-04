@@ -18,6 +18,13 @@ use WScore\ScoreDB\Hook\Hooks;
 class Dao extends Query
 {
     /**
+     * assume it is auto-incremented key for generic dao.
+     *
+     * @var bool
+     */
+    protected $returnLastId = false;
+
+    /**
      * time stamps config.
      *
      * $timeStamps = array(
@@ -149,7 +156,7 @@ class Dao extends Query
     //  static methods
     // +----------------------------------------------------------------------+
     /**
-     * @return Dao
+     * @return Dao|static
      */
     public static function query()
     {

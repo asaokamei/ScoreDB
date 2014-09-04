@@ -17,7 +17,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     /**
      * @var bool
      */
-    protected $returnLastId = true;
+    protected $returnLastId = false;
 
     /**
      * class name used as fetched object.
