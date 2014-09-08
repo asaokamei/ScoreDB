@@ -211,7 +211,7 @@ class Dao extends Query
 
     /**
      * @param array $data
-     * @return bool|int
+     * @return EntityObject|ActiveRecord
      */
     public static function create($data=array())
     {
