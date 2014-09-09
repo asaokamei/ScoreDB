@@ -136,8 +136,9 @@ abstract class EntityAbstract
      * @param string $key
      * @return mixed
      */
-    public function _getRaw( $key )
+    public function _getRaw( $key=null )
     {
+        if( !$key ) return $this->data;
         return $this->__isset( $key ) ? $this->data[$key] : null;
     }
 
