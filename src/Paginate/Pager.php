@@ -27,8 +27,6 @@ class Pager
     
     protected $perPage = 20;
     
-    protected $currUri = null;
-    
     protected $currPage = 1;
     
     protected $saveID = 'Paginated-Query';
@@ -45,30 +43,29 @@ class Pager
     // +----------------------------------------------------------------------+
     /**
      * @param array|null $session
-     * @param string|null $uri
      */
-    public function __construct( &$session=null, $uri=null )
+    public function __construct( &$session=null )
     {
         if( is_null( $session ) ) {
             $this->session = $_SESSION;
         } else {
             $this->session = &$session;
         }
-        $this->currUri = $uri ?: $this->getRequestUri();
         $this->setSaveId();
         if( $limit = $this->getKey( $_GET, $this->limiter ) ) {
             $this->perPage = $limit;
         }
     }
 
-    protected function getRequestUri()
+    /**
+     * @param string $uri
+     * @return ToHtml
+     */
+    public function html( $uri=null )
     {
-        $uri = $this->getKey( $_SERVER, 'REQUEST_URI' );
-        $uri = htmlspecialchars( $uri, ENT_QUOTES, 'UTF-8' );
-        if( ( $post = strpos( $uri, '?' ) ) !== false ) {
-            $uri = substr( $uri, 0, $post );
-        }
-        return $uri;
+        $toHtml = new ToHtml( $uri );
+        $toHtml->setPager($this);
+        return $toHtml;
     }
 
     /**
@@ -90,7 +87,7 @@ class Pager
     }
 
     protected function setSaveId() {
-        $this->saveID = 'Paginated-'.md5( $this->currUri );
+        $this->saveID = 'Paginated-'.md5( $_SERVER["SCRIPT_FILENAME"] );
     }
 
     // +----------------------------------------------------------------------+
@@ -211,123 +208,21 @@ class Pager
         return $this->currPage;
     }
 
-    // +----------------------------------------------------------------------+
-    //  preparing for pagination list. Yep, this should go any other class.
-    // +----------------------------------------------------------------------+
-    function getBootstrapPaging( $numLinks=5)
+    /**
+     * @return int|null
+     */
+    public function getPerPage()
     {
-        $html = '';
-        $pages = $this->getPagination($numLinks);
-        $currPage = $pages['curr_page'];
-        $html .= $this->bootLi( '&laquo;', $pages['top_page'], $currPage );
-        $html .= $this->bootLi( 'prev', $pages['prev_page'], $currPage );
-        foreach( $pages['page'] as $page ) {
-            $html .= $this->bootLi( $page, $page, $currPage, 'active' );
-        }
-        $html .= $this->bootLi( 'next', $pages['next_page'], $currPage );
-        $html .= $this->bootLi( '&raquo;', $pages['last_page'], $currPage );
-        return "<ul class=\"pagination\">{$html}</ul>";
-    }
-
-    protected function bootLi( $label, $page, $currPage, $type='disable' )
-    {
-        if( $page != $currPage ) {
-            $html = "<li><a href='{$this->currUri}?{$this->pager}={$page}' >{$label}</a></li>";
-        } elseif( $type == 'disable' ) {
-            $html = "<li class='disabled'><a href='#' >{$label}</a></li>";
-        } else {
-            $html = "<li class='active'><a href='#' >{$label}</a></li>";
-        }
-        return $html;
+        return $this->perPage;
     }
 
     /**
-     * @param int $numLinks
-     * @return array
+     * @return string
      */
-    function getPagination( $numLinks = 5 )
+    public function getPageKey()
     {
-        $pages = [
-            'found' => $this->getTotal(),
-            'curr_page' => $this->getCurrPage(),
-        ];
-        $pages[ 'top_page'  ] = 1;
-        $pages[ 'last_page' ] = $lastPage = $this->findLastPage($numLinks);
-
-        // prepare pages
-        $pages['page'] = $this->fillPages($numLinks);
-
-        // previous and next pages.
-        $pages['prev_page'] = $this->currPage>1 ? $this->currPage-1: 1;
-        $pages['next_page'] = $this->currPage<$lastPage ? $this->currPage+1: $lastPage;
-        return $pages;
+        return $this->pager;
     }
 
-    /**
-     * @param $numLinks
-     * @return array
-     */
-    protected function fillPages($numLinks)
-    {
-        $start    = $this->findStart($numLinks);
-        $last     = $this->findLast( $numLinks );
-
-        $pages    = [];
-        for( $page = $start; $page <= $last; $page++ ) {
-            $pages[] = $page;
-        }
-        return $pages;
-    }
-
-    /**
-     * @param int $numLinks
-     * @return int
-     */
-    protected function findStart($numLinks)
-    {
-        $start = $this->currPage - $numLinks;
-        return $start >= 1 ? $start: 1;
-    }
-
-    /**
-     * @param int $numLinks
-     * @return int
-     */
-    protected function findLastPage($numLinks)
-    {
-        // total and perPage is set.
-        if( $this->total && $this->perPage ) {
-            return (integer) ( ceil( $this->total / $this->perPage ) );
-        }
-        return $this->currPage + $numLinks;
-    }
-
-    /**
-     * @param int $numLinks
-     * @return int
-     */
-    protected function findLast($numLinks)
-    {
-        $lastPage = $this->findLastPage($numLinks);
-        $last = $this->currPage + $numLinks;
-        if( $last <= $lastPage ) {
-            return $last;
-        }
-        return $lastPage;
-    }
     // +----------------------------------------------------------------------+
 }
-
-/*
-
-$pager = new Paginate()->set( 'perPage', 25 );
-if( !$query = $pager->loadQuery() ) {
-    $query = new Query;
-    // ... prepare query...
-    $pager->setQuery( $query );
-}
-$pager->countQuery();
-$pager->saveQuery();
-$data = $pager->queryPage();
-$info = $pager->getPagination();
- */
