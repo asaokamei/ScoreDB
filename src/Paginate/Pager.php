@@ -47,7 +47,7 @@ class Pager
     public function __construct( &$session=null )
     {
         if( is_null( $session ) ) {
-            $this->session = $_SESSION;
+            $this->session = &$_SESSION;
         } else {
             $this->session = &$session;
         }
@@ -132,10 +132,9 @@ class Pager
      */
     public function saveQuery()
     {
-        $this->session[$this->saveID] = [
-            'perPage' => $this->perPage,
-            'query'   => clone( $this->query ),
-        ];
+        $cloned = clone( $this->query );
+        $this->session[$this->saveID]['perPage'] = $this->perPage;
+        $this->session[$this->saveID]['query']   = $cloned;
         return $this;
     }
 
