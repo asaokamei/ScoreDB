@@ -52,11 +52,21 @@ class Paginate
         } else {
             $this->session = &$session;
         }
-        $this->currUri = $uri ?: $this->getKey( $_SERVER, 'REQUEST_URI' );
+        $this->currUri = $uri ?: $this->getRequestUri();
         $this->setSaveId();
         if( $limit = $this->getKey( $_GET, $this->limiter ) ) {
             $this->perPage = $limit;
         }
+    }
+
+    protected function getRequestUri()
+    {
+        $uri = $this->getKey( $_SERVER, 'REQUEST_URI' );
+        $uri = htmlspecialchars( $uri, ENT_QUOTES, 'UTF-8' );
+        if( ( $post = strpos( $uri, '?' ) ) !== false ) {
+            $uri = substr( $uri, 0, $post );
+        }
+        return $uri;
     }
 
     /**
@@ -202,6 +212,33 @@ class Paginate
     // +----------------------------------------------------------------------+
     //  preparing for pagination list. Yep, this should go any other class.
     // +----------------------------------------------------------------------+
+    function getBootstrapPaging( $numLinks=5)
+    {
+        $html = '';
+        $pages = $this->getPagination($numLinks);
+        $currPage = $pages['curr_page'];
+        $html .= $this->bootLi( '&laquo;', $pages['top_page'], $currPage );
+        $html .= $this->bootLi( 'prev', $pages['prev_page'], $currPage );
+        foreach( $pages['page'] as $page ) {
+            $html .= $this->bootLi( $page, $page, $currPage, 'active' );
+        }
+        $html .= $this->bootLi( 'next', $pages['next_page'], $currPage );
+        $html .= $this->bootLi( '&raquo;', $pages['last_page'], $currPage );
+        return "<ul class=\"pagination\">{$html}</ul>";
+    }
+
+    protected function bootLi( $label, $page, $currPage, $type='disable' )
+    {
+        if( $page != $currPage ) {
+            $html = "<li><a href='{$this->currUri}?{$this->pager}={$page}' >{$label}</a></li>";
+        } elseif( $type == 'disable' ) {
+            $html = "<li class='disabled'><a href='#' >{$label}</a></li>";
+        } else {
+            $html = "<li class='active'><a href='#' >{$label}</a></li>";
+        }
+        return $html;
+    }
+
     /**
      * @param int $numLinks
      * @return array
@@ -216,7 +253,7 @@ class Paginate
         $pages[ 'last_page' ] = $lastPage = $this->findLastPage($numLinks);
 
         // prepare pages
-        $pages['page'] = $this->findLastPage($numLinks);
+        $pages['page'] = $this->fillPages($numLinks);
 
         // previous and next pages.
         $pages['prev_page'] = $this->currPage>1 ? $this->currPage-1: 1;
@@ -235,7 +272,7 @@ class Paginate
 
         $pages    = [];
         for( $page = $start; $page <= $last; $page++ ) {
-            $pages[$page] = ($page == $this->currPage) ? '' : $page;
+            $pages[] = $page;
         }
         return $pages;
     }
