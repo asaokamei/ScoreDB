@@ -1,9 +1,11 @@
 <?php
-namespace WScore\ScoreDB;
+namespace WScore\ScoreDB\Paginate;
+
+use WScore\ScoreDB\Query;
 
 /**
- * Class Paginate
- * @package WScore\ScoreDB
+ * Class Pager
+ * @package WScore\ScoreDB\Paginate
  *
  * keys to set:
  *  - pager   : $_GET variable name to set the page number.
@@ -12,7 +14,7 @@ namespace WScore\ScoreDB;
  *
  *
  */
-class Paginate
+class Pager
 {
     /**
      * @var Query

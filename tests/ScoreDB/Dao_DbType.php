@@ -4,7 +4,7 @@ namespace tests\ScoreDB;
 use tests\ScoreDB\Dao\User;
 use WScore\ScoreDB\Dao\TimeStamp;
 use WScore\ScoreDB\DB;
-use WScore\ScoreDB\Paginate;
+use WScore\ScoreDB\Paginate\Pager;
 use WScore\ScoreSql\Sql\Join;
 use WScore\ScoreSql\Sql\Where;
 
@@ -270,7 +270,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         // construct initial Query.
         $this->saveUser(10);
         $session = [];
-        $pager = new Paginate( $session, '/test/' );
+        $pager = new Pager( $session, '/test/' );
         $pager->set( 'perPage', 3 );
         $this->assertEquals( null, $pager->loadQuery() );
 
@@ -292,7 +292,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $session = unserialize( $session );
 
         // recall the query, then paginate to the next page.
-        $pager = new Paginate( $session, '/test/' );
+        $pager = new Pager( $session, '/test/' );
         $user2 = $pager->loadQuery(2);
         $this->assertEquals( 'tests\ScoreDB\Dao\User', get_class($user2) );
 
@@ -338,7 +338,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
     function query_only_gender_is_1( & $session )
     {
-        $pager = new Paginate( $session );
+        $pager = new Pager( $session );
         /** @var User $user */
         if( !$user = $pager->loadQuery() ) {
             $user = User::query();
