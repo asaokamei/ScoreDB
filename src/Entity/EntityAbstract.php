@@ -18,6 +18,11 @@ abstract class EntityAbstract
     protected $_data = array();
 
     /**
+     * @var string
+     */
+    protected $_keyName;
+    
+    /**
      * @var array
      */
     protected $_original_data = array();
@@ -44,6 +49,7 @@ abstract class EntityAbstract
     public function __construct( $dao )
     {
         $this->_dao = $dao;
+        $this->_keyName = $dao->getKeyName();
         if( !empty($this->_data) ) {
             $this->_isFetched = true;
             $this->_original_data = $this->_data;
@@ -58,8 +64,7 @@ abstract class EntityAbstract
      */
     public function getKey()
     {
-        $key = $this->_dao->getKeyName();
-        return $this->__get($key);
+        return $this->__get($this->_keyName);
     }
 
     /**
