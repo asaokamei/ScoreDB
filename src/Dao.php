@@ -88,20 +88,29 @@ class Dao extends Query
      */
     public function __construct( $hook=null )
     {
-        if( $hook ) {
-            $hook->hookEvent( Events::ANY_EVENT, $this );
-            $hook->hookEvent( 'onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
-            $hook->hookEvent( 'onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
-            $hook->hookEvent( 'onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
-            $hook->setScope(  $this);
-            $hook->setMutant( $this);
-            $hook->setDates(  $this->dates, $this->dateTimeFormat );
-            $this->hooks = $hook;
-        }
+        $this->setUpHooks( $hook );
         $this->hook( 'constructing' );
         $this->hook( 'constructed' );
     }
 
+    /**
+     * @param Hooks $hook
+     * @return Dao
+     */
+    protected function setUpHooks($hook=null)
+    {
+        $hook = $hook ?: new Hooks();
+        $hook->hookEvent( Events::ANY_EVENT, $this );
+        $hook->hookEvent( 'onConstructingHook',  'WScore\ScoreDB\Dao\TableAndKeyName' );
+        $hook->hookEvent( 'onCreateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
+        $hook->hookEvent( 'onUpdateStampFilter', 'WScore\ScoreDB\Dao\TimeStamp' );
+        $hook->setScope(  $this);
+        $hook->setMutant( $this);
+        $hook->setDates(  $this->dates, $this->dateTimeFormat );
+        $this->hooks = $hook;
+        return $this;
+    }
+    
     // +----------------------------------------------------------------------+
     //  hooks
     // +----------------------------------------------------------------------+
