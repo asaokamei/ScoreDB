@@ -15,17 +15,17 @@ abstract class EntityAbstract
     /**
      * @var array
      */
-    protected $data = array();
+    protected $_data = array();
 
     /**
      * @var array
      */
-    protected $original_data = array();
+    protected $_original_data = array();
 
     /**
      * @var Dao
      */
-    protected $dao;
+    protected $_dao;
 
     /**
      * check if this entity object is fetched from db.
@@ -33,7 +33,7 @@ abstract class EntityAbstract
      *
      * @var bool
      */
-    protected $isFetched = false;
+    protected $_isFetched = false;
 
     // +----------------------------------------------------------------------+
     //  constructors and managing values
@@ -43,10 +43,10 @@ abstract class EntityAbstract
      */
     public function __construct( $dao )
     {
-        $this->dao = $dao;
-        if( !empty($this->data) ) {
-            $this->isFetched = true;
-            $this->original_data = $this->data;
+        $this->_dao = $dao;
+        if( !empty($this->_data) ) {
+            $this->_isFetched = true;
+            $this->_original_data = $this->_data;
         }
     }
 
@@ -58,7 +58,7 @@ abstract class EntityAbstract
      */
     public function getKey()
     {
-        $key = $this->dao->getKeyName();
+        $key = $this->_dao->getKeyName();
         return $this->__get($key);
     }
 
@@ -69,7 +69,7 @@ abstract class EntityAbstract
      */
     public function isFetched()
     {
-        return $this->isFetched;
+        return $this->_isFetched;
     }
 
     // +----------------------------------------------------------------------+
@@ -81,7 +81,7 @@ abstract class EntityAbstract
      */
     public function fill( $data )
     {
-        $data = $this->dao->filterFillable($data);
+        $data = $this->_dao->filterFillable($data);
         foreach( $data as $key => $value ) {
             $this->__set( $key, $value );
         }
@@ -95,8 +95,8 @@ abstract class EntityAbstract
     public function __get( $key )
     {
         $value = $this->_getRaw($key);
-        if( $this->dao ) {
-            $value = $this->dao->mutate( $key, $value );
+        if( $this->_dao ) {
+            $value = $this->_dao->mutate( $key, $value );
         }
         return $value;
     }
@@ -107,10 +107,10 @@ abstract class EntityAbstract
      */
     public function __set( $key, $value )
     {
-        if( $this->dao ) {
-            $value = $this->dao->muteBack( $key, $value );
+        if( $this->_dao ) {
+            $value = $this->_dao->muteBack( $key, $value );
         }
-        $this->data[$key] = $value;
+        $this->_data[$key] = $value;
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class EntityAbstract
      */
     public function __isset( $key )
     {
-        return isset( $this->data[$key] );
+        return isset( $this->_data[$key] );
     }
 
     /**
@@ -129,7 +129,7 @@ abstract class EntityAbstract
      */
     public function __unset( $key )
     {
-        if( isset( $this->data[$key]) ) unset( $this->data[$key] );
+        if( isset( $this->_data[$key]) ) unset( $this->_data[$key] );
     }
 
     /**
@@ -138,8 +138,8 @@ abstract class EntityAbstract
      */
     public function _getRaw( $key=null )
     {
-        if( !$key ) return $this->data;
-        return $this->__isset( $key ) ? $this->data[$key] : null;
+        if( !$key ) return $this->_data;
+        return $this->__isset( $key ) ? $this->_data[$key] : null;
     }
 
     /**
@@ -148,8 +148,8 @@ abstract class EntityAbstract
     public function _getModified()
     {
         $modified = array();
-        foreach ( $this->data as $key => $value ) {
-            if ( !array_key_exists( $key, $this->original_data ) || $value !== $this->original_data[ $key ] ) {
+        foreach ( $this->_data as $key => $value ) {
+            if ( !array_key_exists( $key, $this->_original_data ) || $value !== $this->_original_data[ $key ] ) {
                 $modified[ $key ] = $value;
             }
         }
