@@ -170,7 +170,7 @@ class Dao extends Query
     public static function query()
     {
         /** @var Dao $self */
-        return new static( new Hooks() );
+        return new static();
     }
 
     /**
