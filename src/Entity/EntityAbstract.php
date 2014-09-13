@@ -45,9 +45,11 @@ abstract class EntityAbstract
     // +----------------------------------------------------------------------+
     /**
      * @param Dao $dao
+     * @throws \InvalidArgumentException
      */
     public function __construct( $dao )
     {
+        if( !$dao instanceof Dao ) throw new \InvalidArgumentException;
         $this->_dao = $dao;
         $this->_keyName = $dao->getKeyName();
         if( !empty($this->_data) ) {
