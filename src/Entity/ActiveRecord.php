@@ -35,7 +35,7 @@ class ActiveRecord extends EntityObject
         if( $this->isImmune() ) {
             throw new \BadMethodCallException();
         }
-        $dao = $this->_dao;
+        $dao = $this->_dao();
         if( $this->isFetched() ) {
             $modified = $this->_getModified();
             $dao::modify( $this->getKey(), $modified );
@@ -57,7 +57,7 @@ class ActiveRecord extends EntityObject
             throw new \BadMethodCallException();
         }
         if( $this->isFetched() ) {
-            $this->_dao->update( $this->getKey() );
+            $this->_dao()->update( $this->getKey() );
         }
         return $this;
     }

@@ -56,6 +56,14 @@ abstract class EntityAbstract
         }
     }
 
+    /**
+     * @return Dao
+     */
+    public function _dao()
+    {
+        return $this->_dao;
+    }
+
     // +----------------------------------------------------------------------+
     //  database access
     // +----------------------------------------------------------------------+
@@ -86,7 +94,9 @@ abstract class EntityAbstract
      */
     public function fill( $data )
     {
-        $data = $this->_dao->filterFillable($data);
+        if( $dao = $this->_dao() ) {
+            $data = $dao->filterFillable($data);
+        }
         foreach( $data as $key => $value ) {
             $this->__set( $key, $value );
         }
@@ -100,8 +110,8 @@ abstract class EntityAbstract
     public function __get( $key )
     {
         $value = $this->_getRaw($key);
-        if( $this->_dao ) {
-            $value = $this->_dao->mutate( $key, $value );
+        if( $dao = $this->_dao() ) {
+            $value = $dao->mutate( $key, $value );
         }
         return $value;
     }
@@ -112,8 +122,8 @@ abstract class EntityAbstract
      */
     public function __set( $key, $value )
     {
-        if( $this->_dao ) {
-            $value = $this->_dao->muteBack( $key, $value );
+        if( $dao = $this->_dao() ) {
+            $value = $dao->muteBack( $key, $value );
         }
         $this->_data[$key] = $value;
     }
