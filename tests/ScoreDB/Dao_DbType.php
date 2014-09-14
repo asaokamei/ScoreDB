@@ -415,4 +415,22 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals( $found, $found2 );
     }
+
+    /**
+     * @test
+     */
+    function sub_queries()
+    {
+        $this->saveUser(10);
+        $user = $this->user;
+        $user->column( 
+            DB::subQuery( 'dao_user' )->column(DB::raw('COUNT(*)'))->where(
+                DB::given('status')->is('1')
+            ), 'count_status_1'
+        );
+        //$this->assertEquals('SELECT ( SELECT COUNT(*) FROM "dao_user" AS "sub_1" WHERE "sub_1"."status" = :db_prep_1 ) AS "count_status_1" FROM "dao_user"', (string) $user);
+        
+        $found = $user->select();
+        $this->assertEquals( '3', $found[0]->count_status_1 );
+    }
 }
