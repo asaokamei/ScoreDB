@@ -423,14 +423,41 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
     {
         $this->saveUser(10);
         $user = $this->user;
+
+        /*
+         * sub query in column
+         */
         $user->column( 
-            DB::subQuery( 'dao_user' )->column(DB::raw('COUNT(*)'))->where(
-                DB::given('status')->is('1')
+            DB::subQuery( 'dao_user' )
+                ->column(DB::raw('COUNT(*)'))
+                ->where(
+                    DB::given('status')->is('1')
             ), 'count_status_1'
-        );
-        //$this->assertEquals('SELECT ( SELECT COUNT(*) FROM "dao_user" AS "sub_1" WHERE "sub_1"."status" = :db_prep_1 ) AS "count_status_1" FROM "dao_user"', (string) $user);
-        
+        )->column(
+                DB::subQuery( 'dao_user' )
+                    ->column(DB::raw('COUNT(*)'))
+                    ->where(
+                        DB::given('status')->is('2')
+                    ), 'count_status_2'
+            );
+
         $found = $user->select();
         $this->assertEquals( '3', $found[0]->count_status_1 );
+        $this->assertEquals( '4', $found[0]->count_status_2 );
+        
+        /*
+         * sub query in IN clause
+         */
+        $user->reset();
+        $user->where(
+            $user->status->in( 
+                DB::subQuery('dao_user')->where(
+                    $user->status->is('1')
+                )->column('status')
+            )
+        );
+        $found = $user->select();
+        $this->assertEquals( '3', count($found) );
+        $this->assertEquals( '1', $found[0]->status );
     }
 }
