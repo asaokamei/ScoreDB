@@ -57,7 +57,7 @@ class ActiveRecord extends EntityObject
             throw new \BadMethodCallException();
         }
         if( $this->isFetched() ) {
-            $this->_dao()->update( $this->getKey() );
+            $this->_dao()->delete( $this->getKey() );
         }
         return $this;
     }
