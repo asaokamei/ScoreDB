@@ -391,6 +391,25 @@ class Dao extends Query
 
     /**
      * @param array $data
+     * @return bool|int|PdoStatement
+     * @throws \InvalidArgumentException
+     */
+    public function replace( $data )
+    {
+        if( !isset( $data[$this->keyName] ) ) {
+            throw new \InvalidArgumentException;
+        }
+        $key = $data[$this->keyName];
+        if( $this::find($key) ) {
+            $this->key($key)->update($data);
+            return $key;
+        } else {
+            return $this->insert($data);
+        }
+    }
+
+    /**
+     * @param array $data
      * @return PDOStatement
      */
     public function update( $data=array() )
