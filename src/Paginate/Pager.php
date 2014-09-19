@@ -38,6 +38,11 @@ class Pager
      */
     protected $session = array();
 
+    /**
+     * @var array  keep values as part of query info.
+     */
+    protected $savedInfo = [];
+
     // +----------------------------------------------------------------------+
     //  set up the pagination.
     // +----------------------------------------------------------------------+
@@ -109,6 +114,7 @@ class Pager
         $this->currPage = $page;
         $this->query   = $this->session[$this->saveID]['query'];
         $this->perPage = $this->session[$this->saveID]['perPage'];
+        $this->savedInfo = $this->session[$this->saveID]['savedInfo'];
         $this->setPageToQuery();
         return $this->query;
     }
@@ -135,6 +141,7 @@ class Pager
         $cloned = clone( $this->query );
         $this->session[$this->saveID]['perPage'] = $this->perPage;
         $this->session[$this->saveID]['query']   = $cloned;
+        $this->session[$this->saveID]['savedInfo'] = $this->savedInfo;
         return $this;
     }
 
@@ -221,6 +228,19 @@ class Pager
     public function getPageKey()
     {
         return $this->pager;
+    }
+
+    // +----------------------------------------------------------------------+
+    //  for savedInfo
+    // +----------------------------------------------------------------------+
+    public function saveValue( $key, $value )
+    {
+        $this->savedInfo[$key] = $value;
+    }
+
+    public function loadValue( $key )
+    {
+        return array_key_exists( $key, $this->savedInfo ) ? $this->savedInfo[$key] : null;
     }
 
     // +----------------------------------------------------------------------+
