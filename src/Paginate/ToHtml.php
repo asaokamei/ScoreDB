@@ -143,8 +143,10 @@ class ToHtml
     protected function findLastPage($numLinks)
     {
         // total and perPage is set.
-        if( $this->pager->getTotal() && $this->pager->getPerPage() ) {
-            return (integer) ( ceil( $this->pager->getTotal() / $this->pager->getPerPage() ) );
+        $total = $this->pager->getTotal();
+        $pages = $this->pager->getPerPage();
+        if( !is_null( $total ) && $pages ) {
+            return (integer) ( ceil( $total / $pages ) );
         }
         return $this->currPage + $numLinks;
     }
