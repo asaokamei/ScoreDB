@@ -34,7 +34,11 @@ trait ArrayAccessTrait
      */
     public function offsetGet( $key )
     {
-        return $this->__get( $key );
+        $found = $this->__get( $key );
+        if( is_string($found) ) {
+            $found = htmlspecialchars($found, ENT_QUOTES, 'UTF-8' );
+        }
+        return $found;
     }
 
     /**
