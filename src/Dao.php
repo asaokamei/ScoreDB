@@ -286,7 +286,7 @@ class Dao extends Query
      */
     public function mutate( $name, $value )
     {
-        return $this->hooks->muteInto( $name, $value );
+        return $this->hooks ? $this->hooks->muteInto( $name, $value ) : $value;
     }
 
     /**
@@ -299,7 +299,7 @@ class Dao extends Query
      */
     public function muteBack( $name, $value )
     {
-        return $this->hooks->muteBack( $name, $value );
+        return $this->hooks ? $this->hooks->muteBack( $name, $value ) : $value;
     }
 
     /**
