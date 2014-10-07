@@ -63,6 +63,21 @@ class Pager
     }
 
     /**
+     * @param \Closure $factory
+     * @return \WScore\ScoreDB\Query
+     */
+    public function load( $factory )
+    {
+        if( !$dao = $this->loadQuery() ) {
+            $dao = $factory($this);
+            $this->setQuery($dao);
+        }
+        $this->queryTotal();
+        $this->saveQuery();
+        return $dao;
+    }
+
+    /**
      * @param string $uri
      * @return ToHtml
      */
