@@ -246,13 +246,33 @@ class Pager
     }
 
     // +----------------------------------------------------------------------+
-    //  for savedInfo
+    //  for getting input value and saving them
     // +----------------------------------------------------------------------+
+    /**
+     * @param array  $input
+     * @param string $key
+     * @return mixed|string
+     */
+    public function pushValue( $input, $key )
+    {
+        $value = array_key_exists( $key, $input ) ? $input[$key] : null;
+        $this->saveValue( $key, $value );
+        return $value;
+    }
+
+    /**
+     * @param string       $key
+     * @param mixed|string $value
+     */
     public function saveValue( $key, $value )
     {
         $this->savedInfo[$key] = $value;
     }
 
+    /**
+     * @param string $key
+     * @return mixed|string
+     */
     public function loadValue( $key )
     {
         return array_key_exists( $key, $this->savedInfo ) ? $this->savedInfo[$key] : null;
