@@ -251,11 +251,12 @@ class Pager
     /**
      * @param array  $input
      * @param string $key
+     * @param string $default
      * @return mixed|string
      */
-    public function pushValue( $input, $key )
+    public function pushValue( $input, $key, $default='' )
     {
-        $value = array_key_exists( $key, $input ) ? $input[$key] : null;
+        $value = array_key_exists( $key, $input ) ? $input[$key] : $default;
         $this->saveValue( $key, $value );
         return $value;
     }
