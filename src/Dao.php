@@ -165,7 +165,7 @@ class Dao extends Query
     //  static methods
     // +----------------------------------------------------------------------+
     /**
-     * @return Dao|static
+     * @return Dao|$this
      */
     public static function query()
     {

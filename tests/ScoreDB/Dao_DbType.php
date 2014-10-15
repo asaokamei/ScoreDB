@@ -217,6 +217,7 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
             $this->assertEquals( 1, $user['gender'] );
         }
         // updating status is 2.
+        /** @var User $d */
         $d = User::query();
         $d->status = 9;
         $d->where( $d->status->eq(1) )->update();
@@ -249,17 +250,17 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         $data['no_null'] = 'any\' OR \'x\'=\'x';
         $id = $this->user->insert( $data );
         $saved = $this->user->load($id);
-        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+        $this->assertEquals( $data['no_null'], $saved[0]->no_null );
 
         $data['no_null'] = "t'' OR ''t''=''t'";
         $id = $this->user->insert( $data );
         $saved = $this->user->load($id);
-        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+        $this->assertEquals( $data['no_null'], $saved[0]->no_null );
 
         $data['no_null'] = "\'' OR 1=1 --";
         $id = $this->user->insert( $data );
         $saved = $this->user->load($id);
-        $this->assertEquals( $data['no_null'], $saved[0]['no_null'] );
+        $this->assertEquals( $data['no_null'], $saved[0]->no_null );
     }
 
     /**
