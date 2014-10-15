@@ -428,17 +428,17 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         /*
          * sub query in column
          */
-        $user->column( 
-            DB::subQuery( 'dao_user' )
-                ->column(DB::raw('COUNT(*)'))
+        $user->column(
+            $user->subQuery( 'dao_user' )
+                ->column($user->raw('COUNT(*)'))
                 ->where(
-                    DB::given('status')->is('1')
+                    $user->given('status')->is('1')
             ), 'count_status_1'
         )->column(
-                DB::subQuery( 'dao_user' )
-                    ->column(DB::raw('COUNT(*)'))
+            $user->subQuery( 'dao_user' )
+                    ->column($user->raw('COUNT(*)'))
                     ->where(
-                        DB::given('status')->is('2')
+                        $user->given('status')->is('2')
                     ), 'count_status_2'
             );
 
@@ -451,8 +451,8 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
          */
         $user->reset();
         $user->where(
-            $user->status->in( 
-                DB::subQuery('dao_user')->where(
+            $user->status->in(
+                $user->subQuery('dao_user')->where(
                     $user->status->is('1')
                 )->column('status')
             )
