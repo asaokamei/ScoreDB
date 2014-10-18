@@ -3,7 +3,6 @@ namespace WScore\ScoreDB\Relation;
 
 use WScore\ScoreDB\Dao;
 use WScore\ScoreDB\Entity\EntityAbstract;
-use WScore\ScoreDB\Relation\RelationInterface;
 
 /**
  * Created by PhpStorm.
@@ -143,7 +142,7 @@ class HasJoin implements RelationInterface
      * @param EntityAbstract $target
      * @return $this|RelationInterface
      */
-    public function unlink( $target=null )
+    public function unlink( $target = null )
     {
         $sourceKey = $this->entity->_getRaw( $this->sourceCol );
         $targetKey = $target->_getRaw( $this->targetCol );
@@ -151,7 +150,7 @@ class HasJoin implements RelationInterface
             $this->sourceDao->given( $this->joinSourceCol )->is( $sourceKey )
                 ->given( $this->joinTargetCol )->is( $targetKey )
         )->delete();
-        
+
         return $this;
     }
 

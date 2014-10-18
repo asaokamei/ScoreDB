@@ -30,7 +30,7 @@ class HasMany implements RelationInterface
     /**
      * @var string
      */
-    protected $targetName;
+    protected $targetDao;
 
     /**
      * @var string
@@ -40,20 +40,20 @@ class HasMany implements RelationInterface
     /**
      * @var EntityAbstract[]
      */
-    protected $target = [];
+    protected $target = [ ];
 
     /**
      * @param Dao            $sourceDao
-     * @param Dao|string     $targetName
+     * @param Dao|string     $targetDao
      * @param EntityAbstract $entity
      */
-    public function __construct( $sourceDao, $targetName, $entity )
+    public function __construct( $sourceDao, $targetDao, $entity )
     {
-        $this->sourceDao  = $sourceDao;
-        $this->sourceCol  = $sourceDao->getKeyName();
-        $this->targetName = $targetName;
-        $this->targetCol  = $this->sourceCol;
-        $this->entity     = $entity;
+        $this->sourceDao = $sourceDao;
+        $this->sourceCol = $sourceDao->getKeyName();
+        $this->targetDao = $targetDao;
+        $this->targetCol = $this->sourceCol;
+        $this->entity    = $entity;
     }
 
     /**
@@ -62,7 +62,7 @@ class HasMany implements RelationInterface
     public function get()
     {
         /** @var Dao $targetName */
-        $targetName   = $this->targetName;
+        $targetName   = $this->targetDao;
         $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
         $this->target = $targetName::fetch( $sourceKey, $this->targetCol );
         return $this->target;
@@ -74,16 +74,16 @@ class HasMany implements RelationInterface
      */
     public function link( $target )
     {
-        if( $target instanceof EntityAbstract ) {
+        if ( $target instanceof EntityAbstract ) {
             $target = [ $target ];
         }
-        if( !$sourceKey    = $this->entity->_getRaw( $this->sourceCol ) ) {
+        if ( !$sourceKey = $this->entity->_getRaw( $this->sourceCol ) ) {
             throw new \RuntimeException( 'lazy relation not supported' );
         }
         $targetCol = $this->targetCol;
-        foreach( $target as $tgt ) {
+        foreach ( $target as $tgt ) {
             $tgt->$targetCol = $sourceKey;
-            $this->target[] = $tgt;
+            $this->target[ ] = $tgt;
         }
         return $this;
     }
@@ -92,11 +92,11 @@ class HasMany implements RelationInterface
      * @param EntityAbstract $target
      * @return $this|RelationInterface
      */
-    public function unlink( $target=null )
+    public function unlink( $target = null )
     {
-        $targetCol = $this->targetCol;
+        $targetCol          = $this->targetCol;
         $target->$targetCol = null;
-        
+
         return $this;
     }
 }

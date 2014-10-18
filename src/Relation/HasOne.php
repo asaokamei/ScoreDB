@@ -29,7 +29,7 @@ class HasOne implements RelationInterface
     /**
      * @var string
      */
-    protected $targetName;
+    protected $targetDao;
 
     /**
      * @var string
@@ -43,17 +43,17 @@ class HasOne implements RelationInterface
 
     /**
      * @param Dao            $sourceDao
-     * @param Dao|string     $targetName
+     * @param Dao|string     $targetDao
      * @param string         $sourceCol
      * @param EntityAbstract $entity
      */
-    public function __construct( $sourceDao, $targetName, $sourceCol, $entity )
+    public function __construct( $sourceDao, $targetDao, $sourceCol, $entity )
     {
-        $this->sourceDao  = $sourceDao;
-        $this->sourceCol  = $sourceCol;
-        $this->targetName = $targetName;
-        $this->targetCol  = $sourceCol;
-        $this->entity     = $entity;
+        $this->sourceDao = $sourceDao;
+        $this->sourceCol = $sourceCol;
+        $this->targetDao = $targetDao;
+        $this->targetCol = $sourceCol;
+        $this->entity    = $entity;
     }
 
     /**
@@ -62,7 +62,7 @@ class HasOne implements RelationInterface
     public function get()
     {
         /** @var Dao $targetName */
-        $targetName   = $this->targetName;
+        $targetName   = $this->targetDao;
         $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
         $this->target = $targetName::fetch( $sourceKey, $this->targetCol );
         if ( $this->target ) {
@@ -90,11 +90,11 @@ class HasOne implements RelationInterface
      * @param EntityAbstract $target
      * @return $this
      */
-    public function unlink( $target=null )
+    public function unlink( $target = null )
     {
-        $sourceCol = $this->sourceCol;
+        $sourceCol                = $this->sourceCol;
         $this->entity->$sourceCol = null;
-        
+
         return $this;
     }
 }
