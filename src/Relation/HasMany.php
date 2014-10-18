@@ -77,7 +77,9 @@ class HasMany implements RelationInterface
         if( $target instanceof EntityAbstract ) {
             $target = [ $target ];
         }
-        $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
+        if( !$sourceKey    = $this->entity->_getRaw( $this->sourceCol ) ) {
+            throw new \RuntimeException( 'lazy relation not supported' );
+        }
         $targetCol = $this->targetCol;
         foreach( $target as $tgt ) {
             $tgt->$targetCol = $sourceKey;
