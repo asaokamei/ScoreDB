@@ -4,9 +4,11 @@ namespace WScore\ScoreDB;
 use Aura\Sql\ExtendedPdo;
 use PdoStatement;
 use WScore\ScoreDB\Entity\ActiveRecord;
+use WScore\ScoreDB\Entity\EntityAbstract;
 use WScore\ScoreDB\Entity\EntityObject;
 use WScore\ScoreDB\Hook\Events;
 use WScore\ScoreDB\Hook\Hooks;
+use WScore\ScoreDB\Relation\RelationInterface;
 
 /**
  * Class Dao
@@ -200,6 +202,16 @@ class Dao extends Query
     }
 
     /**
+     * @param string $id
+     * @param string $column
+     * @return array|mixed
+     */
+    public static function fetch( $id, $column=null )
+    {
+        return static::query()->load( $id, $column );
+    }
+
+    /**
      * @param string|int $key
      * @param array $data
      * @return PdoStatement
@@ -318,6 +330,21 @@ class Dao extends Query
         return $data;
     }
 
+    /**
+     * return relation object, or null if not set. 
+     *
+     * @param EntityAbstract $entity
+     * @param string         $name
+     * @return null|RelationInterface
+     */
+    public function relate( $entity, $name )
+    {
+        $method = 'get'.ucwords($name).'Relation';
+        if( method_exists( $this, $method ) ) {
+            return $this->$method( $entity );
+        }
+        return null;
+    }
     // +----------------------------------------------------------------------+
     //  DB access methods (overwriting Query's methods).
     // +----------------------------------------------------------------------+
