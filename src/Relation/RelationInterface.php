@@ -1,6 +1,8 @@
 <?php
 namespace WScore\ScoreDB\Relation;
 
+use WScore\ScoreDB\Entity\EntityAbstract;
+
 /**
  * Created by PhpStorm.
  * User: Asao Kamei
@@ -9,7 +11,20 @@ namespace WScore\ScoreDB\Relation;
  */
 interface RelationInterface
 {
+    /**
+     * @return EntityAbstract|EntityAbstract[]
+     */
     public function get();
-    
+
+    /**
+     * @param EntityAbstract|EntityAbstract[] $target
+     * @return RelationInterface
+     */
     public function link( $target );
+
+    /**
+     * @param EntityAbstract $target
+     * @return RelationInterface
+     */
+    public function unlink( $target=null );
 }

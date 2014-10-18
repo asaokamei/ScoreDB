@@ -85,4 +85,16 @@ class HasOne implements RelationInterface
         $this->target             = $target;
         return $this->target;
     }
+
+    /**
+     * @param EntityAbstract $target
+     * @return $this
+     */
+    public function unlink( $target=null )
+    {
+        $sourceCol = $this->sourceCol;
+        $this->entity->$sourceCol = null;
+        
+        return $this;
+    }
 }

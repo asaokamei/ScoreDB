@@ -70,7 +70,7 @@ class HasMany implements RelationInterface
 
     /**
      * @param EntityAbstract|EntityAbstract[] $target
-     * @return EntityAbstract[]
+     * @return $this|RelationInterface
      */
     public function link( $target )
     {
@@ -85,6 +85,18 @@ class HasMany implements RelationInterface
             $tgt->$targetCol = $sourceKey;
             $this->target[] = $tgt;
         }
-        return $this->target;
+        return $this;
+    }
+
+    /**
+     * @param EntityAbstract $target
+     * @return $this|RelationInterface
+     */
+    public function unlink( $target=null )
+    {
+        $targetCol = $this->targetCol;
+        $target->$targetCol = null;
+        
+        return $this;
     }
 }
