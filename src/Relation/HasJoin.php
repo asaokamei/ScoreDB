@@ -88,7 +88,7 @@ class HasJoin implements RelationInterface
         // key to search for...  
         $sourceKey = $this->entity->_getRaw( $this->sourceCol );
         if ( !$sourceKey ) return $this->target;
-        $joinList = $this->getJoinDao()->fetch( $sourceKey, $this->joinSourceCol );
+        $joinList = $this->getJoinDao()->load( $sourceKey, $this->joinSourceCol );
 
         // get the target's key list. 
         $joinSourceCol = $this->joinSourceCol;
@@ -98,7 +98,7 @@ class HasJoin implements RelationInterface
         }
         // get the targets
         $targetDao    = $this->targetDao;
-        $this->target = $targetDao::query()->fetch( $this->targetCol, $targetKeys );
+        $this->target = $targetDao::query()->load( $this->targetCol, $targetKeys );
         return $this->target;
     }
 

@@ -202,16 +202,6 @@ class Dao extends Query
     }
 
     /**
-     * @param string $id
-     * @param string $column
-     * @return array|mixed
-     */
-    public static function fetch( $id, $column=null )
-    {
-        return static::query()->load( $id, $column );
-    }
-
-    /**
      * @param string|int $key
      * @param array $data
      * @return PdoStatement
