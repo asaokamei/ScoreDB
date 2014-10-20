@@ -1,5 +1,7 @@
 <?php
 return '
+        DROP TABLE IF EXISTS dao_user;
+
         CREATE TABLE dao_user (
             user_id int NOT NULL AUTO_INCREMENT,
             name VARCHAR(30),
