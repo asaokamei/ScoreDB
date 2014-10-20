@@ -103,5 +103,6 @@ class Relation_Test extends \PHPUnit_Framework_TestCase
         $blog = Blog::create( $this->makeBlogDataAsArray() );
         $this->assertEquals( 'WScore\ScoreDB\Relation\HasMany', get_class($user->blogs) );
         $this->assertEquals( 'WScore\ScoreDB\Relation\HasOne',  get_class($blog->user) );
+        $this->assertSame( $user->blogs, $user->blogs );
     }
 }
