@@ -60,16 +60,14 @@ class HasJoin implements RelationInterface
     /**
      * @param Dao            $sourceDao
      * @param Dao|string     $targetName
-     * @param EntityAbstract $entity
      * @param null|string    $joinDao
      */
-    public function __construct( $sourceDao, $targetName, $entity, $joinDao = null )
+    public function __construct( $sourceDao, $targetName, $joinDao = null )
     {
         $this->sourceDao     = $sourceDao;
         $this->sourceCol     = $sourceDao->getKeyName();
         $this->targetDao     = $targetName;
         $this->targetCol     = $this->sourceCol;
-        $this->entity        = $entity;
         $this->joinDao       = $joinDao ?: function ( $targetName ) use ( $sourceDao ) {
             /** @var Dao $targetName */
             $list = [ $targetName::query()->getTable, $sourceDao::query()->getTable() ];
@@ -78,6 +76,16 @@ class HasJoin implements RelationInterface
         };
         $this->joinSourceCol = $this->sourceCol;
         $this->joinTargetCol = $this->targetCol;
+    }
+
+    /**
+     * @param EntityAbstract $entity
+     * @return RelationInterface
+     */
+    public function entity( $entity )
+    {
+        $this->entity = $entity;
+        return $this;
     }
 
     /**

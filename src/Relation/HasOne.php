@@ -45,15 +45,23 @@ class HasOne implements RelationInterface
      * @param Dao            $sourceDao
      * @param Dao|string     $targetDao
      * @param string         $sourceCol
-     * @param EntityAbstract $entity
      */
-    public function __construct( $sourceDao, $targetDao, $sourceCol, $entity )
+    public function __construct( $sourceDao, $targetDao, $sourceCol )
     {
         $this->sourceDao = $sourceDao;
-        $this->sourceCol = $sourceCol;
+        $this->sourceCol = $sourceCol ?: $sourceDao->getKeyName();
         $this->targetDao = $targetDao;
-        $this->targetCol = $sourceCol;
-        $this->entity    = $entity;
+        $this->targetCol = $this->sourceCol;
+    }
+
+    /**
+     * @param EntityAbstract $entity
+     * @return RelationInterface
+     */
+    public function entity( $entity )
+    {
+        $this->entity = $entity;
+        return $this;
     }
 
     /**

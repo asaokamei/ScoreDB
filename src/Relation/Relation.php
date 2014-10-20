@@ -16,34 +16,31 @@ class Relation
      * @param Dao            $sourceDao
      * @param Dao            $targetDao
      * @param string         $sourceCol
-     * @param EntityAbstract $entity
      * @return HasOne
      */
-    public static function hasOne( $sourceDao, $targetDao, $sourceCol, $entity )
+    public static function hasOne( $sourceDao, $targetDao, $sourceCol )
     {
-        return new HasOne( $sourceDao, $targetDao, $sourceCol, $entity );
+        return new HasOne( $sourceDao, $targetDao, $sourceCol );
     }
 
     /**
      * @param Dao            $sourceDao
      * @param Dao            $targetName
-     * @param EntityAbstract $entity
      * @return HasMany
      */
-    public static function hasMany( $sourceDao, $targetName, $entity )
+    public static function hasMany( $sourceDao, $targetName )
     {
-        return new HasMany( $sourceDao, $targetName, $entity );
+        return new HasMany( $sourceDao, $targetName );
     }
 
     /**
      * @param Dao            $sourceDao
      * @param Dao            $targetName
-     * @param EntityAbstract $entity
      * @param null|string    $joinDao
      * @return HasJoin
      */
-    public static function hasJoin( $sourceDao, $targetName, $entity, $joinDao = null )
+    public static function hasJoin( $sourceDao, $targetName, $joinDao = null )
     {
-        return new HasJoin( $sourceDao, $targetName, $entity, $joinDao );
+        return new HasJoin( $sourceDao, $targetName, $joinDao );
     }
 }

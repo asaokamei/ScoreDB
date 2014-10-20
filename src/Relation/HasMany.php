@@ -45,15 +45,23 @@ class HasMany implements RelationInterface
     /**
      * @param Dao            $sourceDao
      * @param Dao|string     $targetDao
-     * @param EntityAbstract $entity
      */
-    public function __construct( $sourceDao, $targetDao, $entity )
+    public function __construct( $sourceDao, $targetDao )
     {
         $this->sourceDao = $sourceDao;
         $this->sourceCol = $sourceDao->getKeyName();
         $this->targetDao = $targetDao;
         $this->targetCol = $this->sourceCol;
-        $this->entity    = $entity;
+    }
+
+    /**
+     * @param EntityAbstract $entity
+     * @return RelationInterface
+     */
+    public function entity( $entity )
+    {
+        $this->entity = $entity;
+        return $this;
     }
 
     /**

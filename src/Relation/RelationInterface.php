@@ -12,6 +12,12 @@ use WScore\ScoreDB\Entity\EntityAbstract;
 interface RelationInterface
 {
     /**
+     * @param EntityAbstract $entity
+     * @return RelationInterface
+     */
+    public function entity( $entity );
+
+    /**
      * @return EntityAbstract|EntityAbstract[]
      */
     public function get();

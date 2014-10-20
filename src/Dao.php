@@ -324,14 +324,13 @@ class Dao extends Query
      * return relation object, or null if not set. 
      *
      * @param EntityAbstract $entity
-     * @param string         $name
      * @return null|RelationInterface
      */
-    public function relate( $entity, $name )
+    public function relate( $name )
     {
         $method = 'get'.ucwords($name).'Relation';
         if( method_exists( $this, $method ) ) {
-            return $this->$method( $entity );
+            return $this->$method();
         }
         return null;
     }
