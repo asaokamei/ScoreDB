@@ -112,8 +112,12 @@ abstract class EntityAbstract
     public function __get( $key )
     {
         $value = $this->_getRaw($key);
-        if( $dao = $this->_dao() ) {
-            $value = $dao->mutate( $key, $value );
+        $dao = $this->_dao();
+        if( !$dao ) return $value;
+        $value = $dao->mutate( $key, $value );
+        if( !$value && $value = $dao->relate($key) ) {
+            $value->entity($this);
+            $this->_data[$key] = $value;
         }
         return $value;
     }
