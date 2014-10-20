@@ -40,7 +40,8 @@ class ActiveRecord extends EntityObject
             $modified = $this->_getModified();
             $dao::modify( $this->getKey(), $modified );
         } else {
-            $dao::inject( $this->_data );
+            $id = $dao::inject( $this->_data );
+            $this->__set( $this->_keyName, $id );
         }
         return $this;
     }
