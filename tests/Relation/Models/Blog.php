@@ -23,6 +23,12 @@ class Blog extends Dao
         'updated_at' => [ 'updated_at' ],
     ];
 
+    protected $fillable = [
+        'title', 'content'
+    ];
+
+    protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
+
     public function getUserRelation()
     {
         return Relation::hasOne( $this, 'tests\Relation\Models\User', 'user_id' );

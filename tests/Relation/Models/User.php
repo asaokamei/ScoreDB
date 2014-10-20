@@ -28,6 +28,12 @@ class User extends Dao
         ],
     ];
 
+    protected $fillable = [
+        'name', 'gender', 'status', 'age', 'bday', 'no_null', 'open_date'
+    ];
+
+    protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
+
     public function getBlogsRelation()
     {
         return Relation::hasMany( $this, 'tests\Relation\Models\Blog' );
