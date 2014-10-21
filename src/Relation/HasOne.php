@@ -12,31 +12,6 @@ use WScore\ScoreDB\Entity\EntityAbstract;
 class HasOne extends AbstractRelation
 {
     /**
-     * @var Dao
-     */
-    protected $sourceDao;
-
-    /**
-     * @var string
-     */
-    protected $sourceCol;
-
-    /**
-     * @var EntityAbstract
-     */
-    protected $entity;
-
-    /**
-     * @var string
-     */
-    protected $targetDao;
-
-    /**
-     * @var string
-     */
-    protected $targetCol;
-
-    /**
      * @var EntityAbstract
      */
     protected $target;
@@ -60,9 +35,8 @@ class HasOne extends AbstractRelation
     public function get()
     {
         /** @var Dao $targetName */
-        $targetName   = $this->targetDao;
         $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
-        $this->target = $targetName::query()->load( $sourceKey, $this->targetCol );
+        $this->target = $this->load( $this->targetDao, $sourceKey, $this->targetCol );
         if ( $this->target ) {
             $this->target = $this->target[ 0 ];
         }

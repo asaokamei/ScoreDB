@@ -3,6 +3,7 @@ namespace WScore\ScoreDB\Relation;
 
 use WScore\ScoreDB\Dao;
 use WScore\ScoreDB\Entity\EntityAbstract;
+use WScore\ScoreDB\Query;
 
 /**
  * Created by PhpStorm.
@@ -12,21 +13,6 @@ use WScore\ScoreDB\Entity\EntityAbstract;
  */
 class HasJoin extends AbstractRelation
 {
-    /**
-     * @var Dao
-     */
-    protected $sourceDao;
-
-    /**
-     * @var string
-     */
-    protected $sourceCol;
-
-    /**
-     * @var EntityAbstract
-     */
-    protected $entity;
-
     /**
      * @var string|Dao
      */
@@ -41,16 +27,6 @@ class HasJoin extends AbstractRelation
      * @var string
      */
     protected $joinTargetCol;
-
-    /**
-     * @var string
-     */
-    protected $targetDao;
-
-    /**
-     * @var string
-     */
-    protected $targetCol;
 
     /**
      * @var EntityAbstract[]
@@ -76,6 +52,7 @@ class HasJoin extends AbstractRelation
         };
         $this->joinSourceCol = $this->sourceCol;
         $this->joinTargetCol = $this->targetCol;
+        $this->orderBy       = $this->targetCol;
     }
 
     /**
@@ -95,15 +72,12 @@ class HasJoin extends AbstractRelation
         }
         // get the targets
         /** @var Dao $targetDao */
-        $targetDao    = $this->targetDao;
-        $this->target = $targetDao::query()
-            ->order( $this->targetCol )
-            ->load( $targetKeys, $this->targetCol );
+        $this->target  = $this->load( $this->targetDao, $targetKeys, $this->targetCol );
         return $this->target;
     }
 
     /**
-     * @return Dao
+     * @return Dao|Query
      */
     protected function getJoinDao()
     {
@@ -111,7 +85,7 @@ class HasJoin extends AbstractRelation
         if ( class_exists( $joinDao ) ) {
             return $joinDao::query();
         }
-        return $this->sourceDao->query()->table( $joinDao );
+        return $this->getQuery( $joinDao );
     }
 
     /**

@@ -3,6 +3,7 @@ namespace tests\Relation;
 
 use tests\Relation\Models\Blog;
 use tests\Relation\Models\Tag;
+use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Entity\ActiveRecord;
 
 trait testHasJoinTrait
@@ -104,6 +105,16 @@ trait testHasJoinTrait
 
         $this->assertEquals( $tag2->getKey(), $tags[0]->getKey() );
         $this->assertEquals( $tag2->tag, $tags[0]->tag );
+
+        /*
+         * test using where
+         */
+        $tags = $blog->tags->where( DB::given('tag_id')->is($tag1->getKey()) )->get();
+        $this->assertTrue( is_array( $tags ) );
+        $this->assertEquals( '1', count( $tags ) );
+
+        $this->assertEquals( $tag1->getKey(), $tags[0]->getKey() );
+        $this->assertEquals( $tag1->tag, $tags[0]->tag );
     }
 
 }
