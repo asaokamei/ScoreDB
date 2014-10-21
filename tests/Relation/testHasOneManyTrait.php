@@ -3,33 +3,15 @@ namespace tests\Relation;
 
 use tests\Relation\Models\Blog;
 use tests\Relation\Models\User;
-use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Entity\ActiveRecord;
 
-require_once( __DIR__ . '/../autoloader.php' );
-
-class Relation_Test extends \PHPUnit_Framework_TestCase
+trait testHasOneManyTrait
 {
-    use RelationTrait;
+    use testToolsTrait;
 
-    var $dbType = 'mysql';
-
-    static function setupBeforeClass()
-    {
-        self::loadClasses();
-        DB::restart();
-    }
-
-    function setup()
-    {
-        $this->prepareTest( $this->dbType );
-    }
-
-    function test0()
-    {
-        $this->assertEquals( 'tests\Relation\Models\User', get_class(User::query()) );
-        $this->assertEquals( 'tests\Relation\Models\Blog', get_class(Blog::query()) );
-    }
+    abstract function assertEquals($expected, $actual, $message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false);
+    abstract function assertTrue($condition, $message = '');
+    abstract function assertSame($expected, $actual, $message = '');
 
     /**
      * @test
@@ -197,4 +179,5 @@ class Relation_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( $blog2->title, $blogs[1]->title );
         $this->assertEquals( $blog2->content, $blogs[1]->content );
     }
+
 }

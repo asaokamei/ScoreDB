@@ -3,7 +3,7 @@ namespace tests\Relation;
 
 use WScore\ScoreDB\DB;
 
-trait RelationTrait
+trait testToolsTrait
 {
     static function loadClasses()
     {
