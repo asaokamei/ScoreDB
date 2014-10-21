@@ -176,7 +176,13 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
         if( $data ) $this->value($data);
         $this->toInsert();
         $this->performWrite();
-        $id = ( $this->returnLastId ) ? $this->lastId() : true;
+        if( $this->returnLastId ) {
+            $id = $this->lastId();
+        } elseif( $this->keyName && isset( $data[$this->keyName] ) ) {
+            $id = $data[$this->keyName];
+        } else {
+            $id = true;
+        }
         $this->reset();
         return $id;
     }
