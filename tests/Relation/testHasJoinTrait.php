@@ -99,11 +99,11 @@ trait testHasJoinTrait
         $this->assertTrue( is_array( $tags ) );
         $this->assertEquals( '2', count( $tags ) );
 
-        $this->assertEquals( $tag1->getKey(), $tags[0]->getKey() );
-        $this->assertEquals( $tag1->tag, $tags[0]->tag );
+        $this->assertEquals( $tag1->getKey(), $tags[1]->getKey() );
+        $this->assertEquals( $tag1->tag, $tags[1]->tag );
 
-        $this->assertEquals( $tag2->getKey(), $tags[1]->getKey() );
-        $this->assertEquals( $tag2->tag, $tags[1]->tag );
+        $this->assertEquals( $tag2->getKey(), $tags[0]->getKey() );
+        $this->assertEquals( $tag2->tag, $tags[0]->tag );
     }
 
 }

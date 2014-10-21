@@ -9,7 +9,7 @@ use WScore\ScoreDB\Entity\EntityAbstract;
  * Date: 2014/10/18
  * Time: 10:35
  */
-class HasOne implements RelationInterface
+class HasOne extends AbstractRelation
 {
     /**
      * @var Dao
@@ -52,16 +52,6 @@ class HasOne implements RelationInterface
         $this->sourceCol = $sourceCol ?: $sourceDao->getKeyName();
         $this->targetDao = $targetDao;
         $this->targetCol = $this->sourceCol;
-    }
-
-    /**
-     * @param EntityAbstract $entity
-     * @return RelationInterface
-     */
-    public function entity( $entity )
-    {
-        $this->entity = $entity;
-        return $this;
     }
 
     /**

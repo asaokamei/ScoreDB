@@ -10,7 +10,7 @@ use WScore\ScoreDB\Entity\EntityAbstract;
  * Date: 2014/10/18
  * Time: 12:41
  */
-class HasJoin implements RelationInterface
+class HasJoin extends AbstractRelation
 {
     /**
      * @var Dao
@@ -79,16 +79,6 @@ class HasJoin implements RelationInterface
     }
 
     /**
-     * @param EntityAbstract $entity
-     * @return RelationInterface
-     */
-    public function entity( $entity )
-    {
-        $this->entity = $entity;
-        return $this;
-    }
-
-    /**
      * @return EntityAbstract[]
      */
     public function get()
@@ -104,8 +94,11 @@ class HasJoin implements RelationInterface
             $targetKeys[ ] = $j[ $this->joinTargetCol ];
         }
         // get the targets
+        /** @var Dao $targetDao */
         $targetDao    = $this->targetDao;
-        $this->target = $targetDao::query()->load( $targetKeys, $this->targetCol );
+        $this->target = $targetDao::query()
+            ->order( $this->targetCol )
+            ->load( $targetKeys, $this->targetCol );
         return $this->target;
     }
 

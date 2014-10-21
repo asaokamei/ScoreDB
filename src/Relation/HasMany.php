@@ -10,7 +10,7 @@ use WScore\ScoreDB\Entity\EntityAbstract;
  * Date: 2014/10/18
  * Time: 11:16
  */
-class HasMany implements RelationInterface
+class HasMany extends AbstractRelation
 {
     /**
      * @var Dao
@@ -55,16 +55,6 @@ class HasMany implements RelationInterface
     }
 
     /**
-     * @param EntityAbstract $entity
-     * @return RelationInterface
-     */
-    public function entity( $entity )
-    {
-        $this->entity = $entity;
-        return $this;
-    }
-
-    /**
      * @return EntityAbstract[]
      */
     public function get()
@@ -73,7 +63,7 @@ class HasMany implements RelationInterface
         $targetName   = $this->targetDao;
         $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
         $this->target = $targetName::query()
-            ->order( $this->sourceCol )
+            ->order( $this->targetCol )
             ->load( $sourceKey, $this->targetCol );
         return $this->target;
     }
