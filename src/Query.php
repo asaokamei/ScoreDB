@@ -122,8 +122,8 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
     //  execute sql.
     // +----------------------------------------------------------------------+
     /**
-     * @param        $id
-     * @param string $column
+     * @param int|array  $id
+     * @param string     $column
      * @return $this|void
      */
     public function key( $id, $column=null )

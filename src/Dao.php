@@ -360,8 +360,8 @@ class Dao extends Query
     }
 
     /**
-     * @param int    $id
-     * @param string $column
+     * @param int|array  $id
+     * @param string     $column
      * @return array|mixed
      */
     public function load( $id, $column=null )
