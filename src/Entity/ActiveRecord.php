@@ -43,8 +43,8 @@ class ActiveRecord extends EntityObject
             $id = $dao::inject( $this->_data );
             $this->__set( $this->_keyName, $id );
             $this->_isFetched = true;
-            $this->_original_data = $this->_data;
         }
+        $this->_original_data = $this->_data;
         return $this;
     }
 
