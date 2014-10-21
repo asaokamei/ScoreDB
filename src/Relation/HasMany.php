@@ -72,7 +72,9 @@ class HasMany implements RelationInterface
         /** @var Dao $targetName */
         $targetName   = $this->targetDao;
         $sourceKey    = $this->entity->_getRaw( $this->sourceCol );
-        $this->target = $targetName::query()->load( $sourceKey, $this->targetCol );
+        $this->target = $targetName::query()
+            ->order( $this->sourceCol )
+            ->load( $sourceKey, $this->targetCol );
         return $this->target;
     }
 

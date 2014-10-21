@@ -3,32 +3,15 @@ namespace tests\Relation;
 
 use tests\Relation\Models\Blog;
 use tests\Relation\Models\Tag;
-use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Entity\ActiveRecord;
 
-require_once( __DIR__ . '/../autoloader.php' );
-
-class HasJoin_Test extends \PHPUnit_Framework_TestCase
+trait testHasJoinTrait
 {
     use testToolsTrait;
 
-    var $dbType = 'mysql';
-
-    static function setupBeforeClass()
-    {
-        self::loadClasses();
-        DB::restart();
-    }
-
-    function setup()
-    {
-        $this->prepareTest( $this->dbType );
-    }
-
-    function test0()
-    {
-        $this->assertEquals( 'WScore\ScoreDB\Relation\HasJoin', get_class(Blog::query()->getTagsRelation()) );
-    }
+    abstract function assertEquals($expected, $actual, $message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false);
+    abstract function assertTrue($condition, $message = '');
+    abstract function assertSame($expected, $actual, $message = '');
 
     /**
      * @test
@@ -116,10 +99,11 @@ class HasJoin_Test extends \PHPUnit_Framework_TestCase
         $this->assertTrue( is_array( $tags ) );
         $this->assertEquals( '2', count( $tags ) );
 
-        $this->assertEquals( $tag1->getKey(), $tags[1]->getKey() );
-        $this->assertEquals( $tag1->tag, $tags[1]->tag );
+        $this->assertEquals( $tag1->getKey(), $tags[0]->getKey() );
+        $this->assertEquals( $tag1->tag, $tags[0]->tag );
 
-        $this->assertEquals( $tag2->getKey(), $tags[0]->getKey() );
-        $this->assertEquals( $tag2->tag, $tags[0]->tag );
+        $this->assertEquals( $tag2->getKey(), $tags[1]->getKey() );
+        $this->assertEquals( $tag2->tag, $tags[1]->tag );
     }
+
 }
