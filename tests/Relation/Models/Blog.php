@@ -29,8 +29,20 @@ class Blog extends Dao
 
     protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
 
+    /**
+     * @return \WScore\ScoreDB\Relation\HasOne
+     */
     public function getUserRelation()
     {
         return Relation::hasOne( $this, 'tests\Relation\Models\User', 'user_id' );
     }
+
+    /**
+     * @return \WScore\ScoreDB\Relation\HasJoin
+     */
+    public function getBlogsRelation()
+    {
+        return Relation::hasJoin( $this, 'tests\Relation\Models\Tag', 'tests\Relation\Models\BlogTag' );
+    }
+
 }

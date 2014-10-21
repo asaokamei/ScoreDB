@@ -14,7 +14,7 @@ class Relation
 {
     /**
      * @param Dao            $sourceDao
-     * @param Dao            $targetDao
+     * @param string|Dao     $targetDao
      * @param string         $sourceCol
      * @return HasOne
      */
@@ -25,7 +25,7 @@ class Relation
 
     /**
      * @param Dao            $sourceDao
-     * @param Dao            $targetName
+     * @param string|Dao     $targetName
      * @return HasMany
      */
     public static function hasMany( $sourceDao, $targetName )
@@ -35,7 +35,7 @@ class Relation
 
     /**
      * @param Dao            $sourceDao
-     * @param Dao            $targetName
+     * @param string|Dao     $targetName
      * @param null|string    $joinDao
      * @return HasJoin
      */

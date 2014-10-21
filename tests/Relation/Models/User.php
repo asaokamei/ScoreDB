@@ -34,6 +34,9 @@ class User extends Dao
 
     protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
 
+    /**
+     * @return \WScore\ScoreDB\Relation\HasMany
+     */
     public function getBlogsRelation()
     {
         return Relation::hasMany( $this, 'tests\Relation\Models\Blog' );
