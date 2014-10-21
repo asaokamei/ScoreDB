@@ -2,6 +2,7 @@
 namespace WScore\ScoreDB\Entity;
 
 use WScore\ScoreDB\Dao;
+use WScore\ScoreDB\Relation\RelationInterface;
 
 /**
  * Class EntityObject
@@ -16,6 +17,11 @@ abstract class EntityAbstract
      * @var array
      */
     protected $_data = array();
+
+    /**
+     * @var RelationInterface[]
+     */
+    protected $_links = array();
 
     /**
      * @var string
@@ -111,14 +117,25 @@ abstract class EntityAbstract
      */
     public function __get( $key )
     {
+        // find the value.
         $value = $this->_getRaw($key);
         $dao = $this->_dao();
+        // no dao is set, return the found value.
         if( !$dao ) return $value;
-        $value = $dao->mutate( $key, $value );
-        if( !$value && $value = $dao->relate($key) ) {
-            $value->entity($this);
-            $this->_data[$key] = $value;
+        /*
+         * dao exists. check for relation and mutators.
+         */
+        if( isset( $this->_links[$key] ) ) {
+            // found a Relation object.
+            return $this->_links[$key];
         }
+        if( !$value && $value = $dao->relate($key) ) {
+            // got a Relation object.
+            $value->entity($this);
+            $this->_links[$key] = $value;
+            return $value;
+        }
+        $value = $dao->mutate( $key, $value );
         return $value;
     }
 

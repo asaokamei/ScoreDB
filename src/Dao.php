@@ -4,7 +4,6 @@ namespace WScore\ScoreDB;
 use Aura\Sql\ExtendedPdo;
 use PdoStatement;
 use WScore\ScoreDB\Entity\ActiveRecord;
-use WScore\ScoreDB\Entity\EntityAbstract;
 use WScore\ScoreDB\Entity\EntityObject;
 use WScore\ScoreDB\Hook\Events;
 use WScore\ScoreDB\Hook\Hooks;
@@ -323,7 +322,7 @@ class Dao extends Query
     /**
      * return relation object, or null if not set. 
      *
-     * @param EntityAbstract $entity
+     * @param string $name
      * @return null|RelationInterface
      */
     public function relate( $name )

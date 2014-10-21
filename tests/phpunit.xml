@@ -14,6 +14,7 @@
         <testsuite name="WScore/ScoreDB Test Suite">
             <directory>ScoreDB</directory>
             <directory>Entity</directory>
+            <directory>Relation</directory>
             <exclude>DbAccess/Dao_DbType.php</exclude>
         </testsuite>
     </testsuites>

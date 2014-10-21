@@ -105,4 +105,96 @@ class Relation_Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 'WScore\ScoreDB\Relation\HasOne',  get_class($blog->user) );
         $this->assertSame( $user->blogs, $user->blogs );
     }
+
+    /**
+     * @test
+     */
+    function linkSavedEntitiesUsingHasManyRelationObject()
+    {
+        /*
+         * set up
+         */
+        /** @var ActiveRecord $user0 */
+        /** @var ActiveRecord $blog1 */
+        /** @var ActiveRecord $blog2 */
+        $user0 = User::create( $this->makeUserDataAsArray() )->save();
+        $blog1 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $blog2 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $user_id = $user0->getKey();
+        /*
+         * link them!
+         */
+        $user0->blogs->link( $blog1 );
+        $user0->blogs->link( $blog2 );
+        /*
+         * save the blogs with user_id
+         */
+        $blog1->save();
+        $blog2->save();
+
+        /*
+         * get them!
+         */
+        /** @var ActiveRecord $user */
+        /** @var ActiveRecord[] $blogs */
+        $user = User::findOrFail( $user_id );
+        $blogs = $user->blogs->get();
+
+        $this->assertTrue( is_array( $blogs ) );
+        $this->assertEquals( '2', count( $blogs ) );
+
+        $this->assertEquals( $blog1->getKey(), $blogs[0]->getKey() );
+        $this->assertEquals( $blog1->title, $blogs[0]->title );
+        $this->assertEquals( $blog1->content, $blogs[0]->content );
+
+        $this->assertEquals( $blog2->getKey(), $blogs[1]->getKey() );
+        $this->assertEquals( $blog2->title, $blogs[1]->title );
+        $this->assertEquals( $blog2->content, $blogs[1]->content );
+    }
+
+    /**
+     * @test
+     */
+    function linkSavedEntitiesUsingHasOneRelationObject()
+    {
+        /*
+         * set up
+         */
+        /** @var ActiveRecord $user0 */
+        /** @var ActiveRecord $blog1 */
+        /** @var ActiveRecord $blog2 */
+        $user0 = User::create( $this->makeUserDataAsArray() )->save();
+        $blog1 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $blog2 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $user_id = $user0->getKey();
+        /*
+         * link them!
+         */
+        $blog1->user->link( $user0 );
+        $blog2->user->link( $user0 );
+        /*
+         * save the blogs with user_id
+         */
+        $blog1->save();
+        $blog2->save();
+
+        /*
+         * get them!
+         */
+        /** @var ActiveRecord $user */
+        /** @var ActiveRecord[] $blogs */
+        $user = User::findOrFail( $user_id );
+        $blogs = $user->blogs->get();
+
+        $this->assertTrue( is_array( $blogs ) );
+        $this->assertEquals( '2', count( $blogs ) );
+
+        $this->assertEquals( $blog1->getKey(), $blogs[0]->getKey() );
+        $this->assertEquals( $blog1->title, $blogs[0]->title );
+        $this->assertEquals( $blog1->content, $blogs[0]->content );
+
+        $this->assertEquals( $blog2->getKey(), $blogs[1]->getKey() );
+        $this->assertEquals( $blog2->title, $blogs[1]->title );
+        $this->assertEquals( $blog2->content, $blogs[1]->content );
+    }
 }
