@@ -1,5 +1,5 @@
 <?php
-namespace tests\Relation;
+namespace tests\Relation\Models;
 
 use WScore\ScoreDB\Dao;
 use WScore\ScoreDB\Relation\Relation;
@@ -12,7 +12,7 @@ class Tag extends Dao
 
     protected $keyName = 'tag_id';
 
-    protected $fillable = [ 'tag' ];
+    protected $fillable = [ 'tag_id', 'tag' ];
 
     protected $timeStamps = [
         'created_at' => [ 'created_at' ],

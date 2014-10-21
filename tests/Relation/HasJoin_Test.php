@@ -2,7 +2,9 @@
 namespace tests\Relation;
 
 use tests\Relation\Models\Blog;
+use tests\Relation\Models\Tag;
 use WScore\ScoreDB\DB;
+use WScore\ScoreDB\Entity\ActiveRecord;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
@@ -25,6 +27,38 @@ class HasJoin_Test extends \PHPUnit_Framework_TestCase
 
     function test0()
     {
-        $this->assertEquals( 'WScore\ScoreDB\Relation\HasJoin', get_class(Blog::query()->getBlogsRelation()) );
+        $this->assertEquals( 'WScore\ScoreDB\Relation\HasJoin', get_class(Blog::query()->getTagsRelation()) );
+    }
+
+    /**
+     * @test
+     */
+    function relateHasJoin()
+    {
+        /*
+         * setup
+         */
+        /** @var ActiveRecord $blog1 */
+        /** @var ActiveRecord $blog2 */
+        /** @var ActiveRecord $tag1 */
+        $blog1 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $blog2 = Blog::create( $this->makeBlogDataAsArray() )->save();
+        $tag1  = Tag::create(  $this->makeTagDataAsArray('test') )->save();
+
+        $blog1->tags->link( $tag1 );
+        $blog2->tags->link( $tag1 );
+
+        /** @var ActiveRecord[] $blogs */
+        $blogs = $tag1->blogs->get();
+        $this->assertTrue( is_array( $blogs ) );
+        $this->assertEquals( '2', count( $blogs ) );
+
+        $this->assertEquals( $blog1->getKey(), $blogs[0]->getKey() );
+        $this->assertEquals( $blog1->title, $blogs[0]->title );
+        $this->assertEquals( $blog1->content, $blogs[0]->content );
+
+        $this->assertEquals( $blog2->getKey(), $blogs[1]->getKey() );
+        $this->assertEquals( $blog2->title, $blogs[1]->title );
+        $this->assertEquals( $blog2->content, $blogs[1]->content );
     }
 }

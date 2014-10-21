@@ -67,7 +67,7 @@ class HasJoin implements RelationInterface
         $this->sourceDao     = $sourceDao;
         $this->sourceCol     = $sourceDao->getKeyName();
         $this->targetDao     = $targetName;
-        $this->targetCol     = $this->sourceCol;
+        $this->targetCol     = $targetName::query()->getKeyName();
         $this->joinDao       = $joinDao ?: function ( $targetName ) use ( $sourceDao ) {
             /** @var Dao $targetName */
             $list = [ $targetName::query()->getTable, $sourceDao::query()->getTable() ];
@@ -99,14 +99,13 @@ class HasJoin implements RelationInterface
         $joinList = $this->getJoinDao()->load( $sourceKey, $this->joinSourceCol );
 
         // get the target's key list. 
-        $joinSourceCol = $this->joinSourceCol;
         $targetKeys    = [ ];
         foreach ( $joinList as $j ) {
-            $targetKeys[ ] = $j[ $joinSourceCol ];
+            $targetKeys[ ] = $j[ $this->joinTargetCol ];
         }
         // get the targets
         $targetDao    = $this->targetDao;
-        $this->target = $targetDao::query()->load( $this->targetCol, $targetKeys );
+        $this->target = $targetDao::query()->load( $targetKeys, $this->targetCol );
         return $this->target;
     }
 
@@ -116,7 +115,7 @@ class HasJoin implements RelationInterface
     protected function getJoinDao()
     {
         $joinDao = $this->joinDao;
-        if ( class_exists( $joinDao ) && $joinDao instanceof Dao ) {
+        if ( class_exists( $joinDao ) ) {
             return $joinDao::query();
         }
         return $this->sourceDao->query()->table( $joinDao );
@@ -182,9 +181,7 @@ class HasJoin implements RelationInterface
         // key to search for...  
         $sourceKey = $this->entity->_getRaw( $this->sourceCol );
         $targetKey = $target->_getRaw( $this->targetCol );
-        $this->getJoinDao()->where(
-            $this->sourceDao->given( $this->joinSourceCol )->is( $sourceKey )
-        )->inject( [
+        $this->getJoinDao()->inject( [
             $this->joinSourceCol => $sourceKey,
             $this->joinTargetCol => $targetKey,
         ] );

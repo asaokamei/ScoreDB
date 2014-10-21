@@ -24,7 +24,7 @@ class Blog extends Dao
     ];
 
     protected $fillable = [
-        'title', 'content'
+        'title', 'content', 'status'
     ];
 
     protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
@@ -40,7 +40,7 @@ class Blog extends Dao
     /**
      * @return \WScore\ScoreDB\Relation\HasJoin
      */
-    public function getBlogsRelation()
+    public function getTagsRelation()
     {
         return Relation::hasJoin( $this, 'tests\Relation\Models\Tag', 'tests\Relation\Models\BlogTag' );
     }

@@ -1,5 +1,5 @@
 <?php
-namespace tests\Relation;
+namespace tests\Relation\Models;
 
 use WScore\ScoreDB\Dao;
 

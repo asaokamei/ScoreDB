@@ -10,7 +10,10 @@ trait testToolsTrait
         class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
         class_exists( 'WScore\ScoreDB\Hooks\Hooks' );
-        class_exists( 'tests\ScoreDB\Dao\User' );
+        class_exists( 'tests\Relation\Models\User' );
+        class_exists( 'tests\Relation\Models\Blog' );
+        class_exists( 'tests\Relation\Models\Tag' );
+        class_exists( 'tests\Relation\Models\BlogTag' );
     }
 
     function prepareTest( $dbType )
@@ -53,5 +56,17 @@ trait testToolsTrait
             'content' => 'blog content: ' . mt_rand(1000,9999),
         ];
         return $data;
+    }
+
+    /**
+     * @param string $tag
+     * @return array
+     */
+    function makeTagDataAsArray( $tag='tag' )
+    {
+        return [
+            'tag_id' => $tag,
+            'tag'    => 'tag for '.$tag,
+        ];
     }
 }
