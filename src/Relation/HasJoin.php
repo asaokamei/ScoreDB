@@ -63,7 +63,9 @@ class HasJoin extends AbstractRelation
         // key to search for...  
         $sourceKey = $this->entity->_getRaw( $this->sourceCol );
         if ( !$sourceKey ) return $this->target;
-        $joinList = $this->getJoinDao()->load( $sourceKey, $this->joinSourceCol );
+        if( !$joinList = $this->getJoinDao()->load( $sourceKey, $this->joinSourceCol ) ) {
+            return $this->target;
+        }
 
         // get the target's key list. 
         $targetKeys    = [ ];
