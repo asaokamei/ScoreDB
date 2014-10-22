@@ -128,7 +128,6 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function key( $id, $column=null )
     {
-        if( !$id ) return $this;
         $column = $column ?: $this->keyName;
         $this->where( $this->$column->eq( $id ) );
         return $this;
@@ -222,7 +221,9 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      */
     public function delete( $id=null, $column=null )
     {
-        $this->key($id, $column);
+        if( $id ) {
+            $this->key($id, $column);
+        }
         $this->toDelete();
         $stmt = $this->performWrite();
         $this->reset();
