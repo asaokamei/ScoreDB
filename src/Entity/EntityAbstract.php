@@ -56,7 +56,7 @@ abstract class EntityAbstract
     public function __construct( $dao )
     {
         if( !$dao instanceof Dao ) throw new \InvalidArgumentException;
-        $this->_dao = $dao;
+        $this->_dao = get_class($dao);
         $this->_keyName = $dao->getKeyName();
         if( !empty($this->_data) ) {
             $this->_isFetched = true;
@@ -69,7 +69,9 @@ abstract class EntityAbstract
      */
     public function _dao()
     {
-        return $this->_dao;
+        if( !$this->_dao ) return null;
+        $dao = $this->_dao;
+        return $dao::query();
     }
 
     // +----------------------------------------------------------------------+
