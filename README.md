@@ -92,6 +92,40 @@ $result = DB::query( 'myTable' )
 The ```connect()``` maybe omitted if the default connection is used.
 
 
+### EntityObject
+
+As default, the Dao object returns the found database
+record as ```EntityObject``` class. This class has a
+reference to the Dao object to provide many useful
+functions while keeping the code base to a minimum size.
+
+some functions are:
+
+*   mutating values to an object (or back).
+*   accessing data as a property, or as array.
+*   finding the modified data.
+*   get the primary key.
+*   get the relation objects.
+
+
+### ActiveRecord
+
+Dao can return object as ActiveRecord class, as
+
+```php
+class YourDao extends Dao
+{
+    protected $fetch_class = 'WScore\ScoreDB\Entity\ActiveRecord';
+}
+```
+
+The ActiveRecord class will provide more functions
+added to the EntityObject described above, such as,
+
+*   save to database.
+*   delete itself from database.
+*   immunize the access to database.
+
 
 Data Access Object
 ------------------
@@ -288,6 +322,43 @@ hidden (or already used) events:
 *   createStamp, updateStamp:
 
 for adding timestamps to data when inserting or updating data.
+
+
+Relation
+--------
+
+ScoreDB provides simple relationship classes as,
+
+*   HasOne,
+*   HasMany, and
+*   HasJoin.
+
+### Using Relation
+
+In your Dao class, create methods like'
+
+```php
+class YourDao extends Dao
+{
+    public function getTargetsRelation() {
+        return Relation::HasOne( $this, 'TargetDaoName' );
+    }
+}
+$dao     = new YourDao();
+$entity  = $dao->find($id);
+
+// get target record using HasOne relation.
+$targets = $dao->getTargetsRelation()->entity( $entity )->get();
+
+// or use EntityObject's magic method.
+$targets = $entity->targets->get();
+```
+
+to set new relation,
+
+```php
+$entity->targets->link( $targetEntity );
+```
 
 
 WISHES WISHES WISHES
