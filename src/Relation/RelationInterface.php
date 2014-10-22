@@ -2,6 +2,7 @@
 namespace WScore\ScoreDB\Relation;
 
 use WScore\ScoreDB\Entity\EntityAbstract;
+use WScore\ScoreSql\Sql\Where;
 
 /**
  * Created by PhpStorm.
@@ -33,4 +34,16 @@ interface RelationInterface
      * @return RelationInterface
      */
     public function unlink( $target=null );
+
+    /**
+     * @param string|\Closure $order
+     * @return RelationInterface
+     */
+    public function orderBy( $order );
+
+    /**
+     * @param Where $where
+     * @return RelationInterface
+     */
+    public function where( $where );
 }

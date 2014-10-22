@@ -56,7 +56,7 @@ abstract class AbstractRelation implements RelationInterface
 
     /**
      * @param string|\Closure $order
-     * @return $this
+     * @return RelationInterface
      */
     public function orderBy( $order )
     {
@@ -66,7 +66,7 @@ abstract class AbstractRelation implements RelationInterface
 
     /**
      * @param Where $where
-     * @return $this
+     * @return RelationInterface
      */
     public function where( $where )
     {
