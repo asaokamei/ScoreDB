@@ -28,7 +28,8 @@ class Scopes
     {
         foreach( $this->scopes as $scope ) {
             if( method_exists( $scope, $method = 'scope'.ucfirst($name) ) ) {
-                call_user_func_array( [$scope, $method], [$query]+$args );
+                $pass = array_merge([$query], $args);
+                call_user_func_array( [$scope, $method], $pass );
                 return $this;
             }
         }
