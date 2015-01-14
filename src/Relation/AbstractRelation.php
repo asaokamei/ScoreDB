@@ -96,4 +96,15 @@ abstract class AbstractRelation implements RelationInterface
         if( $this->where   ) $query->where( $this->where );
         return $query->load( $keys, $column );
     }
+
+    /**
+     * @param $column
+     * @return $this
+     */
+    public function setTargetCol( $column )
+    {
+        $this->targetCol = $column;
+        return $this;
+    }
+
 }
