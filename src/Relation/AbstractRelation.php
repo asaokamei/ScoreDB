@@ -45,6 +45,11 @@ abstract class AbstractRelation implements RelationInterface
     protected $where;
 
     /**
+     * @var \Closure
+     */
+    protected $onQueryCallBack;
+
+    /**
      * @param EntityAbstract $entity
      * @return RelationInterface
      */
@@ -83,6 +88,12 @@ abstract class AbstractRelation implements RelationInterface
         return DB::query( $table );
     }
 
+    public function onQuery( $callback )
+    {
+        $this->onQueryCallBack = $callback;
+        return $this;
+    }
+
     /**
      * @param Dao       $dao
      * @param int|array $keys
@@ -94,6 +105,10 @@ abstract class AbstractRelation implements RelationInterface
         $query = $dao::query();
         if( $this->orderBy ) $query->order( $this->orderBy );
         if( $this->where   ) $query->where( $this->where );
+        if( $this->onQueryCallBack ) {
+            $q = $this->onQueryCallBack;
+            $q( $query );
+        }
         return $query->load( $keys, $column );
     }
 
