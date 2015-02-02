@@ -131,7 +131,7 @@ abstract class EntityAbstract
             // found a Relation object.
             return $this->_links[$key];
         }
-        if( !$value && $value = $dao->relate($key) ) {
+        if( is_null($value) && $value = $dao->relate($key) ) {
             // got a Relation object.
             $value->entity($this);
             $this->_links[$key] = $value;
