@@ -7,9 +7,9 @@ use tests\Entity\Dao\UserDao;
 use WScore\ScoreDB\DB;
 use WScore\ScoreDB\Entity\ActiveRecord;
 
-class EntityMySql_Test extends \PHPUnit_Framework_TestCase
+class EntityMySql_Test extends \PHPUnit\Framework\TestCase
 {
-    static function setupBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
@@ -19,12 +19,12 @@ class EntityMySql_Test extends \PHPUnit_Framework_TestCase
         DB::restart();
     }
 
-    function setup()
+    protected function setUp() : void
     {
         $this->prepareTest('mysql');
     }
 
-    function teardown()
+    protected function teardown(): void
     {
         DB::restart();
     }

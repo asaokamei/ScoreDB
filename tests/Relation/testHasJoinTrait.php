@@ -10,10 +10,6 @@ trait testHasJoinTrait
 {
     use testToolsTrait;
 
-    abstract function assertEquals($expected, $actual, $message = '', $delta = 0, $maxDepth = 10, $canonicalize = false, $ignoreCase = false);
-    abstract function assertTrue($condition, $message = '');
-    abstract function assertSame($expected, $actual, $message = '');
-
     /**
      * @test
      */

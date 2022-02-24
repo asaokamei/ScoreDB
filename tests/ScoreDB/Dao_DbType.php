@@ -8,14 +8,14 @@ use WScore\ScoreDB\Paginate\Pager;
 use WScore\ScoreSql\Sql\Join;
 use WScore\ScoreSql\Sql\Where;
 
-class Dao_DbType extends \PHPUnit_Framework_TestCase
+class Dao_DbType extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var User
      */
     var $user;
 
-    static function setupBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
@@ -24,12 +24,12 @@ class Dao_DbType extends \PHPUnit_Framework_TestCase
         DB::restart();
     }
 
-    function setup()
+    protected function setUp() : void
     {
         throw new \Exception( 'WHAT?' );
     }
 
-    function teardown()
+    protected function tearDown() : void
     {
         DB::restart();
     }

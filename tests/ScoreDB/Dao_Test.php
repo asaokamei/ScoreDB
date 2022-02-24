@@ -6,7 +6,7 @@ use WScore\ScoreDB\Hook\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class Dao_Test extends \PHPUnit_Framework_TestCase
+class Dao_Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test

@@ -150,7 +150,7 @@ class Query extends SqlQuery implements IteratorAggregate, QueryInterface
      * Retrieve an external iterator
      * @return Traversable|PdoStatement
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         $this->toSelect();
         return $this->performRead( 'perform' );

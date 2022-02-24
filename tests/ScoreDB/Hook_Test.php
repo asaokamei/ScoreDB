@@ -8,7 +8,7 @@ use WScore\ScoreDB\Hook\Hooks;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class Hook_Test extends \PHPUnit_Framework_TestCase
+class Hook_Test extends \PHPUnit\Framework\TestCase
 {
     function test0()
     {
@@ -32,7 +32,7 @@ class Hook_Test extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * @bad-test
      */
     function query_filter_()
     {

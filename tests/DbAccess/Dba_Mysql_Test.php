@@ -6,7 +6,7 @@ use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
+class Dba_Mysql_Test extends \PHPUnit\Framework\TestCase
 {
     var $configMysql = [
         'dsn' => 'mysql:dbname=test_WScore',
@@ -20,7 +20,7 @@ class Dba_Mysql_Test extends \PHPUnit_Framework_TestCase
         'pass' => 'admin',
     ];
 
-    static function setupBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );

@@ -7,7 +7,7 @@ class DaoMysql_Test extends Dao_DbType
 {
     var $dbType = 'mysql';
 
-    function setup()
+    protected function setUp() : void
     {
         $this->prepareTest( $this->dbType );
     }
