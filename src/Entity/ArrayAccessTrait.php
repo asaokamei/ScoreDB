@@ -22,7 +22,7 @@ trait ArrayAccessTrait
      * @param mixed $key
      * @return boolean
      */
-    public function offsetExists( $key )
+    public function offsetExists(mixed  $key ): bool
     {
         return $this->__isset( $key );
     }
@@ -32,7 +32,7 @@ trait ArrayAccessTrait
      * @param mixed $key
      * @return mixed
      */
-    public function offsetGet( $key )
+    public function offsetGet(mixed $key ): mixed
     {
         $found = $this->__get( $key );
         if( is_string($found) ) {
@@ -49,7 +49,7 @@ trait ArrayAccessTrait
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function offsetSet( $key, $value )
+    public function offsetSet( mixed $key, mixed $value ): void
     {
         $this->__set( $key, $value );
     }
@@ -59,7 +59,7 @@ trait ArrayAccessTrait
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function offsetUnset( $key )
+    public function offsetUnset( mixed $key ): void
     {
         $this->__unset($key);
     }

@@ -5,19 +5,19 @@ use WScore\ScoreDB\DB;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class HasOneMany_MySql_Test extends \PHPUnit_Framework_TestCase
+class HasOneMany_MySql_Test extends \PHPUnit\Framework\TestCase
 {
     use testHasOneManyTrait;
 
     var $dbType = 'mysql';
 
-    static function setupBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         self::loadClasses();
         DB::restart();
     }
 
-    function setup()
+    protected function setUp() : void
     {
         $this->prepareTest( $this->dbType );
     }

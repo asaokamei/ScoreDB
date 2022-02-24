@@ -8,19 +8,19 @@ use WScore\ScoreDB\Entity\ActiveRecord;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class HasJoin_MySql_Test extends \PHPUnit_Framework_TestCase
+class HasJoin_MySql_Test extends \PHPUnit\Framework\TestCase
 {
     use testHasJoinTrait;
 
     var $dbType = 'mysql';
 
-    static function setupBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         self::loadClasses();
         DB::restart();
     }
 
-    function setup()
+    protected function setUp() : void
     {
         $this->prepareTest( $this->dbType );
     }

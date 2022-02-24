@@ -7,7 +7,7 @@ class DaoPgsql_Test extends Dao_DbType
 {
     var $dbType = 'pgsql';
 
-    function setup()
+    protected function setUp() : void
     {
         $this->prepareTest( $this->dbType );
     }

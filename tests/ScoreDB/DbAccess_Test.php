@@ -6,14 +6,14 @@ use WScore\ScoreDB\DbAccess;
 
 require_once( __DIR__ . '/../autoloader.php' );
 
-class DbAccess_Test extends \PHPUnit_Framework_TestCase
+class DbAccess_Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var DbAccess
      */
     var $dba;
     
-    function setup()
+    protected function setUp() : void
     {
         class_exists( 'WScore\ScoreDB\DB' );
         class_exists( 'WScore\ScoreDB\DbAccess' );
@@ -78,7 +78,7 @@ class DbAccess_Test extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * @bad-test
      */
     function config_using_names()
     {
