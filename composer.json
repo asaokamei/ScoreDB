@@ -8,8 +8,9 @@
         }
     ],
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "aura/sql":"5.*",
+        "aura/sql":"4.*",
         "psr/log": "~1.0",
         "wscore/scoresql":"0.2.*"
     },
